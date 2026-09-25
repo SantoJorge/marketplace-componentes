@@ -1,0 +1,77 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito | Marketplace Componentes</title>
+    <link rel="stylesheet" href="{% static 'css/carrito.css' %}">
+</head>
+<body>
+    <header class="encabezado">
+        <div class="barra-superior">
+            <a class="logo" href="/" aria-label="Inicio">M</a>
+            <div class="buscador">☰　Buscar <span>⌕</span></div>
+            <div class="iconos" aria-label="Cuenta y carrito">♙　🛒</div>
+        </div>
+        <nav class="categorias" aria-label="Categorías">
+            <a href="#">Inicio</a><a href="#">Laptops</a><a href="#">Gamer</a>
+            <a href="#">Mouse</a><a href="#">Teclados</a><a href="#">Monitores</a><a href="#">LEDs</a>
+        </nav>
+    </header>
+
+    <main class="contenedor">
+        <h1>Carrito</h1>
+        {% if articulos %}
+            <section class="lista-productos" aria-label="Productos en el carrito">
+                {% for articulo in articulos %}
+                    <article class="producto">
+                        <div class="detalle-producto">
+                            {% if articulo.producto.imagen_url %}
+                                <img class="foto" src="{{ articulo.producto.imagen_url }}" alt="{{ articulo.producto.nombre }}">
+                            {% else %}
+                                <div class="foto sin-foto" aria-hidden="true">📦</div>
+                            {% endif %}
+                            <div>
+                                <h2>{{ articulo.producto.nombre }}</h2>
+                                <p>${{ articulo.producto.precio }}</p>
+                            </div>
+                        </div>
+                        <div class="controles">
+                            <form method="post" action="{% url 'cambiar_cantidad' articulo.producto.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="cantidad" value="{{ articulo.cantidad|add:'-1' }}">
+                                <button class="boton-cantidad" aria-label="Reducir cantidad">−</button>
+                            </form>
+                            <span class="cantidad">{{ articulo.cantidad }}</span>
+                            <form method="post" action="{% url 'cambiar_cantidad' articulo.producto.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="cantidad" value="{{ articulo.cantidad|add:'1' }}">
+                                <button class="boton-cantidad" aria-label="Aumentar cantidad">+</button>
+                            </form>
+                            <form method="post" action="{% url 'quitar_del_carrito' articulo.producto.id %}">
+                                {% csrf_token %}
+                                <button class="quitar">Quitar</button>
+                            </form>
+                        </div>
+                    </article>
+                {% endfor %}
+            </section>
+            <section class="resumen">
+                <div class="datos-compra">
+                    <p><u>Envío a dirección:</u> Avenida Brasil</p>
+                    <p>Envío: <strong>Gratis</strong></p>
+                    <p class="total">Total <strong>${{ total }}</strong></p>
+                </div>
+                <button class="comprar" type="button" title="La compra se habilitará en una etapa posterior">Comprar todo</button>
+            </section>
+        {% else %}
+            <section class="carrito-vacio">
+                <div class="caja-vacia">🛒</div>
+                <h2>Tu carrito está vacío</h2>
+                <p>Cuando agregues productos, aparecerán aquí.</p>
+            </section>
+        {% endif %}
+    </main>
+</body>
+</html>

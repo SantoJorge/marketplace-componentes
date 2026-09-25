@@ -1,0 +1,255 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    color: #191919;
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.encabezado {
+    width: 100%;
+}
+
+.barra-superior {
+    min-height: 76px;
+    padding: 12px max(calc((100% - 1080px) / 2), 24px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.logo {
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    color: white;
+    background: #0787f9;
+    font-size: 25px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.buscador {
+    width: min(320px, 45vw);
+    padding: 11px 16px;
+    border-radius: 22px;
+    background: #f0edf3;
+    color: #68636d;
+    font-size: 13px;
+}
+
+.buscador span {
+    float: right;
+    font-size: 18px;
+}
+
+.iconos {
+    font-size: 25px;
+}
+
+.categorias {
+    min-height: 42px;
+    padding: 9px 16px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    background: #0787f9;
+}
+
+.categorias a {
+    padding: 5px 14px;
+    border: 1px solid rgba(255, 255, 255, .35);
+    color: white;
+    font-size: 11px;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+.contenedor {
+    width: min(1080px, calc(100% - 40px));
+    margin: 35px auto;
+}
+
+h1 {
+    margin: 0 0 18px;
+    color: #0787f9;
+    font-size: 24px;
+    font-weight: 500;
+}
+
+.lista-productos {
+    border-top: 1px solid #e5e5e5;
+}
+
+.producto {
+    min-height: 108px;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.detalle-producto {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.foto {
+    width: 74px;
+    height: 74px;
+    object-fit: contain;
+}
+
+.sin-foto {
+    display: grid;
+    place-items: center;
+    background: #f5f5f5;
+    font-size: 28px;
+}
+
+.producto h2 {
+    max-width: 300px;
+    margin: 0 0 6px;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.producto p {
+    margin: 0;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.controles {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.controles form {
+    margin: 0;
+}
+
+.boton-cantidad {
+    width: 38px;
+    height: 42px;
+    border: 0;
+    background: white;
+    cursor: pointer;
+    font-size: 28px;
+}
+
+.cantidad {
+    min-width: 32px;
+    text-align: center;
+    font-size: 25px;
+}
+
+.quitar {
+    margin-left: 12px;
+    padding: 8px 10px;
+    border: 0;
+    background: transparent;
+    color: #555;
+    cursor: pointer;
+}
+
+.resumen {
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.datos-compra p {
+    margin: 7px 0;
+    font-size: 17px;
+}
+
+.datos-compra strong {
+    margin-left: 12px;
+}
+
+.total {
+    font-size: 20px !important;
+}
+
+.comprar {
+    min-width: 220px;
+    padding: 18px 24px;
+    border: 0;
+    border-radius: 7px;
+    color: white;
+    background: #0787f9;
+    cursor: pointer;
+    font-size: 20px;
+    text-transform: uppercase;
+}
+
+.carrito-vacio {
+    padding: 70px 20px;
+    text-align: center;
+}
+
+.caja-vacia {
+    font-size: 52px;
+}
+
+.carrito-vacio h2 {
+    font-size: 23px;
+}
+
+.carrito-vacio p {
+    color: #666;
+}
+
+@media (max-width: 650px) {
+    .barra-superior {
+        padding: 12px 16px;
+        gap: 12px;
+    }
+
+    .categorias {
+        gap: 6px;
+    }
+
+    .categorias a {
+        padding: 5px 8px;
+    }
+
+    .contenedor {
+        width: calc(100% - 24px);
+        margin-top: 22px;
+    }
+
+    .producto {
+        padding: 14px 6px;
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .controles {
+        align-self: flex-end;
+    }
+
+    .resumen {
+        padding: 20px 6px;
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .comprar {
+        width: 100%;
+    }
+}
