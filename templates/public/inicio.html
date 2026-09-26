@@ -1,0 +1,610 @@
+{% extends "base.html" %}
+
+{% block title %}
+Inicio | Marketplace Componentes
+{% endblock %}
+
+
+{% block content %}
+
+
+<section class="hero">
+
+    <div class="hero-content">
+
+        <div class="hero-tag">
+            ⚡ PLATAFORMA DE COMPRA Y REVENTA
+        </div>
+
+
+        <h1>
+
+            Compra y vende
+
+            <span>
+                componentes de computadora
+            </span>
+
+        </h1>
+
+
+        <p>
+            El marketplace donde encontrarás procesadores,
+            tarjetas gráficas, memorias RAM y todo el hardware
+            que necesitas. Vendedores verificados, control de
+            inventario y compra segura.
+        </p>
+
+
+        <div class="hero-actions">
+
+            <a href="{% url 'catalog:catalogo' %}"
+               class="btn btn-primary btn-large">
+                🔍 Explorar componentes
+            </a>
+
+
+            <a href="#"
+               class="btn btn-secondary btn-large">
+                🏪 Vender componentes
+            </a>
+
+        </div>
+
+
+        <div class="hero-stats">
+
+            <div>
+                <strong>16</strong>
+                <span>PRODUCTOS ACTIVOS</span>
+            </div>
+
+            <div>
+                <strong>2</strong>
+                <span>VENDEDORES</span>
+            </div>
+
+            <div>
+                <strong>14</strong>
+                <span>CATEGORÍAS</span>
+            </div>
+
+            <div>
+                <strong>4</strong>
+                <span>ÓRDENES</span>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<section class="section">
+
+    <div class="section-header">
+
+        <div>
+
+            <h2>
+                🗂️ Categorías populares
+            </h2>
+
+            <p>
+                Explora componentes por tipo
+            </p>
+
+        </div>
+
+
+        <a href="{% url 'catalog:catalogo' %}"
+           class="btn btn-secondary">
+            Ver todo
+        </a>
+
+    </div>
+
+
+    <div class="category-grid">
+
+
+        <article class="category-card">
+            <div class="category-icon">⚙️</div>
+            <strong>Procesadores</strong>
+            <span>3 productos</span>
+        </article>
+
+
+        <article class="category-card">
+            <div class="category-icon">🎮</div>
+            <strong>Tarjetas gráficas</strong>
+            <span>3 productos</span>
+        </article>
+
+
+        <article class="category-card">
+            <div class="category-icon">🧠</div>
+            <strong>Memoria RAM</strong>
+            <span>2 productos</span>
+        </article>
+
+
+        <article class="category-card">
+            <div class="category-icon">🔌</div>
+            <strong>Tarjetas madre</strong>
+            <span>2 productos</span>
+        </article>
+
+
+        <article class="category-card">
+            <div class="category-icon">💾</div>
+            <strong>Almacenamiento</strong>
+            <span>1 producto</span>
+        </article>
+
+
+        <article class="category-card">
+            <div class="category-icon">⚡</div>
+            <strong>Fuentes de poder</strong>
+            <span>1 producto</span>
+        </article>
+
+
+        <article class="category-card">
+            <div class="category-icon">🗄️</div>
+            <strong>Gabinetes</strong>
+            <span>0 productos</span>
+        </article>
+
+
+        <article class="category-card">
+            <div class="category-icon">❄️</div>
+            <strong>Refrigeración</strong>
+            <span>1 producto</span>
+        </article>
+
+
+        <article class="category-card">
+            <div class="category-icon">🖥️</div>
+            <strong>Monitores</strong>
+            <span>1 producto</span>
+        </article>
+
+
+        <article class="category-card">
+            <div class="category-icon">⌨️</div>
+            <strong>Teclados</strong>
+            <span>1 producto</span>
+        </article>
+
+
+    </div>
+
+</section>
+
+
+
+<section class="section">
+
+    <div class="section-header">
+
+        <div>
+
+            <h2>
+                ⭐ Productos destacados
+            </h2>
+
+            <p>
+                Los componentes mejor valorados del marketplace
+            </p>
+
+        </div>
+
+        //CAMBIOS MODIFICADOS PARA ACCION
+        <a href="{% url 'catalog:catalogo' %}"
+           class="btn btn-secondary">
+            Ver catálogo
+        </a>
+
+    </div>
+
+
+    <div class="products-grid">
+
+
+        <article class="product-card">
+
+            <div class="product-image">
+
+                <span class="product-badge">
+                    NUEVO
+                </span>
+
+                <div>
+                    ⚙️
+                </div>
+
+            </div>
+
+
+            <div class="product-body">
+
+                <span class="product-category">
+                    PROCESADORES
+                </span>
+
+                <h3>
+                    AMD Ryzen 5 5600X
+                </h3>
+
+                <p class="product-meta">
+                    AMD · 100-100000065BOX
+                </p>
+
+                <p class="seller">
+                    Vendido por
+                    <strong>TechStore</strong>
+                </p>
+
+
+                <div class="product-divider"></div>
+
+
+                <div class="product-footer">
+
+                    <div>
+
+                        <strong class="price">
+                            $179.99
+                        </strong>
+
+                        <span class="stock">
+                            Stock: 12
+                        </span>
+
+                    </div>
+
+
+                    <div class="product-actions">
+
+                        <button class="btn btn-secondary">
+                            Ver
+                        </button>
+
+                        <button class="btn btn-primary">
+                            Añadir
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </article>
+
+
+
+        <article class="product-card">
+
+            <div class="product-image">
+
+                <span class="product-badge">
+                    NUEVO
+                </span>
+
+                <div>
+                    ⚙️
+                </div>
+
+            </div>
+
+
+            <div class="product-body">
+
+                <span class="product-category">
+                    PROCESADORES
+                </span>
+
+                <h3>
+                    Intel Core i5-12400F
+                </h3>
+
+                <p class="product-meta">
+                    Intel · BX8071512400F
+                </p>
+
+                <p class="seller">
+                    Vendido por
+                    <strong>PC Parts</strong>
+                </p>
+
+
+                <div class="product-divider"></div>
+
+
+                <div class="product-footer">
+
+                    <div>
+
+                        <strong class="price">
+                            $164.50
+                        </strong>
+
+                        <span class="stock">
+                            Stock: 8
+                        </span>
+
+                    </div>
+
+
+                    <div class="product-actions">
+
+                        <button class="btn btn-secondary">
+                            Ver
+                        </button>
+
+                        <button class="btn btn-primary">
+                            Añadir
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </article>
+
+
+
+        <article class="product-card">
+
+            <div class="product-image">
+
+                <span class="product-badge">
+                    NUEVO
+                </span>
+
+                <div>
+                    🎮
+                </div>
+
+            </div>
+
+
+            <div class="product-body">
+
+                <span class="product-category">
+                    TARJETAS GRÁFICAS
+                </span>
+
+                <h3>
+                    MSI GeForce RTX 3060 Ventus 2X
+                </h3>
+
+                <p class="product-meta">
+                    MSI · RTX 3060 VENTUS
+                </p>
+
+                <p class="seller">
+                    Vendido por
+                    <strong>TechStore</strong>
+                </p>
+
+
+                <div class="product-divider"></div>
+
+
+                <div class="product-footer">
+
+                    <div>
+
+                        <strong class="price">
+                            $329.00
+                        </strong>
+
+                        <span class="stock">
+                            Stock: 5
+                        </span>
+
+                    </div>
+
+
+                    <div class="product-actions">
+
+                        <button class="btn btn-secondary">
+                            Ver
+                        </button>
+
+                        <button class="btn btn-primary">
+                            Añadir
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </article>
+
+
+
+        <article class="product-card">
+
+            <div class="product-image">
+
+                <span class="product-badge">
+                    NUEVO
+                </span>
+
+                <div>
+                    🎮
+                </div>
+
+            </div>
+
+
+            <div class="product-body">
+
+                <span class="product-category">
+                    TARJETAS GRÁFICAS
+                </span>
+
+                <h3>
+                    ASUS Dual GeForce RTX 4060 OC
+                </h3>
+
+                <p class="product-meta">
+                    ASUS · DUAL-RTX4060
+                </p>
+
+                <p class="seller">
+                    Vendido por
+                    <strong>PC Parts</strong>
+                </p>
+
+
+                <div class="product-divider"></div>
+
+
+                <div class="product-footer">
+
+                    <div>
+
+                        <strong class="price">
+                            $389.99
+                        </strong>
+
+                        <span class="stock">
+                            Stock: 4
+                        </span>
+
+                    </div>
+
+
+                    <div class="product-actions">
+
+                        <button class="btn btn-secondary">
+                            Ver
+                        </button>
+
+                        <button class="btn btn-primary">
+                            Añadir
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </article>
+
+
+    </div>
+
+</section>
+
+
+
+<section class="section">
+
+    <div class="section-header">
+
+        <div>
+
+            <h2>
+                🛡️ Beneficios de la plataforma
+            </h2>
+
+            <p>
+                Diseñada para compradores y vendedores exigentes
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="benefits-grid">
+
+        <article class="benefit-card">
+
+            <div class="benefit-icon">
+                🔒
+            </div>
+
+            <h3>
+                Compra segura
+            </h3>
+
+            <p>
+                Cada orden queda registrada con precios históricos
+                y control de stock.
+            </p>
+
+        </article>
+
+
+        <article class="benefit-card">
+
+            <div class="benefit-icon">
+                ✅
+            </div>
+
+            <h3>
+                Vendedores verificados
+            </h3>
+
+            <p>
+                Solo los vendedores aprobados podrán publicar
+                componentes.
+            </p>
+
+        </article>
+
+
+        <article class="benefit-card">
+
+            <div class="benefit-icon">
+                🔄
+            </div>
+
+            <h3>
+                Nuevos y usados
+            </h3>
+
+            <p>
+                Encuentra productos nuevos, usados y reacondicionados.
+            </p>
+
+        </article>
+
+
+        <article class="benefit-card">
+
+            <div class="benefit-icon">
+                📊
+            </div>
+
+            <h3>
+                Control de inventario
+            </h3>
+
+            <p>
+                Los vendedores podrán gestionar su stock desde
+                su panel.
+            </p>
+
+        </article>
+
+    </div>
+
+</section>
+
+
+{% endblock %}

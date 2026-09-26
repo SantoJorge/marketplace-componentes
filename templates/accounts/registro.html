@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% block title %}
+Crear cuenta | Marketplace Componentes
+{% endblock %}
+
+
+{% block content %}
+
+<div
+    class="auth-wrap"
+    style="max-width:560px">
+
+    <div class="auth-card">
+
+        <div class="auth-head">
+
+            <div class="logo-mark">
+                M
+            </div>
+
+            <h2>
+                Crear cuenta
+            </h2>
+
+            <p>
+                Únete al marketplace de componentes
+            </p>
+
+        </div>
+
+
+        {% if form.errors %}
+
+            <div class="form-error">
+
+                <strong>
+                    Revisa la información ingresada.
+                </strong>
+
+                {% for field in form %}
+
+                    {% for error in field.errors %}
+
+                        <div>
+                            {{ error }}
+                        </div>
+
+                    {% endfor %}
+
+                {% endfor %}
+
+
+                {% for error in form.non_field_errors %}
+
+                    <div>
+                        {{ error }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+
+            <div class="field-row">
+
+                <div class="field">
+
+                    <label>
+                        Nombre *
+                    </label>
+
+                    {{ form.first_name }}
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Apellido *
+                    </label>
+
+                    {{ form.last_name }}
+
+                </div>
+
+            </div>
+
+
+            <div class="field">
+
+                <label>
+                    Nombre de usuario *
+                </label>
+
+                {{ form.username }}
+
+            </div>
+
+
+            <div class="field">
+
+                <label>
+                    Correo electrónico *
+                </label>
+
+                {{ form.email }}
+
+            </div>
+
+
+            <div class="field-row">
+
+                <div class="field">
+
+                    <label>
+                        Contraseña *
+                    </label>
+
+                    <div class="input-wrap">
+
+                        {{ form.password1 }}
+
+                        <button
+                            type="button"
+                            class="toggle-pass"
+                            data-toggle-password="reg-pass">
+                            👁
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Confirmar contraseña *
+                    </label>
+
+                    <div class="input-wrap">
+
+                        {{ form.password2 }}
+
+                        <button
+                            type="button"
+                            class="toggle-pass"
+                            data-toggle-password="reg-pass2">
+                            👁
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="field-row">
+
+                <div class="field">
+
+                    <label>
+                        Teléfono (opcional)
+                    </label>
+
+                    {{ form.phone }}
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Provincia (opcional)
+                    </label>
+
+                    {{ form.province }}
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="btn btn-primary btn-block"
+                style="margin-top:6px">
+
+                Crear mi cuenta
+
+            </button>
+
+        </form>
+
+
+        <div class="auth-foot">
+
+            ¿Ya tienes cuenta?
+
+            <a href="{% url 'accounts:login' %}">
+                Inicia sesión
+            </a>
+
+        </div>
+
+
+        <div
+            class="demo-box"
+            style="
+                border-style:solid;
+                border-color:var(--border);
+            ">
+
+            <h4>
+                ℹ️ Información
+            </h4>
+
+            <div
+                style="
+                    font-size:12px;
+                    color:var(--muted);
+                    line-height:1.7;
+                ">
+
+                Al registrarte obtienes el rol
+
+                <b style="color:#7ba7ff">
+                    COMPRADOR
+                </b>.
+
+                Para vender deberás solicitar la conversión
+                a vendedor desde tu perfil, y un administrador
+                deberá aprobarla.
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

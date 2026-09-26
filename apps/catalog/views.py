@@ -1,3 +1,8 @@
 from django.shortcuts import render
 
-# Create your views here.
+
+def inicio(request):
+    return render(request, "public/inicio.html")
+
+def catalogo(request):
+    return render (request, "public/catalogo.html")

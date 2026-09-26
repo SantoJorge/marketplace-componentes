@@ -1,0 +1,130 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% block title %}
+        Marketplace Componentes
+        {% endblock %}
+    </title>
+
+    <link rel="stylesheet"
+          href="{% static 'css/marketplace.css' %}?v=6">
+</head>
+
+
+<body>
+
+    <header class="navbar">
+
+        <div class="logo">
+
+            <a href="{% url 'catalog:inicio' %}"
+               class="logo-link">
+
+                <div class="logo-mark">
+                    M
+                </div>
+
+                <div class="logo-text">
+                    <strong>MARKETPLACE</strong>
+                    <span>COMPONENTES</span>
+                </div>
+
+            </a>
+
+        </div>
+
+
+        <nav class="nav-links">
+
+            <a href="{% url 'catalog:inicio' %}"
+               class="nav-link">
+                Inicio
+            </a>
+
+            <a href="{% url 'catalog:catalogo' %}"
+               class="nav-link">
+                Catálogo
+            </a>
+
+        </nav>
+
+
+        <div class="nav-search">
+
+            <span>🔍</span>
+
+            <input type="text"
+                   placeholder="Buscar componentes, marcas, modelos...">
+
+        </div>
+
+
+        <div class="nav-actions">
+
+            <button class="cart-btn"
+                    type="button">
+                🛒
+            </button>
+
+
+            {% if user.is_authenticated %}
+
+            <span class="nav-username">
+                {{ user.first_name|default:user.username }}
+            </span>
+
+            <a href="{% url 'accounts:logout' %}"
+               class="btn btn-secondary">
+                Cerrar sesión
+            </a>
+
+            {% else %}
+
+            <a href="{% url 'accounts:login' %}"
+               class="btn btn-secondary">
+                Iniciar sesión
+            </a>
+
+            <a href="{% url 'accounts:registro' %}"
+               class="btn btn-primary">
+                Registrarse
+            </a>
+
+            {% endif %}
+
+        </div>
+
+    </header>
+
+
+    <div id="layout">
+
+        <aside id="sidebar"
+               class="hidden">
+        </aside>
+
+        <main id="view"
+              class="view">
+
+            {% block content %}
+            {% endblock %}
+
+        </main>
+
+    </div>
+
+
+    <script src="{% static 'js/marketplace.js' %}"></script>
+
+</body>
+
+</html>

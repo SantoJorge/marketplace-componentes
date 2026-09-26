@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}
+Iniciar sesión | Marketplace Componentes
+{% endblock %}
+
+{% block content %}
+
+<div class="auth-wrap">
+
+    <div class="auth-card">
+
+        <div class="auth-head">
+
+            <div class="logo-mark">
+                M
+            </div>
+
+            <h2>
+                Iniciar sesión
+            </h2>
+
+            <p>
+                Accede a tu cuenta del marketplace
+            </p>
+
+        </div>
+
+
+        {% if error %}
+
+        <div class="form-error">
+            {{ error }}
+        </div>
+
+        {% endif %}
+
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+
+            <div class="field">
+
+                <label>
+                    Correo o usuario
+                </label>
+
+                <input class="input"
+                       name="username"
+                       required
+                       placeholder="tu@correo.com o usuario"
+                       autocomplete="username">
+
+            </div>
+
+
+            <div class="field">
+
+                <label>
+                    Contraseña
+                </label>
+
+                <div class="input-wrap">
+
+                    <input class="input"
+                           type="password"
+                           name="password"
+                           id="login-pass"
+                           required
+                           placeholder="••••••••"
+                           autocomplete="current-password">
+
+                    <button type="button"
+                            class="toggle-pass"
+                            data-toggle-password="login-pass">
+
+                        👁
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <label class="check"
+                   style="margin-bottom:18px">
+
+                <input type="checkbox"
+                       name="remember"
+                       checked>
+
+                Recordar sesión
+
+            </label>
+
+
+            <button type="submit"
+                    class="btn btn-primary btn-block">
+
+                Iniciar sesión
+
+            </button>
+
+        </form>
+
+
+        <div class="auth-foot">
+
+            ¿No tienes cuenta?
+
+            <a href="{% url 'accounts:registro' %}">
+                Regístrate aquí
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
