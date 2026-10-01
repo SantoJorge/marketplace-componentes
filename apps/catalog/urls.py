@@ -6,6 +6,19 @@ app_name = "catalog"
 
 
 urlpatterns = [
-    path("", views.inicio, name="inicio"),
-    path("catalogo/", views.catalogo, name="catalogo")
+
+    # Página pública principal
+    path(
+        "",
+        views.inicio,
+        name="inicio"
+    ),
+
+    # Catálogo público
+    path(
+        "catalogo/",
+        views.catalogo,
+        name="catalogo"
+    ),
+
 ]

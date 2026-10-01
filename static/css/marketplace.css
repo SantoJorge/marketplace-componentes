@@ -1091,3 +1091,470 @@ select.input {
         font-size: 21px;
     }
 }
+
+/* =========================
+   LAYOUT PRINCIPAL DJANGO
+========================= */
+
+#layout {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    min-height: calc(100vh - var(--nav-h));
+}
+
+.view {
+    flex: 1;
+    min-width: 0;
+    padding: 28px 32px 70px;
+    animation: viewIn .35s cubic-bezier(.2,.8,.3,1);
+}
+
+@keyframes viewIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* =========================================================
+   FASE 2.4 — CATÁLOGO CONECTADO A DJANGO
+   ========================================================= */
+
+
+/* CONTENEDOR GENERAL */
+
+.catalog-page {
+    width: 100%;
+    max-width: 1440px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 26px 32px 70px;
+}
+
+
+    /* =========================================================
+   CABECERA
+   ========================================================= */
+
+    .catalog-page .page-head {
+        margin-bottom: 24px;
+    }
+
+    .catalog-page .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+        font-size: 12px;
+        color: var(--muted-2);
+    }
+
+        .catalog-page .breadcrumb a {
+            color: var(--muted);
+            transition: color .15s ease;
+        }
+
+            .catalog-page .breadcrumb a:hover {
+                color: var(--cyan);
+            }
+
+        .catalog-page .breadcrumb .sep {
+            opacity: .5;
+        }
+
+
+    .catalog-page .page-title {
+        margin: 0;
+        font-size: 28px;
+        line-height: 1.15;
+        font-weight: 900;
+        letter-spacing: -.7px;
+        color: var(--text);
+    }
+
+
+        .catalog-page .page-title .accent {
+            background: linear-gradient( 90deg, var(--blue), var(--cyan) );
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+
+    .catalog-page .page-desc {
+        max-width: 760px;
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 13.5px;
+    }
+
+
+    /* =========================================================
+   LAYOUT PRINCIPAL
+   ========================================================= */
+
+    .catalog-page .catalog-layout {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 258px minmax(0, 1fr);
+        gap: 22px;
+        align-items: start;
+    }
+
+
+    /* =========================================================
+   FILTROS
+   ========================================================= */
+
+    .catalog-page .filters {
+        width: 100%;
+        padding: 18px;
+        background: linear-gradient( 165deg, var(--panel), var(--bg-soft) );
+        border: 1px solid var(--border-soft);
+        border-radius: var(--radius);
+        position: sticky;
+        top: calc( var(--nav-h) + 20px );
+    }
+
+
+    .catalog-page .filter-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        color: var(--muted-2);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+    }
+
+
+    .catalog-page .filter-clear {
+        padding: 4px 9px;
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        color: var(--muted);
+        font-size: 10.5px;
+        letter-spacing: normal;
+        text-transform: none;
+    }
+
+
+        .catalog-page .filter-clear:hover {
+            border-color: var(--blue);
+            color: white;
+        }
+
+
+    .catalog-page .filter-group h4 {
+        margin-bottom: 11px;
+        color: var(--text);
+        font-size: 12.5px;
+        font-weight: 800;
+    }
+
+
+    /* =========================================================
+   CHIPS CATEGORÍA
+   ========================================================= */
+
+    .catalog-page .chip-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+
+    .catalog-page .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 11px;
+        border: 1px solid var(--border);
+        border-radius: 30px;
+        background: var(--panel-2);
+        color: var(--muted);
+        font-size: 11.5px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all .16s ease;
+    }
+
+
+        .catalog-page .chip:hover {
+            border-color: var(--blue);
+            color: white;
+        }
+
+
+        .catalog-page .chip.active {
+            border-color: transparent;
+            background: linear-gradient( 135deg, var(--blue), var(--blue-2) );
+            color: white;
+        }
+
+
+/* =========================================================
+   RESULTADOS
+   ========================================================= */
+
+.catalog-results {
+    min-width: 0;
+    width: 100%;
+}
+
+
+.catalog-page .results-bar {
+    min-height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2px;
+}
+
+
+.catalog-page .results-count {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+
+    .catalog-page .results-count b {
+        color: white;
+    }
+
+
+/* =========================================================
+   GRID PRODUCTOS
+   ========================================================= */
+
+.catalog-page .grid-products {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat( 3, minmax(250px, 1fr) );
+    gap: 18px;
+}
+
+
+/* =========================================================
+   TARJETA PRODUCTO
+   ========================================================= */
+
+.catalog-page .pcard {
+    min-width: 0;
+    min-height: 375px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: linear-gradient( 165deg, var(--panel), var(--bg-soft) );
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius);
+    transition: all .25s cubic-bezier(.2,.8,.3,1);
+}
+
+
+    .catalog-page .pcard:hover {
+        transform: translateY(-4px);
+        border-color: rgba(37,99,255,.5);
+        box-shadow: 0 24px 46px -28px rgba(37,99,255,.95);
+    }
+
+
+/* =========================================================
+   IMAGEN
+   ========================================================= */
+
+.catalog-page .pcard-media {
+    position: relative;
+    width: 100%;
+    height: 168px;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    background: radial-gradient( circle at 50% 40%, #1c2942, #0d1424 );
+}
+
+
+.catalog-page .pcard-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+
+.catalog-page .img-placeholder {
+    font-size: 54px;
+    opacity: .72;
+    transition: transform .3s ease;
+}
+
+
+.catalog-page .pcard:hover
+.img-placeholder {
+    transform: scale(1.1);
+}
+
+
+/* =========================================================
+   BADGE NUEVO / USADO
+   ========================================================= */
+
+.product-condition {
+    position: absolute;
+    top: 11px;
+    left: 11px;
+    padding: 4px 11px;
+    border: 1px solid rgba(34,197,94,.35);
+    border-radius: 30px;
+    background: rgba(34,197,94,.14);
+    color: #4ade80;
+    font-size: 10.5px;
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   CUERPO
+   ========================================================= */
+
+.catalog-page .pcard-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    padding: 15px;
+}
+
+
+.catalog-page .pcard-cat {
+    color: var(--cyan);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+}
+
+
+.catalog-page .pcard-title {
+    min-height: 39px;
+    margin: 0;
+    color: var(--text);
+    font-size: 14.5px;
+    font-weight: 800;
+    line-height: 1.35;
+}
+
+
+.catalog-page .pcard-meta {
+    color: var(--muted-2);
+    font-size: 11.5px;
+}
+
+
+.catalog-page .pcard-seller {
+    color: var(--muted);
+    font-size: 11.5px;
+}
+
+
+    .catalog-page .pcard-seller strong {
+        color: #9fc4ff;
+        font-weight: 700;
+    }
+
+
+/* =========================================================
+   FOOTER PRODUCTO
+   ========================================================= */
+
+.catalog-page .pcard-foot {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-soft);
+}
+
+
+.catalog-page .pcard-price {
+    color: white;
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: -.5px;
+}
+
+
+.catalog-page .pcard-stock {
+    color: var(--muted-2);
+    font-size: 11px;
+    font-weight: 600;
+}
+
+
+.catalog-page .pcard-actions {
+    display: flex;
+    gap: 7px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media ( max-width: 1180px ) {
+
+    .catalog-page
+    .grid-products {
+        grid-template-columns: repeat( 2, minmax(230px, 1fr) );
+    }
+}
+
+
+@media ( max-width: 900px ) {
+
+    .catalog-page {
+        padding: 22px 18px 60px;
+    }
+
+
+        .catalog-page
+        .catalog-layout {
+            grid-template-columns: 1fr;
+        }
+
+
+        .catalog-page
+        .filters {
+            position: static;
+        }
+
+
+        .catalog-page
+        .grid-products {
+            grid-template-columns: repeat( 2, minmax(200px, 1fr) );
+        }
+}
+
+
+@media ( max-width: 620px ) {
+
+    .catalog-page
+    .grid-products {
+        grid-template-columns: 1fr;
+    }
+
+
+    .catalog-page
+    .page-title {
+        font-size: 23px;
+    }
+}

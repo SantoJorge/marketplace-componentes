@@ -1,27 +1,662 @@
 {% extends "base.html" %}
 
-{% block title %}
-Catálogo | Marketplace Componentes
-{% endblock %}
-
-
 {% block content %}
 
-<section class="section">
+<style>
+     /* =========================================================
+    CATALOGO V2 — ESTILO AISLADO
+    ========================================================= */
 
-    <div class="section-header">
+     .catalog-v2-page {
+         width: 100%;
+         max-width: 1450px;
+         margin: 0 auto;
+         padding: 34px 28px 70px;
+     }
 
-        <div>
-            <h1>Catálogo de componentes</h1>
+     .catalog-v2-breadcrumb {
+         display: flex;
+         align-items: center;
+         gap: 8px;
+         margin-bottom: 10px;
+         font-size: 12px;
+         color: #667089;
+     }
 
-            <p>
-                Explora los componentes disponibles en el marketplace.
-            </p>
-        </div>
+         .catalog-v2-breadcrumb a {
+             color: #8996b3;
+             text-decoration: none;
+         }
+
+             .catalog-v2-breadcrumb a:hover {
+                 color: #22d3ee;
+             }
+
+     .catalog-v2-title {
+         margin: 0;
+         font-size: 30px;
+         line-height: 1.15;
+         font-weight: 900;
+         color: #ffffff;
+         letter-spacing: -.7px;
+     }
+
+         .catalog-v2-title span {
+             background: linear-gradient(90deg,#2563ff,#22d3ee);
+             -webkit-background-clip: text;
+             background-clip: text;
+             color: transparent;
+         }
+
+     .catalog-v2-description {
+         margin-top: 8px;
+         margin-bottom: 26px;
+         color: #8996b3;
+         font-size: 13.5px;
+     }
+
+     .catalog-v2-layout {
+         display: grid !important;
+         grid-template-columns: 260px minmax(0,1fr) !important;
+         gap: 22px !important;
+         align-items: start;
+         width: 100%;
+     }
+
+
+     /* ================= FILTROS ================= */
+
+     .catalog-v2-filters {
+         background: #121a2b;
+         border: 1px solid #22304c;
+         border-radius: 14px;
+         padding: 18px;
+         position: sticky;
+         top: 85px;
+     }
+
+     .catalog-v2-filter-head {
+         display: flex;
+         justify-content: space-between;
+         align-items: center;
+         margin-bottom: 18px;
+     }
+
+     .catalog-v2-filter-title {
+         color: #667089;
+         font-size: 11px;
+         font-weight: 800;
+         letter-spacing: 1.5px;
+     }
+
+     .catalog-v2-clear {
+         border: 1px solid #22304c;
+         border-radius: 20px;
+         padding: 4px 9px;
+         color: #8996b3;
+         font-size: 10.5px;
+         text-decoration: none;
+     }
+
+         .catalog-v2-clear:hover {
+             border-color: #2563ff;
+             color: #fff;
+         }
+
+     .catalog-v2-filter-label {
+         display: block;
+         color: #e9eefb;
+         font-weight: 800;
+         font-size: 12px;
+         margin-bottom: 12px;
+     }
+
+     .catalog-v2-chips {
+         display: flex;
+         flex-wrap: wrap;
+         gap: 8px;
+     }
+
+     .catalog-v2-chip {
+         display: inline-flex;
+         align-items: center;
+         gap: 6px;
+         border: 1px solid #22304c;
+         background: #162034;
+         border-radius: 30px;
+         padding: 7px 11px;
+         color: #8996b3;
+         font-size: 11px;
+         font-weight: 700;
+         text-decoration: none;
+     }
+
+         .catalog-v2-chip:hover {
+             border-color: #2563ff;
+             color: #fff;
+         }
+
+         .catalog-v2-chip.active {
+             background: linear-gradient(135deg,#2563ff,#1a4fd6);
+             border-color: transparent;
+             color: white;
+         }
+
+
+     /* ================= PRODUCTOS ================= */
+
+     .catalog-v2-results {
+         min-width: 0;
+         width: 100%;
+     }
+
+     .catalog-v2-count {
+         margin: 4px 0 15px;
+         color: #8996b3;
+         font-size: 13px;
+     }
+
+         .catalog-v2-count strong {
+             color: #fff;
+         }
+
+     .catalog-v2-grid {
+         display: grid !important;
+         grid-template-columns: repeat(3,minmax(0,1fr)) !important;
+         gap: 18px !important;
+         width: 100%;
+     }
+
+     .catalog-v2-card {
+         display: flex !important;
+         flex-direction: column;
+         min-width: 0;
+         overflow: hidden;
+         background: linear-gradient(165deg,#121a2b,#0d1220);
+         border: 1px solid #1a2337;
+         border-radius: 14px;
+         transition: .22s ease;
+     }
+
+         .catalog-v2-card:hover {
+             transform: translateY(-4px);
+             border-color: rgba(37,99,255,.55);
+             box-shadow: 0 25px 45px -28px rgba(37,99,255,.9);
+         }
+
+     .catalog-v2-image {
+         height: 170px;
+         width: 100%;
+         position: relative;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         overflow: hidden;
+         background: radial-gradient(circle at 50% 40%,#1c2942,#0d1424);
+     }
+
+         .catalog-v2-image img {
+             width: 100%;
+             height: 100%;
+             object-fit: cover;
+         }
+
+     .catalog-v2-placeholder {
+         font-size: 58px;
+         opacity: .78;
+     }
+
+     .catalog-v2-condition {
+         position: absolute;
+         top: 11px;
+         left: 11px;
+         background: rgba(34,197,94,.14);
+         border: 1px solid rgba(34,197,94,.35);
+         color: #4ade80;
+         border-radius: 30px;
+         padding: 4px 10px;
+         font-size: 10px;
+         font-weight: 900;
+     }
+
+     .catalog-v2-body {
+         display: flex;
+         flex-direction: column;
+         flex: 1;
+         padding: 16px;
+     }
+
+     .catalog-v2-category {
+         color: #22d3ee;
+         font-size: 10px;
+         font-weight: 900;
+         letter-spacing: 1.3px;
+         text-transform: uppercase;
+         margin-bottom: 8px;
+     }
+
+     .catalog-v2-name {
+         color: #fff;
+         font-size: 15px;
+         line-height: 1.35;
+         font-weight: 800;
+         min-height: 40px;
+         margin: 0 0 8px;
+     }
+
+     .catalog-v2-meta {
+         color: #667089;
+         font-size: 11.5px;
+         margin-bottom: 6px;
+     }
+
+     .catalog-v2-seller {
+         color: #8996b3;
+         font-size: 11.5px;
+         margin-bottom: 14px;
+     }
+
+         .catalog-v2-seller strong {
+             color: #9fc4ff;
+         }
+
+     .catalog-v2-footer {
+         display: flex;
+         align-items: flex-end;
+         justify-content: space-between;
+         gap: 12px;
+         margin-top: auto;
+         padding-top: 14px;
+         border-top: 1px solid #1a2337;
+     }
+
+     .catalog-v2-price {
+         color: #fff;
+         font-size: 21px;
+         font-weight: 900;
+     }
+
+     .catalog-v2-stock {
+         color: #667089;
+         font-size: 11px;
+         margin-top: 2px;
+     }
+
+     .catalog-v2-actions {
+         display: flex;
+         gap: 7px;
+     }
+
+     .catalog-v2-btn {
+         border-radius: 9px;
+         padding: 8px 13px;
+         font-size: 12px;
+         font-weight: 800;
+         cursor: pointer;
+         border: 1px solid transparent;
+     }
+
+     .catalog-v2-btn-view {
+         background: #121a2b;
+         border-color: #22304c;
+         color: #fff;
+     }
+
+         .catalog-v2-btn-view:hover {
+             background: #162034;
+             border-color: #2563ff;
+         }
+
+     .catalog-v2-btn-add {
+         background: linear-gradient(135deg,#2563ff,#1a4fd6);
+         color: white;
+     }
+
+         .catalog-v2-btn-add:hover {
+             transform: translateY(-1px);
+         }
+
+     .catalog-v2-empty {
+         grid-column: 1/-1;
+         padding: 70px 20px;
+         text-align: center;
+         color: #8996b3;
+     }
+
+
+     /* ================= RESPONSIVE ================= */
+
+     @media(max-width:1200px) {
+
+         .catalog-v2-grid {
+             grid-template-columns: repeat(2,minmax(0,1fr)) !important;
+         }
+     }
+
+     @media(max-width:850px) {
+
+         .catalog-v2-layout {
+             grid-template-columns: 1fr !important;
+         }
+
+         .catalog-v2-filters {
+             position: static;
+         }
+     }
+
+     @media(max-width:600px) {
+
+         .catalog-v2-page {
+             padding: 22px 15px 55px;
+         }
+
+         .catalog-v2-grid {
+             grid-template-columns: 1fr !important;
+         }
+     }
+</style>
+
+
+<div class="catalog-v2-page">
+
+    <!-- CABECERA -->
+
+    <div class="catalog-v2-breadcrumb">
+
+        <a href="{% url 'catalog:inicio' %}">
+            Inicio
+        </a>
+
+        <span>/</span>
+
+        <span>
+            Catálogo
+        </span>
 
     </div>
 
-</section>
 
+    <h1 class="catalog-v2-title">
+
+        Catálogo de
+
+        <span>
+            componentes
+        </span>
+
+    </h1>
+
+
+    <p class="catalog-v2-description">
+
+        Explora todos los componentes aprobados y disponibles.
+        Usa el buscador o los filtros para encontrar lo que necesitas.
+
+    </p>
+
+
+
+    <div class="catalog-v2-layout">
+
+
+        <!-- =================================================
+             FILTROS
+             ================================================= -->
+
+        <aside class="catalog-v2-filters">
+
+
+            <div class="catalog-v2-filter-head">
+
+                <span class="catalog-v2-filter-title">
+                    FILTROS
+                </span>
+
+
+                <a href="{% url 'catalog:catalogo' %}"
+                   class="catalog-v2-clear">
+                    Limpiar
+                </a>
+
+            </div>
+
+
+            <span class="catalog-v2-filter-label">
+                Categoría
+            </span>
+
+
+            <div class="catalog-v2-chips">
+
+
+                <a href="{% url 'catalog:catalogo' %}"
+                   class="catalog-v2-chip active">
+                    Todas
+                </a>
+
+
+                {% for categoria in categorias %}
+
+
+                <a href="?categoria={{ categoria.id }}"
+                   class="catalog-v2-chip">
+
+                    <span>
+                        {{ categoria.icon|default:"📦" }}
+                    </span>
+
+                    {{ categoria.name }}
+
+                </a>
+
+
+                {% endfor %}
+
+
+            </div>
+
+
+        </aside>
+
+
+
+        <!-- =================================================
+             PRODUCTOS
+             ================================================= -->
+
+        <section class="catalog-v2-results">
+
+
+            <div class="catalog-v2-count">
+
+                <strong>
+                    {{ productos|length }}
+                </strong>
+
+                producto(s) encontrado(s)
+
+            </div>
+
+
+
+            <div class="catalog-v2-grid">
+
+
+                {% for producto in productos %}
+
+
+                <article class="catalog-v2-card">
+
+
+                    <!-- IMAGEN -->
+
+                    <div class="catalog-v2-image">
+
+
+                        {% if producto.image %}
+
+
+                        <img src="{{ producto.image.url }}"
+                             alt="{{ producto.name }}">
+
+
+                        {% else %}
+
+
+                        <div class="catalog-v2-placeholder">
+
+                            {{ producto.category.icon|default:"📦" }}
+
+                        </div>
+
+
+                        {% endif %}
+
+
+                        <span class="catalog-v2-condition">
+
+                            {{ producto.get_condition_display|upper }}
+
+                        </span>
+
+
+                    </div>
+
+
+
+                    <!-- INFORMACIÓN -->
+
+                    <div class="catalog-v2-body">
+
+
+                        <div class="catalog-v2-category">
+
+                            {{ producto.category.name }}
+
+                        </div>
+
+
+                        <h3 class="catalog-v2-name">
+
+                            {{ producto.name }}
+
+                        </h3>
+
+
+                        <div class="catalog-v2-meta">
+
+                            {{ producto.brand }}
+
+                            {% if producto.model %}
+
+                            · {{ producto.model }}
+
+                            {% endif %}
+
+                        </div>
+
+
+
+                        <div class="catalog-v2-seller">
+
+                            Vendido por
+
+                            <strong>
+
+                                {{ producto.seller.username }}
+
+                            </strong>
+
+                        </div>
+
+
+
+                        <div class="catalog-v2-footer">
+
+
+                            <div>
+
+                                <div class="catalog-v2-price">
+
+                                    ${{ producto.price }}
+
+                                </div>
+
+
+                                <div class="catalog-v2-stock">
+
+                                    Stock:
+                                    {{ producto.stock }}
+
+                                </div>
+
+                            </div>
+
+
+
+                            <div class="catalog-v2-actions">
+
+
+                                <button type="button"
+                                        class="
+                                            catalog-v2-btn
+                                            catalog-v2-btn-view
+                                        ">
+                                    Ver
+                                </button>
+
+                                <!-- fase 2.5 conexion añadir a carrito -->
+
+                                <a href="{% url 'orders:add_to_cart' producto.id %}"
+                                   class="
+                                        catalog-v2-btn
+                                        catalog-v2-btn-add
+                                    "
+                                >
+                                    Añadir
+                                </a>
+
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </article>
+
+
+                {% empty %}
+
+
+                <div class="catalog-v2-empty">
+
+                    <h3>
+                        No hay productos disponibles
+                    </h3>
+
+                    <p>
+                        No existen productos aprobados con stock.
+                    </p>
+
+                </div>
+
+
+                {% endfor %}
+
+
+            </div>
+
+
+        </section>
+
+
+    </div>
+
+
+</div>
 
 {% endblock %}

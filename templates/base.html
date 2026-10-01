@@ -16,7 +16,7 @@
     </title>
 
     <link rel="stylesheet"
-          href="{% static 'css/marketplace.css' %}?v=6">
+          href="{% static 'css/marketplace.css' %}?v=7">
 </head>
 
 
@@ -24,6 +24,9 @@
 
     <header class="navbar">
 
+        <!-- ==========================================
+             LOGO
+        =========================================== -->
         <div class="logo">
 
             <a href="{% url 'catalog:inicio' %}"
@@ -43,6 +46,9 @@
         </div>
 
 
+        <!-- ==========================================
+             NAVEGACIÓN PRINCIPAL
+        =========================================== -->
         <nav class="nav-links">
 
             <a href="{% url 'catalog:inicio' %}"
@@ -50,30 +56,85 @@
                 Inicio
             </a>
 
+
             <a href="{% url 'catalog:catalogo' %}"
                class="nav-link">
                 Catálogo
             </a>
 
+
+            {% if user.is_authenticated %}
+
+            <!-- ================================
+                 ADMINISTRADOR
+            ================================= -->
+            {% if user.is_superuser %}
+
+            <a href="{% url 'management:dashboard' %}"
+               class="nav-link">
+                Administración
+            </a>
+
+            {% elif user.profile.role == "ADMINISTRADOR" %}
+
+            <a href="{% url 'management:dashboard' %}"
+               class="nav-link">
+                Administración
+            </a>
+
+            {% endif %}
+
+
+            <!-- ================================
+                 VENDEDOR
+            ================================= -->
+            {% if user.profile.role == "VENDEDOR" %}
+
+            <a href="{% url 'accounts:vendedor_dashboard' %}"
+               class="nav-link">
+                Panel Vendedor
+            </a>
+
+            {% endif %}
+
+            {% endif %}
+
         </nav>
 
 
-        <div class="nav-search">
+        <!-- ==========================================
+             BUSCADOR PRINCIPAL
+        =========================================== -->
+        <form method="GET"
+              action="{% url 'catalog:catalogo' %}"
+              class="nav-search">
 
-            <span>🔍</span>
+            <button type="submit"
+                    class="nav-search-button"
+                    aria-label="Buscar"
+                    title="Buscar">
+                🔍
+            </button>
 
-            <input type="text"
-                   placeholder="Buscar componentes, marcas, modelos...">
+            <input type="search"
+                   name="q"
+                   value="{{ request.GET.q|default:'' }}"
+                   placeholder="Buscar componentes, marcas, modelos..."
+                   autocomplete="off">
 
-        </div>
+        </form>
 
 
+        <!-- ==========================================
+             ACCIONES DEL USUARIO
+        =========================================== -->
         <div class="nav-actions">
 
-            <button class="cart-btn"
-                    type="button">
+            <a href="{% url 'orders:cart_detail' %}"
+               class="cart-btn"
+               title="Carrito">
                 🛒
-            </button>
+            </a>
 
 
             {% if user.is_authenticated %}
@@ -81,6 +142,7 @@
             <span class="nav-username">
                 {{ user.first_name|default:user.username }}
             </span>
+
 
             <a href="{% url 'accounts:logout' %}"
                class="btn btn-secondary">
@@ -94,6 +156,7 @@
                 Iniciar sesión
             </a>
 
+
             <a href="{% url 'accounts:registro' %}"
                class="btn btn-primary">
                 Registrarse
@@ -106,11 +169,15 @@
     </header>
 
 
+    <!-- ==========================================
+         CONTENIDO PRINCIPAL
+    =========================================== -->
     <div id="layout">
 
         <aside id="sidebar"
                class="hidden">
         </aside>
+
 
         <main id="view"
               class="view">

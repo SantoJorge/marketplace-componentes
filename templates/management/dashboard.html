@@ -1,0 +1,538 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Administración | Marketplace Componentes
+    </title>
+
+    <link rel="stylesheet"
+          href="{% static 'css/management.css' %}">
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================================
+         NAVBAR
+    ========================================= -->
+
+    <header class="admin-navbar">
+
+
+        <a href="{% url 'catalog:inicio' %}"
+           class="admin-logo">
+
+            <div class="admin-logo-icon">
+                M
+            </div>
+
+            <div class="admin-logo-text">
+
+                <strong>
+                    MARKETPLACE
+                </strong>
+
+                <span>
+                    COMPONENTES
+                </span>
+
+            </div>
+
+        </a>
+
+
+        <nav class="admin-nav-links">
+
+            <a href="{% url 'catalog:inicio' %}"
+               class="admin-nav-link">
+                Inicio
+            </a>
+
+
+            <a href="{% url 'catalog:catalogo' %}"
+               class="admin-nav-link">
+                Catálogo
+            </a>
+
+
+            <a href="{% url 'management:dashboard' %}"
+               class="admin-nav-link active">
+                Administración
+            </a>
+
+        </nav>
+
+
+        <div class="admin-search">
+
+            <span>
+                🔍
+            </span>
+
+            <input type="text"
+                   placeholder="Buscar componentes, marcas, modelos...">
+
+        </div>
+
+
+        <div class="admin-user">
+
+            <div class="admin-avatar">
+
+                {% if request.user.first_name %}
+
+                {{ request.user.first_name|slice:":1"|upper }}
+
+                {% else %}
+
+                {{ request.user.username|slice:":1"|upper }}
+
+                {% endif %}
+
+            </div>
+
+
+            <span class="admin-user-name">
+
+                {{ admin_name }}
+
+            </span>
+
+            <span>
+                ▾
+            </span>
+
+        </div>
+
+
+    </header>
+
+
+
+    <!-- =========================================
+         LAYOUT GENERAL
+    ========================================= -->
+
+    <div class="admin-layout">
+
+
+        <!-- =========================================
+             SIDEBAR
+        ========================================= -->
+
+        <aside class="admin-sidebar">
+
+
+            <div class="sidebar-user">
+
+
+                <div class="admin-avatar">
+
+                    {% if request.user.first_name %}
+
+                    {{ request.user.first_name|slice:":1"|upper }}
+
+                    {% else %}
+
+                    {{ request.user.username|slice:":1"|upper }}
+
+                    {% endif %}
+
+                </div>
+
+
+                <div>
+
+                    <div class="sidebar-user-name">
+
+                        {{ admin_full_name }}
+
+                    </div>
+
+                    <div class="sidebar-user-role">
+
+                        ADMINISTRADOR
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="sidebar-title">
+                ADMINISTRACIÓN
+            </div>
+
+
+            <a href="{% url 'management:dashboard' %}"
+               class="sidebar-link active">
+                📊 Dashboard
+            </a>
+
+
+            <a href="#"
+               class="sidebar-link">
+                👥 Usuarios
+            </a>
+
+
+            <a href="#"
+               class="sidebar-link">
+                📨 Solicitudes
+            </a>
+
+
+            <a href="#"
+               class="sidebar-link">
+                ⏳ Productos pendientes
+            </a>
+
+
+            <a href="#"
+               class="sidebar-link">
+                📦 Productos
+            </a>
+
+
+            <a href="#"
+               class="sidebar-link">
+                🗂️ Categorías
+            </a>
+
+
+            <a href="#"
+               class="sidebar-link">
+                🧾 Órdenes
+            </a>
+
+
+
+            <div class="sidebar-title">
+                CUENTA
+            </div>
+
+
+            <a href="#"
+               class="sidebar-link">
+                👤 Perfil
+            </a>
+
+
+
+            <div class="sidebar-footer">
+
+
+                <a href="{% url 'catalog:inicio' %}"
+                   class="sidebar-button">
+                    🏠 Ir al marketplace
+                </a>
+
+
+                <a href="{% url 'accounts:logout' %}"
+                   class="sidebar-button">
+                    ⏻ Cerrar sesión
+                </a>
+
+
+            </div>
+
+
+        </aside>
+
+
+
+        <!-- =========================================
+             CONTENIDO PRINCIPAL
+        ========================================= -->
+
+        <main class="admin-main">
+
+
+            <div class="breadcrumb">
+
+                Inicio
+                /
+                Administración
+
+            </div>
+
+
+            <h1 class="page-title">
+
+                Panel de
+                <span>
+                    administración
+                </span>
+
+            </h1>
+
+
+            <p class="page-description">
+
+                Control general del marketplace:
+                usuarios, vendedores, productos,
+                categorías y órdenes.
+
+            </p>
+
+
+
+            <!-- =========================================
+                 TARJETAS
+            ========================================= -->
+
+            <section class="stats-grid">
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        👥
+                    </div>
+
+                    <div class="stat-label">
+                        USUARIOS REGISTRADOS
+                    </div>
+
+                    <div class="stat-value">
+                        0
+                    </div>
+
+                </div>
+
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        🛍️
+                    </div>
+
+                    <div class="stat-label">
+                        COMPRADORES
+                    </div>
+
+                    <div class="stat-value">
+                        0
+                    </div>
+
+                </div>
+
+
+
+                <div class="stat-card green">
+
+                    <div class="stat-icon">
+                        🏪
+                    </div>
+
+                    <div class="stat-label">
+                        VENDEDORES
+                    </div>
+
+                    <div class="stat-value">
+                        0
+                    </div>
+
+                </div>
+
+
+
+                <div class="stat-card amber">
+
+                    <div class="stat-icon">
+                        📨
+                    </div>
+
+                    <div class="stat-label">
+                        SOLICITUDES PENDIENTES
+                    </div>
+
+                    <div class="stat-value">
+                        0
+                    </div>
+
+                </div>
+
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        📦
+                    </div>
+
+                    <div class="stat-label">
+                        PRODUCTOS
+                    </div>
+
+                    <div class="stat-value">
+                        0
+                    </div>
+
+                </div>
+
+
+
+                <div class="stat-card amber">
+
+                    <div class="stat-icon">
+                        ⏳
+                    </div>
+
+                    <div class="stat-label">
+                        PRODUCTOS PENDIENTES
+                    </div>
+
+                    <div class="stat-value">
+                        0
+                    </div>
+
+                </div>
+
+
+
+                <div class="stat-card purple">
+
+                    <div class="stat-icon">
+                        🧾
+                    </div>
+
+                    <div class="stat-label">
+                        ÓRDENES
+                    </div>
+
+                    <div class="stat-value">
+                        0
+                    </div>
+
+                </div>
+
+
+
+                <div class="stat-card green">
+
+                    <div class="stat-icon">
+                        💰
+                    </div>
+
+                    <div class="stat-label">
+                        VENTAS TOTALES
+                    </div>
+
+                    <div class="stat-value">
+                        $0.00
+                    </div>
+
+                </div>
+
+
+            </section>
+
+
+
+            <!-- =========================================
+                 PARTE INFERIOR
+            ========================================= -->
+
+            <section class="dashboard-bottom">
+
+
+                <div class="panel">
+
+                    <h2>
+                        📊 Productos por categoría
+                    </h2>
+
+                    <p>
+                        Aquí mostraremos posteriormente
+                        la distribución real de productos.
+                    </p>
+
+                </div>
+
+
+                <div class="panel">
+
+                    <h2>
+                        ⚡ Tareas pendientes
+                    </h2>
+
+                    <p>
+                        Aquí aparecerán solicitudes,
+                        productos pendientes y órdenes.
+                    </p>
+
+                </div>
+
+
+            </section>
+
+
+        </main>
+
+
+    </div>
+
+
+
+    <!-- =========================================
+         TOAST BIENVENIDA
+    ========================================= -->
+    {% if request.session.admin_welcome %}
+
+    <div id="admin-toast"
+         class="admin-toast">
+
+        <span class="toast-check">
+            ✓
+        </span>
+
+        <span>
+            ¡Bienvenido, {{ admin_name }}!
+        </span>
+
+    </div>
+
+    {% endif %}
+
+
+
+    <script>const toast =
+        document.getElementById("admin-toast");
+
+
+    if (toast) {
+
+        setTimeout(() => {
+
+            toast.classList.add("hide");
+
+            setTimeout(() => {
+
+                toast.remove();
+
+            }, 350);
+
+        }, 3000);
+
+    }</script>
+
+
+</body>
+
+</html>

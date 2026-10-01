@@ -24,4 +24,14 @@ urlpatterns = [
         views.logout_view,
         name="logout"
     ),
+
+    # ==========================================
+    # V1.1 - PANEL DEL VENDEDOR
+    # ==========================================
+    path(
+        "vendedor/",
+        views.vendedor_dashboard,
+        name="vendedor_dashboard"
+    ),
+
 ]

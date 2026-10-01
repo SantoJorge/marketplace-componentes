@@ -12,15 +12,30 @@ urlpatterns = [
         admin.site.urls
     ),
 
+    # Inicio + catálogo público
     path(
         "",
         include("apps.catalog.urls")
     ),
 
+    ##AÑADIDO EN FASE 2.5 DE CONEXION CARRITO
+    path(
+    "",
+    include("apps.orders.urls")
+),
+
+    # Login + registro
     path(
         "cuenta/",
         include("apps.accounts.urls")
     ),
+    #FASE ADMINISTRATIVA
+    path(
+        "gestion/",
+        include(("apps.management.urls", "management"),
+        namespace="management")
+     ),
+
 ]
 
 
