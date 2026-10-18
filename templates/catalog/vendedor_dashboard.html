@@ -1,0 +1,938 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Dashboard del vendedor | Marketplace Componentes
+{% endblock %}
+
+{% block content %}
+
+<style>
+     /* ===========================================
+    FASE 4.4 - DASHBOARD DEL VENDEDOR
+    DISEÑO BASADO EN EL INDEX ORIGINAL
+    =========================================== */
+
+     .mc-sd {
+         width: 100%;
+         max-width: 1600px;
+         color: #e9eefb;
+     }
+
+         .mc-sd * {
+             box-sizing: border-box;
+         }
+
+     /* ENCABEZADO */
+
+     .mc-sd-head {
+         margin-bottom: 25px;
+     }
+
+     .mc-sd-breadcrumb {
+         margin: 0 0 12px;
+         color: #8996b3;
+         font-size: 12px;
+     }
+
+         .mc-sd-breadcrumb a {
+             color: #8996b3;
+             text-decoration: none;
+         }
+
+             .mc-sd-breadcrumb a:hover {
+                 color: #22d3ee;
+             }
+
+     .mc-sd-head h1 {
+         margin: 0;
+         color: #fff;
+         font-size: clamp(25px, 3vw, 32px);
+         line-height: 1.25;
+         letter-spacing: -.8px;
+         font-weight: 900;
+     }
+
+         .mc-sd-head h1 span {
+             background: linear-gradient(90deg, #2563ff, #22d3ee);
+             -webkit-background-clip: text;
+             background-clip: text;
+             color: transparent;
+         }
+
+     .mc-sd-description {
+         margin: 8px 0 0;
+         color: #8996b3;
+         font-size: 13.5px;
+     }
+
+     /* SEIS TARJETAS ESTADÍSTICAS */
+
+     .mc-sd-stats {
+         display: grid;
+         grid-template-columns: repeat( auto-fit, minmax(200px, 1fr) );
+         gap: 15px;
+         margin-bottom: 24px;
+     }
+
+     .mc-sd-stat {
+         position: relative;
+         overflow: hidden;
+         min-height: 132px;
+         padding: 18px;
+         border: 1px solid #1a2337;
+         border-radius: 14px;
+         background: linear-gradient( 155deg, #121a2b, #0d1220 );
+         transition: transform .22s, border-color .22s, box-shadow .22s;
+     }
+
+         .mc-sd-stat::after {
+             content: "";
+             position: absolute;
+             top: 0;
+             left: 0;
+             right: 0;
+             height: 2px;
+             background: linear-gradient( 90deg, #2563ff, #22d3ee );
+         }
+
+         .mc-sd-stat:hover {
+             transform: translateY(-3px);
+             border-color: #2d3f63;
+             box-shadow: 0 18px 36px -20px #2563ffcc;
+         }
+
+     .mc-sd-stat-top {
+         display: flex;
+         align-items: center;
+         justify-content: space-between;
+         margin-bottom: 12px;
+     }
+
+     .mc-sd-stat-icon {
+         display: grid;
+         place-items: center;
+         width: 40px;
+         height: 40px;
+         border: 1px solid #294677;
+         border-radius: 11px;
+         background: #172744;
+         font-size: 18px;
+     }
+
+     .mc-sd-stat-label {
+         margin-bottom: 7px;
+         color: #8996b3;
+         font-size: 11px;
+         font-weight: 800;
+         text-transform: uppercase;
+         letter-spacing: 1.2px;
+     }
+
+     .mc-sd-stat-value {
+         color: #ffffff;
+         font-size: 27px;
+         font-weight: 900;
+         line-height: 1.15;
+         letter-spacing: -.8px;
+         overflow-wrap: anywhere;
+     }
+
+     /* COLORES DE LAS TARJETAS */
+
+     .mc-sd-stat.is-amber::after {
+         background: linear-gradient( 90deg, #d97706, #f59e0b );
+     }
+
+     .mc-sd-stat.is-amber .mc-sd-stat-icon {
+         background: #372913;
+         border-color: #74541b;
+     }
+
+     .mc-sd-stat.is-green::after {
+         background: linear-gradient( 90deg, #16a34a, #22c55e );
+     }
+
+     .mc-sd-stat.is-green .mc-sd-stat-icon {
+         background: #163d2c;
+         border-color: #276749;
+     }
+
+     .mc-sd-stat.is-purple::after {
+         background: linear-gradient( 90deg, #7c3aed, #a855f7 );
+     }
+
+     .mc-sd-stat.is-purple .mc-sd-stat-icon {
+         background: #2d2048;
+         border-color: #604094;
+     }
+
+     /* DISTRIBUCIÓN INFERIOR */
+
+     .mc-sd-columns {
+         display: grid;
+         grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+         gap: 20px;
+         align-items: stretch;
+     }
+
+     /* PANELES */
+
+     .mc-sd-panel {
+         min-width: 0;
+         padding: 21px;
+         border: 1px solid #22304c;
+         border-radius: 14px;
+         background: linear-gradient( 155deg, #121a2b, #0d1220 );
+     }
+
+     .mc-sd-panel-head {
+         display: flex;
+         align-items: center;
+         justify-content: space-between;
+         gap: 12px;
+         margin-bottom: 20px;
+     }
+
+     .mc-sd-panel-title {
+         color: #f4f7ff;
+         font-size: 15px;
+         font-weight: 850;
+     }
+
+     .mc-sd-panel-sub {
+         margin-top: 5px;
+         color: #8996b3;
+         font-size: 12px;
+     }
+
+     /* GRÁFICA DE BARRAS */
+
+     .mc-sd-chart {
+         position: relative;
+         width: 100%;
+         height: 230px;
+     }
+
+         .mc-sd-chart canvas {
+             display: block;
+             width: 100%;
+             height: 100%;
+         }
+
+     /* ACCIONES RÁPIDAS */
+
+     .mc-sd-actions {
+         display: flex;
+         flex-direction: column;
+         gap: 10px;
+     }
+
+     .mc-sd-action {
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         gap: 9px;
+         min-height: 42px;
+         padding: 11px 14px;
+         border: 1px solid #30415f;
+         border-radius: 10px;
+         background: #19263d;
+         color: #e9eefb;
+         font-size: 12px;
+         font-weight: 800;
+         text-align: center;
+         text-decoration: none;
+         transition: background .18s, border-color .18s;
+     }
+
+         .mc-sd-action:hover {
+             background: #243859;
+             border-color: #466799;
+             color: #ffffff;
+         }
+
+         .mc-sd-action.is-primary {
+             border-color: #316aff;
+             background: linear-gradient( 130deg, #316aff, #1e50d6 );
+             color: #ffffff;
+         }
+
+             .mc-sd-action.is-primary:hover {
+                 filter: brightness(1.14);
+             }
+
+     /* RESUMEN DE APROBACIÓN */
+
+     .mc-sd-status-summary {
+         margin-top: 20px;
+         padding-top: 18px;
+         border-top: 1px solid #1a2337;
+     }
+
+     .mc-sd-summary-title {
+         margin-bottom: 11px;
+         color: #8996b3;
+         font-size: 11px;
+         font-weight: 850;
+         text-transform: uppercase;
+         letter-spacing: 1px;
+     }
+
+     .mc-sd-summary-row {
+         display: flex;
+         align-items: center;
+         justify-content: space-between;
+         gap: 14px;
+         padding: 5px 0;
+         color: #a8b8d2;
+         font-size: 13px;
+     }
+
+         .mc-sd-summary-row strong {
+             color: #ffffff;
+             font-size: 13px;
+         }
+
+         .mc-sd-summary-row .is-pending {
+             color: #fbbf24;
+         }
+
+         .mc-sd-summary-row .is-rejected {
+             color: #f87171;
+         }
+
+     /* NOTA SOBRE INGRESOS */
+
+     .mc-sd-revenue-note {
+         margin-top: 6px;
+         color: #8293b0;
+         font-size: 10px;
+         line-height: 1.45;
+     }
+
+     /* RESPONSIVE */
+
+     @media (max-width: 1100px) {
+         .mc-sd-columns {
+             grid-template-columns: 1fr;
+         }
+     }
+
+     @media (max-width: 650px) {
+         .mc-sd-stats {
+             grid-template-columns: repeat( 2, minmax(0, 1fr) );
+             gap: 10px;
+         }
+
+         .mc-sd-stat {
+             padding: 14px;
+             min-height: 120px;
+         }
+
+         .mc-sd-stat-label {
+             font-size: 10px;
+             letter-spacing: .5px;
+         }
+
+         .mc-sd-stat-value {
+             font-size: 22px;
+         }
+
+         .mc-sd-panel {
+             padding: 17px;
+         }
+
+         .mc-sd-chart {
+             height: 230px;
+         }
+     }
+
+     @media (max-width: 380px) {
+         .mc-sd-stats {
+             grid-template-columns: 1fr;
+         }
+     }
+</style>
+
+
+<section class="mc-sd">
+
+    <!-- =====================================
+         ENCABEZADO DEL DASHBOARD
+         ===================================== -->
+
+    <header class="mc-sd-head">
+
+        <p class="mc-sd-breadcrumb">
+            <a href="{% url 'catalog:inicio' %}">
+                Inicio
+            </a>
+            / Panel del vendedor
+        </p>
+
+        <h1>
+            Hola,
+            <span>{{ user.first_name|default:user.username }}</span>
+            👋
+        </h1>
+
+        <p class="mc-sd-description">
+            Resumen general de tu actividad comercial
+            en el marketplace.
+        </p>
+
+    </header>
+
+
+    <!-- =====================================
+         SEIS TARJETAS DEL INDEX
+         ===================================== -->
+
+    <div class="mc-sd-stats">
+
+        <!-- PRODUCTOS PUBLICADOS -->
+
+        <div class="mc-sd-stat">
+
+            <div class="mc-sd-stat-top">
+                <div class="mc-sd-stat-icon">
+                    📦
+                </div>
+            </div>
+
+            <div class="mc-sd-stat-label">
+                Productos publicados
+            </div>
+
+            <div class="mc-sd-stat-value">
+                {{ total_products }}
+            </div>
+
+        </div>
+
+
+        <!-- PENDIENTES -->
+
+        <div class="mc-sd-stat is-amber">
+
+            <div class="mc-sd-stat-top">
+                <div class="mc-sd-stat-icon">
+                    ⏳
+                </div>
+            </div>
+
+            <div class="mc-sd-stat-label">
+                Pendientes
+            </div>
+
+            <div class="mc-sd-stat-value">
+                {{ pending }}
+            </div>
+
+        </div>
+
+
+        <!-- APROBADOS -->
+
+        <div class="mc-sd-stat is-green">
+
+            <div class="mc-sd-stat-top">
+                <div class="mc-sd-stat-icon">
+                    ✅
+                </div>
+            </div>
+
+            <div class="mc-sd-stat-label">
+                Aprobados
+            </div>
+
+            <div class="mc-sd-stat-value">
+                {{ approved }}
+            </div>
+
+        </div>
+
+
+        <!-- UNIDADES DISPONIBLES -->
+
+        <div class="mc-sd-stat">
+
+            <div class="mc-sd-stat-top">
+                <div class="mc-sd-stat-icon">
+                    🏷️
+                </div>
+            </div>
+
+            <div class="mc-sd-stat-label">
+                Unidades disponibles
+            </div>
+
+            <div class="mc-sd-stat-value">
+                {{ units }}
+            </div>
+
+        </div>
+
+
+        <!-- PRODUCTOS VENDIDOS -->
+
+        <div class="mc-sd-stat is-purple">
+
+            <div class="mc-sd-stat-top">
+                <div class="mc-sd-stat-icon">
+                    📈
+                </div>
+            </div>
+
+            <div class="mc-sd-stat-label">
+                Productos vendidos
+            </div>
+
+            <div class="mc-sd-stat-value">
+                {{ sold_units }}
+            </div>
+
+        </div>
+
+
+        <!-- INGRESOS SIMULADOS -->
+
+        <div class="mc-sd-stat is-green">
+
+            <div class="mc-sd-stat-top">
+                <div class="mc-sd-stat-icon">
+                    💰
+                </div>
+            </div>
+
+            <div class="mc-sd-stat-label">
+                Ingresos simulados
+            </div>
+
+            <div class="mc-sd-stat-value">
+                ${{ revenue|floatformat:2 }}
+            </div>
+
+            <div class="mc-sd-revenue-note">
+                Pedidos no cancelados.
+                No representa cobros confirmados.
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================
+         GRÁFICA Y ACCIONES RÁPIDAS
+         ===================================== -->
+
+    <div class="mc-sd-columns">
+
+        <!-- GRÁFICA -->
+
+        <section class="mc-sd-panel">
+
+            <div class="mc-sd-panel-head">
+
+                <div>
+
+                    <div class="mc-sd-panel-title">
+                        📊 Unidades vendidas por producto
+                    </div>
+
+                    <div class="mc-sd-panel-sub">
+                        Basado en órdenes registradas
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="mc-sd-chart">
+
+                <canvas id="mc-seller-chart"
+                        role="img"
+                        aria-label="Gráfica de unidades vendidas por producto">
+                    Gráfica de unidades vendidas.
+                </canvas>
+
+            </div>
+
+        </section>
+
+
+        <!-- ACCIONES RÁPIDAS -->
+
+        <section class="mc-sd-panel">
+
+            <div class="mc-sd-panel-head">
+
+                <div class="mc-sd-panel-title">
+                    ⚡ Acciones rápidas
+                </div>
+
+            </div>
+
+            <div class="mc-sd-actions">
+
+                <!-- MIS PRODUCTOS -->
+
+                <a href="{% url 'catalog:vendedor_productos' %}"
+                   class="mc-sd-action is-primary">
+                    📦 Gestionar mis productos
+                </a>
+
+                <!-- PUBLICAR PRODUCTO -->
+
+                <a href="{% url 'catalog:vendedor_producto_nuevo' %}"
+                   class="mc-sd-action">
+                    ＋ Publicar nuevo componente
+                </a>
+
+                <!-- VENTAS -->
+
+                <a href="{% url 'orders:vendedor_ventas' %}"
+                   class="mc-sd-action">
+                    🧾 Ver mis ventas
+                </a>
+
+                <!-- INVENTARIO -->
+
+                <a href="{% url 'catalog:vendedor_productos' %}?vista=inventario"
+                   class="mc-sd-action">
+                    📋 Revisar inventario
+                </a>
+
+            </div>
+
+
+            <!-- PRODUCTOS POR ESTADO -->
+
+            <div class="mc-sd-status-summary">
+
+                <div class="mc-sd-summary-title">
+                    Productos por estado
+                </div>
+
+                <div class="mc-sd-summary-row">
+                    <span>Aprobados</span>
+                    <strong>{{ approved }}</strong>
+                </div>
+
+                <div class="mc-sd-summary-row">
+                    <span>Pendientes</span>
+                    <strong class="is-pending">
+                        {{ pending }}
+                    </strong>
+                </div>
+
+                <div class="mc-sd-summary-row">
+                    <span>Rechazados</span>
+                    <strong class="is-rejected">
+                        {{ rejected }}
+                    </strong>
+                </div>
+
+                <div class="mc-sd-summary-row">
+                    <span>Inactivos</span>
+                    <strong>{{ inactive }}</strong>
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+</section>
+
+<!-- DATOS REALES ENVIADOS POR DJANGO -->
+{{ chart_data|json_script:"mc-seller-chart-data" }}
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script>(function () {
+    "use strict";
+
+    const canvas = document.getElementById(
+        "mc-seller-chart"
+    );
+
+    const dataElement = document.getElementById(
+        "mc-seller-chart-data"
+    );
+
+    if (!canvas || !dataElement) {
+        return;
+    }
+
+    let rawData = [];
+
+    try {
+        rawData = JSON.parse(
+            dataElement.textContent
+        );
+    } catch (error) {
+        console.error(
+            "No se pudieron leer los datos del gráfico.",
+            error
+        );
+        return;
+    }
+
+    const palette = [
+        "#2563ff",
+        "#22d3ee",
+        "#a855f7",
+        "#22c55e",
+        "#f59e0b",
+        "#ef4444",
+        "#6366f1"
+    ];
+
+    const data = rawData.map(function (item, index) {
+        return {
+            name: String(item.product_name || ""),
+            label: String(item.product_name || "").length > 12
+                ? String(item.product_name).slice(0, 11) + "…"
+                : String(item.product_name || ""),
+            value: Number(item.value) || 0,
+            color: palette[index % palette.length]
+        };
+    });
+
+    function roundedBar(ctx, x, y, width, height) {
+        ctx.beginPath();
+
+        if (typeof ctx.roundRect === "function") {
+            ctx.roundRect(
+                x,
+                y,
+                width,
+                height,
+                6
+            );
+        } else {
+            ctx.rect(
+                x,
+                y,
+                width,
+                height
+            );
+        }
+
+        ctx.fill();
+    }
+
+    function drawChart() {
+
+        const container = canvas.parentElement;
+
+        if (!container) {
+            return;
+        }
+
+        const width = Math.max(
+            1,
+            container.clientWidth
+        );
+
+        const height = Math.max(
+            1,
+            container.clientHeight
+        );
+
+        const dpr = window.devicePixelRatio || 1;
+
+        canvas.width = Math.round(width * dpr);
+        canvas.height = Math.round(height * dpr);
+
+        const ctx = canvas.getContext("2d");
+
+        if (!ctx) {
+            return;
+        }
+
+        ctx.setTransform(
+            dpr, 0,
+            0, dpr,
+            0, 0
+        );
+
+        ctx.clearRect(
+            0, 0,
+            width, height
+        );
+
+        // MENSAJE SIN VENTAS
+
+        if (!data.length) {
+
+            ctx.fillStyle = "#8996b3";
+            ctx.font = "13px Segoe UI, sans-serif";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+
+            ctx.fillText(
+                "Aún no hay ventas registradas",
+                width / 2,
+                height / 2
+            );
+
+            return;
+        }
+
+        // DIMENSIONES
+
+        const padLeft = 43;
+        const padRight = 12;
+        const padTop = 16;
+        const padBottom = 38;
+
+        const chartWidth = Math.max(
+            1,
+            width - padLeft - padRight
+        );
+
+        const chartHeight = Math.max(
+            1,
+            height - padTop - padBottom
+        );
+
+        const maxValue = Math.max(
+            1,
+            ...data.map(function (item) {
+                return item.value;
+            })
+        );
+
+        ctx.font = "11px Segoe UI, sans-serif";
+
+        // LÍNEAS Y VALORES
+
+        for (let i = 0; i <= 4; i++) {
+
+            const y = padTop + chartHeight
+                - (chartHeight / 4) * i;
+
+            ctx.strokeStyle = "rgba(255,255,255,.06)";
+            ctx.beginPath();
+
+            ctx.moveTo(
+                padLeft,
+                y
+            );
+
+            ctx.lineTo(
+                width - padRight,
+                y
+            );
+
+            ctx.stroke();
+
+            ctx.fillStyle = "#667089";
+            ctx.textAlign = "right";
+
+            ctx.fillText(
+                String(Math.round((maxValue / 4) * i)),
+                padLeft - 8,
+                y + 4
+            );
+
+        }
+
+        // BARRAS
+
+        const sectionWidth = chartWidth / data.length;
+
+        data.forEach(function (item, index) {
+
+            const barHeight = Math.max(
+                2,
+                (item.value / maxValue) * chartHeight
+            );
+
+            const barWidth = sectionWidth * 0.56;
+
+            const x = padLeft
+                + index * sectionWidth
+                + sectionWidth * 0.22;
+
+            const y = padTop + chartHeight - barHeight;
+
+            const gradient = ctx.createLinearGradient(
+                0,
+                y,
+                0,
+                y + barHeight
+            );
+
+            gradient.addColorStop(
+                0,
+                item.color
+            );
+
+            gradient.addColorStop(
+                1,
+                "rgba(37,99,255,.18)"
+            );
+
+            ctx.fillStyle = gradient;
+
+            roundedBar(
+                ctx,
+                x,
+                y,
+                barWidth,
+                barHeight
+            );
+
+            // NOMBRE DEL PRODUCTO
+
+            ctx.fillStyle = "#8996b3";
+            ctx.textAlign = "center";
+
+            ctx.fillText(
+                item.label,
+                x + barWidth / 2,
+                height - 12
+            );
+
+        });
+
+    }
+
+    // DIBUJAR AL CARGAR
+
+    drawChart();
+
+    // AJUSTAR LA GRÁFICA AL TAMAÑO DE PANTALLA
+
+    if (typeof ResizeObserver !== "undefined") {
+
+        const observer = new ResizeObserver(
+            function () {
+                drawChart();
+            }
+        );
+
+        observer.observe(
+            canvas.parentElement
+        );
+
+    } else {
+
+        window.addEventListener(
+            "resize",
+            drawChart
+        );
+
+    }
+
+})();</script>
+
+{% endblock %}

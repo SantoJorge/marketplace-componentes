@@ -1,661 +1,1039 @@
 {% extends "base.html" %}
 
+{% block title %}Catálogo | Marketplace Componentes{% endblock %}
+
 {% block content %}
 
 <style>
-     /* =========================================================
-    CATALOGO V2 — ESTILO AISLADO
-    ========================================================= */
+        /* ==========================================
+       MARKETPLACE COMPONENTES
+       CATALOGO PUBLICO
+    ========================================== */
 
-     .catalog-v2-page {
-         width: 100%;
-         max-width: 1450px;
-         margin: 0 auto;
-         padding: 34px 28px 70px;
-     }
+        #mc-catalogo {
+            width: 100%;
+            max-width: 1450px;
+            margin: 0 auto;
+            padding: 28px 24px 70px;
+            color: #e9eefb;
+        }
 
-     .catalog-v2-breadcrumb {
-         display: flex;
-         align-items: center;
-         gap: 8px;
-         margin-bottom: 10px;
-         font-size: 12px;
-         color: #667089;
-     }
+            #mc-catalogo * {
+                box-sizing: border-box;
+            }
 
-         .catalog-v2-breadcrumb a {
-             color: #8996b3;
-             text-decoration: none;
-         }
+            #mc-catalogo a {
+                text-decoration: none;
+            }
 
-             .catalog-v2-breadcrumb a:hover {
-                 color: #22d3ee;
-             }
+            #mc-catalogo .ruta {
+                font-size: 12px;
+                color: #8996b3;
+                margin-bottom: 12px;
+            }
 
-     .catalog-v2-title {
-         margin: 0;
-         font-size: 30px;
-         line-height: 1.15;
-         font-weight: 900;
-         color: #ffffff;
-         letter-spacing: -.7px;
-     }
+                #mc-catalogo .ruta a {
+                    color: #8996b3;
+                }
 
-         .catalog-v2-title span {
-             background: linear-gradient(90deg,#2563ff,#22d3ee);
-             -webkit-background-clip: text;
-             background-clip: text;
-             color: transparent;
-         }
+                    #mc-catalogo .ruta a:hover {
+                        color: #22d3ee;
+                    }
 
-     .catalog-v2-description {
-         margin-top: 8px;
-         margin-bottom: 26px;
-         color: #8996b3;
-         font-size: 13.5px;
-     }
+            #mc-catalogo h1 {
+                margin: 0 0 8px;
+                font-size: 30px;
+                font-weight: 900;
+                line-height: 1.2;
+            }
 
-     .catalog-v2-layout {
-         display: grid !important;
-         grid-template-columns: 260px minmax(0,1fr) !important;
-         gap: 22px !important;
-         align-items: start;
-         width: 100%;
-     }
+                #mc-catalogo h1 span {
+                    background: linear-gradient(90deg, #2563ff, #22d3ee);
+                    -webkit-background-clip: text;
+                    background-clip: text;
+                    color: transparent;
+                }
 
+            #mc-catalogo .descripcion {
+                font-size: 13.5px;
+                color: #8996b3;
+                margin-bottom: 25px;
+            }
 
-     /* ================= FILTROS ================= */
+            #mc-catalogo .estructura {
+                display: grid;
+                grid-template-columns: 260px minmax(0, 1fr);
+                gap: 22px;
+                align-items: start;
+            }
 
-     .catalog-v2-filters {
-         background: #121a2b;
-         border: 1px solid #22304c;
-         border-radius: 14px;
-         padding: 18px;
-         position: sticky;
-         top: 85px;
-     }
+            /* FILTROS */
 
-     .catalog-v2-filter-head {
-         display: flex;
-         justify-content: space-between;
-         align-items: center;
-         margin-bottom: 18px;
-     }
+            #mc-catalogo .filtros {
+                position: sticky;
+                top: 85px;
+                padding: 18px;
+                background: #121a2b;
+                border: 1px solid #22304c;
+                border-radius: 14px;
+                min-width: 0;
+            }
 
-     .catalog-v2-filter-title {
-         color: #667089;
-         font-size: 11px;
-         font-weight: 800;
-         letter-spacing: 1.5px;
-     }
+            #mc-catalogo .filtros-cabecera {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 10px;
+                margin-bottom: 18px;
+            }
 
-     .catalog-v2-clear {
-         border: 1px solid #22304c;
-         border-radius: 20px;
-         padding: 4px 9px;
-         color: #8996b3;
-         font-size: 10.5px;
-         text-decoration: none;
-     }
+                #mc-catalogo .filtros-cabecera strong {
+                    font-size: 11px;
+                    letter-spacing: 1.5px;
+                    color: #8996b3;
+                }
 
-         .catalog-v2-clear:hover {
-             border-color: #2563ff;
-             color: #fff;
-         }
+            #mc-catalogo .limpiar {
+                padding: 6px 11px;
+                border: 1px solid #22304c;
+                border-radius: 22px;
+                color: #c3cee5;
+                font-size: 11px;
+            }
 
-     .catalog-v2-filter-label {
-         display: block;
-         color: #e9eefb;
-         font-weight: 800;
-         font-size: 12px;
-         margin-bottom: 12px;
-     }
+                #mc-catalogo .limpiar:hover {
+                    border-color: #2563ff;
+                    color: white;
+                }
 
-     .catalog-v2-chips {
-         display: flex;
-         flex-wrap: wrap;
-         gap: 8px;
-     }
+            #mc-catalogo .grupo {
+                padding-bottom: 16px;
+                margin-bottom: 16px;
+                border-bottom: 1px solid #22304c;
+            }
 
-     .catalog-v2-chip {
-         display: inline-flex;
-         align-items: center;
-         gap: 6px;
-         border: 1px solid #22304c;
-         background: #162034;
-         border-radius: 30px;
-         padding: 7px 11px;
-         color: #8996b3;
-         font-size: 11px;
-         font-weight: 700;
-         text-decoration: none;
-     }
+                #mc-catalogo .grupo h2 {
+                    margin: 0 0 11px;
+                    font-size: 12px;
+                    font-weight: 800;
+                    color: #e9eefb;
+                }
 
-         .catalog-v2-chip:hover {
-             border-color: #2563ff;
-             color: #fff;
-         }
+            #mc-catalogo .chips {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 7px;
+            }
 
-         .catalog-v2-chip.active {
-             background: linear-gradient(135deg,#2563ff,#1a4fd6);
-             border-color: transparent;
-             color: white;
-         }
+            #mc-catalogo .chip {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+                cursor: pointer;
+                padding: 7px 11px;
+                border: 1px solid #22304c;
+                border-radius: 25px;
+                background: #162034;
+                color: #a9b6d1;
+                font-size: 11.5px;
+                font-weight: 700;
+                line-height: 1.35;
+                text-align: center;
+            }
 
+                #mc-catalogo .chip:hover {
+                    border-color: #2563ff;
+                    color: white;
+                }
 
-     /* ================= PRODUCTOS ================= */
+                #mc-catalogo .chip.activo {
+                    background: linear-gradient(135deg, #2563ff, #1a4fd6);
+                    border-color: #2563ff;
+                    color: white;
+                }
 
-     .catalog-v2-results {
-         min-width: 0;
-         width: 100%;
-     }
+                #mc-catalogo .chip input {
+                    position: absolute;
+                    width: 1px;
+                    height: 1px;
+                    opacity: 0;
+                }
 
-     .catalog-v2-count {
-         margin: 4px 0 15px;
-         color: #8996b3;
-         font-size: 13px;
-     }
+                #mc-catalogo .chip:focus-within {
+                    outline: 2px solid #22d3ee;
+                    outline-offset: 3px;
+                }
 
-         .catalog-v2-count strong {
-             color: #fff;
-         }
+            #mc-catalogo .campo {
+                width: 100%;
+                min-width: 0;
+                padding: 11px;
+                background: #0d1220;
+                border: 1px solid #22304c;
+                border-radius: 10px;
+                color: #e9eefb;
+                font-size: 13px;
+                outline: none;
+            }
 
-     .catalog-v2-grid {
-         display: grid !important;
-         grid-template-columns: repeat(3,minmax(0,1fr)) !important;
-         gap: 18px !important;
-         width: 100%;
-     }
+                #mc-catalogo .campo:focus {
+                    border-color: #2563ff;
+                    box-shadow: 0 0 0 3px rgba(37, 99, 255, .12);
+                }
 
-     .catalog-v2-card {
-         display: flex !important;
-         flex-direction: column;
-         min-width: 0;
-         overflow: hidden;
-         background: linear-gradient(165deg,#121a2b,#0d1220);
-         border: 1px solid #1a2337;
-         border-radius: 14px;
-         transition: .22s ease;
-     }
+                #mc-catalogo .campo::placeholder {
+                    color: #667089;
+                }
 
-         .catalog-v2-card:hover {
-             transform: translateY(-4px);
-             border-color: rgba(37,99,255,.55);
-             box-shadow: 0 25px 45px -28px rgba(37,99,255,.9);
-         }
+            #mc-catalogo .precios {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
 
-     .catalog-v2-image {
-         height: 170px;
-         width: 100%;
-         position: relative;
-         display: flex;
-         align-items: center;
-         justify-content: center;
-         overflow: hidden;
-         background: radial-gradient(circle at 50% 40%,#1c2942,#0d1424);
-     }
+            #mc-catalogo .disponibilidad {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                color: #a9b6d1;
+                font-size: 12px;
+            }
 
-         .catalog-v2-image img {
-             width: 100%;
-             height: 100%;
-             object-fit: cover;
-         }
+                #mc-catalogo .disponibilidad input {
+                    accent-color: #2563ff;
+                }
 
-     .catalog-v2-placeholder {
-         font-size: 58px;
-         opacity: .78;
-     }
+            #mc-catalogo .aplicar {
+                width: 100%;
+                padding: 11px;
+                color: white;
+                font-weight: 800;
+                border: none;
+                border-radius: 10px;
+                cursor: pointer;
+                background: linear-gradient(135deg, #2563ff, #1a4fd6);
+            }
 
-     .catalog-v2-condition {
-         position: absolute;
-         top: 11px;
-         left: 11px;
-         background: rgba(34,197,94,.14);
-         border: 1px solid rgba(34,197,94,.35);
-         color: #4ade80;
-         border-radius: 30px;
-         padding: 4px 10px;
-         font-size: 10px;
-         font-weight: 900;
-     }
+                #mc-catalogo .aplicar:hover {
+                    filter: brightness(1.12);
+                }
 
-     .catalog-v2-body {
-         display: flex;
-         flex-direction: column;
-         flex: 1;
-         padding: 16px;
-     }
+            /* RESULTADOS */
 
-     .catalog-v2-category {
-         color: #22d3ee;
-         font-size: 10px;
-         font-weight: 900;
-         letter-spacing: 1.3px;
-         text-transform: uppercase;
-         margin-bottom: 8px;
-     }
+            #mc-catalogo .resultados {
+                min-width: 0;
+            }
 
-     .catalog-v2-name {
-         color: #fff;
-         font-size: 15px;
-         line-height: 1.35;
-         font-weight: 800;
-         min-height: 40px;
-         margin: 0 0 8px;
-     }
+            #mc-catalogo .barra-resultados {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                gap: 12px;
+                margin-bottom: 17px;
+                color: #8996b3;
+                font-size: 13px;
+            }
 
-     .catalog-v2-meta {
-         color: #667089;
-         font-size: 11.5px;
-         margin-bottom: 6px;
-     }
+                #mc-catalogo .barra-resultados strong {
+                    color: white;
+                }
 
-     .catalog-v2-seller {
-         color: #8996b3;
-         font-size: 11.5px;
-         margin-bottom: 14px;
-     }
+            #mc-catalogo .ordenador {
+                display: flex;
+                align-items: center;
+                gap: 9px;
+                flex-wrap: wrap;
+            }
 
-         .catalog-v2-seller strong {
-             color: #9fc4ff;
-         }
+                #mc-catalogo .ordenador form {
+                    display: flex;
+                    align-items: center;
+                    gap: 7px;
+                }
 
-     .catalog-v2-footer {
-         display: flex;
-         align-items: flex-end;
-         justify-content: space-between;
-         gap: 12px;
-         margin-top: auto;
-         padding-top: 14px;
-         border-top: 1px solid #1a2337;
-     }
+                #mc-catalogo .ordenador select {
+                    width: auto;
+                    max-width: 190px;
+                }
 
-     .catalog-v2-price {
-         color: #fff;
-         font-size: 21px;
-         font-weight: 900;
-     }
+            /* TARJETAS */
 
-     .catalog-v2-stock {
-         color: #667089;
-         font-size: 11px;
-         margin-top: 2px;
-     }
+            #mc-catalogo .productos {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(235px, 1fr));
+                gap: 18px;
+            }
 
-     .catalog-v2-actions {
-         display: flex;
-         gap: 7px;
-     }
+            #mc-catalogo .tarjeta {
+                display: flex;
+                flex-direction: column;
+                min-width: 0;
+                overflow: hidden;
+                border: 1px solid #1a2337;
+                border-radius: 14px;
+                background: linear-gradient(160deg, #121a2b, #0d1220);
+                transition: transform .2s, border-color .2s;
+            }
 
-     .catalog-v2-btn {
-         border-radius: 9px;
-         padding: 8px 13px;
-         font-size: 12px;
-         font-weight: 800;
-         cursor: pointer;
-         border: 1px solid transparent;
-     }
+                #mc-catalogo .tarjeta:hover {
+                    transform: translateY(-3px);
+                    border-color: #2563ff;
+                }
 
-     .catalog-v2-btn-view {
-         background: #121a2b;
-         border-color: #22304c;
-         color: #fff;
-     }
+            #mc-catalogo .foto {
+                position: relative;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 170px;
+                overflow: hidden;
+                background: radial-gradient( circle at 50% 40%, #1c2942, #0d1424 );
+            }
 
-         .catalog-v2-btn-view:hover {
-             background: #162034;
-             border-color: #2563ff;
-         }
+                #mc-catalogo .foto img {
+                    display: block;
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                }
 
-     .catalog-v2-btn-add {
-         background: linear-gradient(135deg,#2563ff,#1a4fd6);
-         color: white;
-     }
+            #mc-catalogo .sin-foto {
+                font-size: 58px;
+            }
 
-         .catalog-v2-btn-add:hover {
-             transform: translateY(-1px);
-         }
+            #mc-catalogo .estado {
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                padding: 4px 9px;
+                border: 1px solid rgba(34, 197, 94, .4);
+                border-radius: 20px;
+                background: #173528;
+                color: #4ade80;
+                font-size: 10px;
+                font-weight: 800;
+            }
 
-     .catalog-v2-empty {
-         grid-column: 1/-1;
-         padding: 70px 20px;
-         text-align: center;
-         color: #8996b3;
-     }
+                #mc-catalogo .estado.usado {
+                    border-color: rgba(245, 158, 11, .35);
+                    background: #332615;
+                    color: #fbbf24;
+                }
 
+                #mc-catalogo .estado.reacondicionado {
+                    border-color: rgba(34, 211, 238, .35);
+                    background: #153039;
+                    color: #67e8f9;
+                }
 
-     /* ================= RESPONSIVE ================= */
+            #mc-catalogo .cuerpo {
+                display: flex;
+                flex-direction: column;
+                flex: 1;
+                gap: 7px;
+                padding: 16px;
+            }
 
-     @media(max-width:1200px) {
+            #mc-catalogo .categoria {
+                color: #22d3ee;
+                text-transform: uppercase;
+                font-size: 10px;
+                font-weight: 800;
+                letter-spacing: 1.2px;
+            }
 
-         .catalog-v2-grid {
-             grid-template-columns: repeat(2,minmax(0,1fr)) !important;
-         }
-     }
+            #mc-catalogo .nombre {
+                min-height: 40px;
+                margin: 0;
+                color: white;
+                font-size: 15px;
+                line-height: 1.35;
+                font-weight: 800;
+            }
 
-     @media(max-width:850px) {
+                #mc-catalogo .nombre a {
+                    color: inherit;
+                }
 
-         .catalog-v2-layout {
-             grid-template-columns: 1fr !important;
-         }
+                    #mc-catalogo .nombre a:hover {
+                        color: #9fc4ff;
+                    }
 
-         .catalog-v2-filters {
-             position: static;
-         }
-     }
+            #mc-catalogo .meta {
+                min-height: 17px;
+                color: #8996b3;
+                font-size: 11.5px;
+            }
 
-     @media(max-width:600px) {
+            #mc-catalogo .vendedor {
+                color: #8996b3;
+                font-size: 11.5px;
+            }
 
-         .catalog-v2-page {
-             padding: 22px 15px 55px;
-         }
+                #mc-catalogo .vendedor strong {
+                    color: #9fc4ff;
+                }
 
-         .catalog-v2-grid {
-             grid-template-columns: 1fr !important;
-         }
-     }
+            #mc-catalogo .pie {
+                display: flex;
+                align-items: flex-end;
+                justify-content: space-between;
+                gap: 10px;
+                margin-top: auto;
+                padding-top: 12px;
+                border-top: 1px solid #22304c;
+            }
+
+            #mc-catalogo .precio {
+                display: block;
+                color: white;
+                font-size: 20px;
+                font-weight: 900;
+            }
+
+            #mc-catalogo .stock {
+                display: block;
+                margin-top: 4px;
+                color: #8996b3;
+                font-size: 11px;
+            }
+
+            #mc-catalogo .acciones {
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+
+                #mc-catalogo .acciones form {
+                    margin: 0;
+                }
+
+            #mc-catalogo .boton {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                padding: 8px 12px;
+                background: #162034;
+                border: 1px solid #22304c;
+                border-radius: 9px;
+                color: white;
+                cursor: pointer;
+                font-size: 12px;
+                font-weight: 800;
+                white-space: nowrap;
+            }
+
+                #mc-catalogo .boton:hover {
+                    border-color: #2563ff;
+                }
+
+                #mc-catalogo .boton.azul {
+                    background: #2563ff;
+                    border-color: #2563ff;
+                }
+
+            #mc-catalogo .sin-resultados {
+                grid-column: 1 / -1;
+                padding: 65px 15px;
+                border: 1px solid #22304c;
+                border-radius: 14px;
+                color: #8996b3;
+                text-align: center;
+            }
+
+                #mc-catalogo .sin-resultados h2 {
+                    margin: 0 0 8px;
+                    color: white;
+                    font-size: 18px;
+                }
+
+            #mc-catalogo .paginas {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 12px;
+                margin-top: 25px;
+                color: #8996b3;
+                font-size: 12px;
+            }
+
+        /* MOVILES */
+
+        @media (max-width: 980px) {
+            #mc-catalogo .estructura {
+                grid-template-columns: 1fr;
+            }
+
+            #mc-catalogo .filtros {
+                position: static;
+            }
+        }
+
+        @media (max-width: 600px) {
+            #mc-catalogo {
+                padding: 18px 12px 55px;
+            }
+
+                #mc-catalogo h1 {
+                    font-size: 25px;
+                }
+
+                #mc-catalogo .productos {
+                    grid-template-columns: repeat( auto-fill, minmax(155px, 1fr) );
+                    gap: 11px;
+                }
+
+                #mc-catalogo .foto {
+                    height: 135px;
+                }
+
+                #mc-catalogo .pie {
+                    flex-direction: column;
+                    align-items: flex-start;
+                }
+
+                #mc-catalogo .acciones {
+                    justify-content: flex-start;
+                }
+        }
 </style>
 
 
-<div class="catalog-v2-page">
+<!-- ==========================================
+     CATALOGO PUBLICO
+========================================== -->
 
-    <!-- CABECERA -->
+<div id="mc-catalogo">
 
-    <div class="catalog-v2-breadcrumb">
-
+    <div class="ruta">
         <a href="{% url 'catalog:inicio' %}">
             Inicio
         </a>
-
-        <span>/</span>
-
-        <span>
-            Catálogo
-        </span>
-
+        / Catálogo
     </div>
 
-
-    <h1 class="catalog-v2-title">
-
-        Catálogo de
-
-        <span>
-            componentes
-        </span>
-
+    <h1>
+        Catálogo de <span>componentes</span>
     </h1>
 
-
-    <p class="catalog-v2-description">
-
-        Explora todos los componentes aprobados y disponibles.
-        Usa el buscador o los filtros para encontrar lo que necesitas.
-
+    <p class="descripcion">
+        Explora todos los componentes aprobados y
+        disponibles. Utiliza la búsqueda y los filtros
+        para encontrar lo que necesitas.
     </p>
 
+    <div class="estructura">
 
-
-    <div class="catalog-v2-layout">
-
-
-        <!-- =================================================
+        <!-- ==================================
              FILTROS
-             ================================================= -->
+        ================================== -->
 
-        <aside class="catalog-v2-filters">
+        <aside class="filtros" aria-label="Filtros">
 
+            <form method="get"
+                  action="{% url 'catalog:catalogo' %}"
+                  id="form-catalogo">
 
-            <div class="catalog-v2-filter-head">
+                <input type="hidden"
+                       name="orden"
+                       value="{{ orden }}">
 
-                <span class="catalog-v2-filter-title">
-                    FILTROS
-                </span>
+                <div class="filtros-cabecera">
 
+                    <strong>FILTROS</strong>
 
-                <a href="{% url 'catalog:catalogo' %}"
-                   class="catalog-v2-clear">
-                    Limpiar
-                </a>
+                    <a href="{% url 'catalog:catalogo' %}?limpiar=1"
+                       class="limpiar">
+                        Limpiar
+                    </a>
 
-            </div>
+                </div>
 
+                <!-- CATEGORIAS -->
 
-            <span class="catalog-v2-filter-label">
-                Categoría
-            </span>
+                <div class="grupo">
 
+                    <h2>Categoría</h2>
 
-            <div class="catalog-v2-chips">
+                    <div class="chips">
 
+                        <label class="chip {% if not selected_category %}activo{% endif %}">
 
-                <a href="{% url 'catalog:catalogo' %}"
-                   class="catalog-v2-chip active">
-                    Todas
-                </a>
+                            <input type="radio"
+                                   name="categoria"
+                                   value=""
+                                   {% if not selected_category %}checked{% endif %}
+                                   onchange="this.form.submit()">
 
+                            Todas
 
-                {% for categoria in categorias %}
+                        </label>
 
+                        {% for categoria in categorias %}
 
-                <a href="?categoria={{ categoria.id }}"
-                   class="catalog-v2-chip">
+                        <label class="chip {% if selected_category == categoria.pk|stringformat:'s' %}activo{% endif %}">
 
-                    <span>
-                        {{ categoria.icon|default:"📦" }}
-                    </span>
+                            <input type="radio"
+                                   name="categoria"
+                                   value="{{ categoria.pk }}"
+                                   {% if selected_category == categoria.pk|stringformat:'s' %}checked{% endif %}
+                                   onchange="this.form.submit()">
 
-                    {{ categoria.name }}
+                            {{ categoria.icon|default:'📦' }}
+                            {{ categoria.name }}
 
-                </a>
+                        </label>
 
+                        {% endfor %}
 
-                {% endfor %}
+                    </div>
 
+                </div>
 
-            </div>
+                <!-- MARCAS -->
 
+                <div class="grupo">
+
+                    <h2>Marca</h2>
+
+                    <div class="chips">
+
+                        <label class="chip {% if not selected_brand %}activo{% endif %}">
+
+                            <input type="radio"
+                                   name="marca"
+                                   value=""
+                                   {% if not selected_brand %}checked{% endif %}
+                                   onchange="this.form.submit()">
+
+                            Todas
+
+                        </label>
+
+                        {% for marca in marcas %}
+
+                        <label class="chip {% if selected_brand == marca %}activo{% endif %}">
+
+                            <input type="radio"
+                                   name="marca"
+                                   value="{{ marca }}"
+                                   {% if selected_brand == marca %}checked{% endif %}
+                                   onchange="this.form.submit()">
+
+                            {{ marca }}
+
+                        </label>
+
+                        {% empty %}
+
+                        <span style="font-size:12px;color:#8996b3">
+                            No hay marcas disponibles.
+                        </span>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+                <!-- CONDICION -->
+
+                <div class="grupo">
+
+                    <h2>Condición</h2>
+
+                    <div class="chips">
+
+                        <label class="chip {% if not selected_condition %}activo{% endif %}">
+
+                            <input type="radio"
+                                   name="condicion"
+                                   value=""
+                                   {% if not selected_condition %}checked{% endif %}
+                                   onchange="this.form.submit()">
+
+                            Todas
+
+                        </label>
+
+                        {% for codigo, etiqueta in condiciones %}
+
+                        <label class="chip {% if selected_condition == codigo %}activo{% endif %}">
+
+                            <input type="radio"
+                                   name="condicion"
+                                   value="{{ codigo }}"
+                                   {% if selected_condition == codigo %}checked{% endif %}
+                                   onchange="this.form.submit()">
+
+                            {{ etiqueta }}
+
+                        </label>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+                <!-- BUSQUEDA -->
+
+                <div class="grupo">
+
+                    <h2>Buscar componentes</h2>
+
+                    <input class="campo"
+                           type="search"
+                           name="q"
+                           value="{{ consulta }}"
+                           maxlength="90"
+                           placeholder="Nombre, marca, modelo..."
+                           aria-label="Buscar componentes">
+
+                </div>
+
+                <!-- PRECIOS -->
+
+                <div class="grupo">
+
+                    <h2>Rango de precio (USD)</h2>
+
+                    <div class="precios">
+
+                        <input class="campo"
+                               type="number"
+                               name="min"
+                               value="{{ precio_minimo }}"
+                               min="0"
+                               max="99999999.99"
+                               step="0.01"
+                               placeholder="Mínimo"
+                               aria-label="Precio mínimo">
+
+                        <input class="campo"
+                               type="number"
+                               name="max"
+                               value="{{ precio_maximo }}"
+                               min="0"
+                               max="99999999.99"
+                               step="0.01"
+                               placeholder="Máximo"
+                               aria-label="Precio máximo">
+
+                    </div>
+
+                </div>
+
+                <!-- STOCK -->
+
+                <div class="grupo">
+
+                    <h2>Disponibilidad</h2>
+
+                    <label class="disponibilidad">
+
+                        <input type="checkbox"
+                               checked
+                               disabled>
+
+                        Solo productos con stock
+
+                    </label>
+
+                </div>
+
+                <button class="aplicar" type="submit">
+                    Aplicar filtros
+                </button>
+
+            </form>
 
         </aside>
 
 
+        <!-- ==================================
+             RESULTADOS
+        ================================== -->
 
-        <!-- =================================================
-             PRODUCTOS
-             ================================================= -->
+        <section class="resultados"
+                 aria-label="Productos del catálogo">
 
-        <section class="catalog-v2-results">
+            <div class="barra-resultados">
 
+                <div>
+                    <strong>{{ total_resultados }}</strong>
+                    producto{{ total_resultados|pluralize }}
+                    encontrado{{ total_resultados|pluralize }}
+                </div>
 
-            <div class="catalog-v2-count">
+                <!-- ORDENAMIENTO -->
 
-                <strong>
-                    {{ productos|length }}
-                </strong>
+                <div class="ordenador">
 
-                producto(s) encontrado(s)
+                    <label for="catalog-orden">
+                        Ordenar por:
+                    </label>
+
+                    <form method="get"
+                          action="{% url 'catalog:catalogo' %}">
+
+                        <input type="hidden"
+                               name="categoria"
+                               value="{{ selected_category }}">
+
+                        <input type="hidden"
+                               name="marca"
+                               value="{{ selected_brand }}">
+
+                        <input type="hidden"
+                               name="condicion"
+                               value="{{ selected_condition }}">
+
+                        <input type="hidden"
+                               name="q"
+                               value="{{ consulta }}">
+
+                        <input type="hidden"
+                               name="min"
+                               value="{{ precio_minimo }}">
+
+                        <input type="hidden"
+                               name="max"
+                               value="{{ precio_maximo }}">
+
+                        <select id="catalog-orden"
+                                class="campo"
+                                name="orden"
+                                onchange="this.form.submit()">
+
+                            <option value="recientes"
+                                    {% if orden == 'recientes' %}selected{% endif %}>
+                                Más recientes
+                            </option>
+
+                            <option value="precio_asc"
+                                    {% if orden == 'precio_asc' %}selected{% endif %}>
+                                Menor precio
+                            </option>
+
+                            <option value="precio_desc"
+                                    {% if orden == 'precio_desc' %}selected{% endif %}>
+                                Mayor precio
+                            </option>
+
+                        </select>
+
+                        <button class="boton"
+                                type="submit">
+                            Ordenar
+                        </button>
+
+                    </form>
+
+                </div>
 
             </div>
 
 
+            <!-- ==================================
+                 PRODUCTOS REALES
+            ================================== -->
 
-            <div class="catalog-v2-grid">
-
+            <div class="productos">
 
                 {% for producto in productos %}
 
-
-                <article class="catalog-v2-card">
-
+                <article class="tarjeta">
 
                     <!-- IMAGEN -->
 
-                    <div class="catalog-v2-image">
-
+                    <a class="foto"
+                       href="{% url 'catalog:producto' producto.pk %}"
+                       aria-label="Ver {{ producto.name }}">
 
                         {% if producto.image %}
 
-
                         <img src="{{ producto.image.url }}"
-                             alt="{{ producto.name }}">
-
+                             alt="{{ producto.name }}"
+                             loading="lazy">
 
                         {% else %}
 
-
-                        <div class="catalog-v2-placeholder">
-
-                            {{ producto.category.icon|default:"📦" }}
-
-                        </div>
-
+                        <span class="sin-foto">
+                            {{ producto.category.icon|default:'📦' }}
+                        </span>
 
                         {% endif %}
 
+                        <!-- CONDICION -->
 
-                        <span class="catalog-v2-condition">
+                        <span class="estado {% if producto.condition == 'USADO' %}usado{% elif producto.condition == 'REACONDICIONADO' %}reacondicionado{% endif %}">
 
-                            {{ producto.get_condition_display|upper }}
+                            {{ producto.get_condition_display }}
 
                         </span>
 
+                    </a>
 
-                    </div>
+                    <!-- INFORMACION -->
 
+                    <div class="cuerpo">
 
-
-                    <!-- INFORMACIÓN -->
-
-                    <div class="catalog-v2-body">
-
-
-                        <div class="catalog-v2-category">
-
+                        <span class="categoria">
                             {{ producto.category.name }}
+                        </span>
 
-                        </div>
+                        <h2 class="nombre">
 
+                            <a href="{% url 'catalog:producto' producto.pk %}">
+                                {{ producto.name }}
+                            </a>
 
-                        <h3 class="catalog-v2-name">
+                        </h2>
 
-                            {{ producto.name }}
-
-                        </h3>
-
-
-                        <div class="catalog-v2-meta">
+                        <span class="meta">
 
                             {{ producto.brand }}
 
                             {% if producto.model %}
-
                             · {{ producto.model }}
-
                             {% endif %}
 
-                        </div>
+                        </span>
 
+                        <!-- VENDEDOR -->
 
-
-                        <div class="catalog-v2-seller">
+                        <span class="vendedor">
 
                             Vendido por
 
                             <strong>
 
+                                {% if producto.seller.seller_profile.business_name %}
+
+                                {{ producto.seller.seller_profile.business_name }}
+
+                                {% else %}
+
                                 {{ producto.seller.username }}
+
+                                {% endif %}
 
                             </strong>
 
-                        </div>
+                        </span>
 
+                        <!-- PRECIO Y BOTONES -->
 
-
-                        <div class="catalog-v2-footer">
-
+                        <div class="pie">
 
                             <div>
 
-                                <div class="catalog-v2-price">
+                                <span class="precio">
+                                    ${{ producto.price|floatformat:2 }}
+                                </span>
 
-                                    ${{ producto.price }}
-
-                                </div>
-
-
-                                <div class="catalog-v2-stock">
-
-                                    Stock:
-                                    {{ producto.stock }}
-
-                                </div>
+                                <span class="stock">
+                                    Stock: {{ producto.stock }}
+                                </span>
 
                             </div>
 
+                            <div class="acciones">
 
-
-                            <div class="catalog-v2-actions">
-
-
-                                <button type="button"
-                                        class="
-                                            catalog-v2-btn
-                                            catalog-v2-btn-view
-                                        ">
+                                <a class="boton"
+                                   href="{% url 'catalog:producto' producto.pk %}">
                                     Ver
-                                </button>
-
-                                <!-- fase 2.5 conexion añadir a carrito -->
-
-                                <a href="{% url 'orders:add_to_cart' producto.id %}"
-                                   class="
-                                        catalog-v2-btn
-                                        catalog-v2-btn-add
-                                    "
-                                >
-                                    Añadir
                                 </a>
 
+                                <form method="post"
+                                      action="{% url 'orders:add_to_cart' producto.pk %}">
+
+                                    {% csrf_token %}
+
+                                    <button class="boton azul"
+                                            type="submit">
+                                        Añadir
+                                    </button>
+
+                                </form>
 
                             </div>
-
 
                         </div>
 
-
                     </div>
-
 
                 </article>
 
-
                 {% empty %}
 
+                <!-- SIN RESULTADOS -->
 
-                <div class="catalog-v2-empty">
+                <div class="sin-resultados">
 
-                    <h3>
-                        No hay productos disponibles
-                    </h3>
+                    <h2>🔎 No se encontraron productos</h2>
 
                     <p>
-                        No existen productos aprobados con stock.
+                        No hay componentes que coincidan
+                        con los filtros seleccionados.
                     </p>
+
+                    <a class="boton"
+                       href="{% url 'catalog:catalogo' %}?limpiar=1">
+                        Limpiar filtros
+                    </a>
 
                 </div>
 
-
                 {% endfor %}
-
 
             </div>
 
 
+            <!-- ==================================
+                 PAGINACION
+            ================================== -->
+            {% if pagina.has_other_pages %}
+
+            <nav class="paginas"
+                 aria-label="Páginas del catálogo">
+
+                {% if pagina.has_previous %}
+
+                <a class="boton"
+                   href="?{% if filtros_url %}{{ filtros_url }}&amp;{% endif %}page={{ pagina.previous_page_number }}">
+                    ← Anterior
+                </a>
+
+                {% endif %}
+
+                <span>
+                    Página {{ pagina.number }}
+                    de {{ pagina.paginator.num_pages }}
+                </span>
+
+                {% if pagina.has_next %}
+
+                <a class="boton"
+                   href="?{% if filtros_url %}{{ filtros_url }}&amp;{% endif %}page={{ pagina.next_page_number }}">
+                    Siguiente →
+                </a>
+
+                {% endif %}
+
+            </nav>
+
+            {% endif %}
+
         </section>
 
-
     </div>
-
 
 </div>
 

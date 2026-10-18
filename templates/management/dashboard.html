@@ -1,14 +1,11 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="dark">
 
     <title>
         Administración | Marketplace Componentes
@@ -17,522 +14,1271 @@
     <link rel="stylesheet"
           href="{% static 'css/management.css' %}">
 
+    <style>
+        /* =========================================
+           FASE 5 - DASHBOARD ADMINISTRADOR
+           Réplica del INDEX original
+           ========================================= */
+
+        /* NAVEGACIÓN ADMINISTRATIVA */
+
+        .dashboard-admin .admin-sidebar {
+            width: 252px;
+        }
+
+        .dashboard-admin .sidebar-link {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+            .dashboard-admin .sidebar-link.active {
+                color: #fff;
+                font-weight: 800;
+                background: linear-gradient( 90deg, rgba(37,99,255,.24), rgba(37,99,255,.05) );
+            }
+
+                .dashboard-admin .sidebar-link.active::before {
+                    content: "";
+                    position: absolute;
+                    left: 0;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    width: 3px;
+                    height: 20px;
+                    background: #22d3ee;
+                    border-radius: 0 4px 4px 0;
+                }
+
+        .dashboard-admin .sidebar-count {
+            margin-left: auto;
+            padding: 1px 7px;
+            border-radius: 20px;
+            background: #ef4444;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .dashboard-admin .sidebar-footer form {
+            margin: 0;
+        }
+
+        .dashboard-admin .sidebar-footer button {
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .dashboard-admin .dashboard-search-button {
+            position: absolute;
+            left: 9px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 0;
+            padding: 5px;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        /* ENCABEZADO DEL DASHBOARD */
+
+        .dashboard-admin .dashboard-heading {
+            margin-bottom: 24px;
+        }
+
+            .dashboard-admin .dashboard-heading .breadcrumb {
+                margin-bottom: 9px;
+            }
+
+            .dashboard-admin .dashboard-heading .page-title {
+                font-size: 27px;
+                font-weight: 900;
+                letter-spacing: -.5px;
+                line-height: 1.15;
+            }
+
+        .dashboard-admin .dashboard-description {
+            margin-top: 7px;
+            color: #8996b3;
+            font-size: 13.5px;
+            line-height: 1.6;
+        }
+
+        /* OCHO TARJETAS DEL INDEX */
+
+        .dashboard-admin .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 15px;
+            margin-bottom: 24px;
+        }
+
+        .dashboard-admin .stat-card {
+            min-height: 135px;
+            padding: 18px;
+            border: 1px solid #1a2337;
+            border-radius: 14px;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient( 155deg, #121a2b, #0d1220 );
+            transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+        }
+
+            .dashboard-admin .stat-card:hover {
+                transform: translateY(-3px);
+                border-color: #2d3f63;
+                box-shadow: 0 18px 36px -20px rgba(37,99,255,.8);
+            }
+
+            .dashboard-admin .stat-card::before {
+                content: "";
+                position: absolute;
+                left: 0;
+                top: 0;
+                right: 0;
+                height: 2px;
+                background: linear-gradient( 90deg, #2563ff, #22d3ee );
+            }
+
+            .dashboard-admin .stat-card.green::before {
+                background: linear-gradient( 90deg, #16a34a, #22c55e );
+            }
+
+            .dashboard-admin .stat-card.amber::before {
+                background: linear-gradient( 90deg, #d97706, #f59e0b );
+            }
+
+            .dashboard-admin .stat-card.purple::before {
+                background: linear-gradient( 90deg, #7c3aed, #a855f7 );
+            }
+
+        .dashboard-admin .stat-icon {
+            width: 40px;
+            height: 40px;
+            display: grid;
+            place-items: center;
+            margin-bottom: 13px;
+            border: 1px solid rgba(37,99,255,.25);
+            border-radius: 11px;
+            background: rgba(37,99,255,.14);
+            font-size: 19px;
+        }
+
+        .dashboard-admin .stat-card.green .stat-icon {
+            background: rgba(34,197,94,.14);
+            border-color: rgba(34,197,94,.28);
+        }
+
+        .dashboard-admin .stat-card.amber .stat-icon {
+            background: rgba(245,158,11,.14);
+            border-color: rgba(245,158,11,.28);
+        }
+
+        .dashboard-admin .stat-card.purple .stat-icon {
+            background: rgba(168,85,247,.14);
+            border-color: rgba(168,85,247,.28);
+        }
+
+        .dashboard-admin .stat-label {
+            color: #667089;
+            font-size: 10.5px;
+            font-weight: 800;
+            letter-spacing: 1.3px;
+            text-transform: uppercase;
+        }
+
+        .dashboard-admin .stat-value {
+            margin-top: 7px;
+            color: #e9eefb;
+            font-size: 27px;
+            font-weight: 900;
+            line-height: 1.15;
+            letter-spacing: -.8px;
+            overflow-wrap: anywhere;
+        }
+
+        /* SECCIONES INFERIORES */
+
+        .dashboard-admin .dashboard-bottom {
+            display: grid;
+            grid-template-columns: minmax(0,1.4fr) minmax(0,1fr);
+            gap: 20px;
+            align-items: start;
+        }
+
+            .dashboard-admin .dashboard-bottom .panel {
+                min-width: 0;
+                padding: 22px;
+                border: 1px solid #1a2337;
+                border-radius: 14px;
+                background: linear-gradient( 160deg, #121a2b, #0d1220 );
+            }
+
+        .dashboard-admin .dashboard-panel-header {
+            margin-bottom: 17px;
+        }
+
+        .dashboard-admin .dashboard-panel-title {
+            color: #e9eefb;
+            font-size: 16.5px;
+            font-weight: 800;
+        }
+
+        .dashboard-admin .dashboard-panel-subtitle {
+            margin-top: 3px;
+            color: #8996b3;
+            font-size: 12.5px;
+        }
+
+        /* GRÁFICA DE BARRAS DEL INDEX */
+
+        .dashboard-admin .dashboard-chart-box {
+            position: relative;
+            width: 100%;
+            height: 260px;
+            min-width: 0;
+        }
+
+        .dashboard-admin #admin-chart {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .dashboard-admin .dashboard-chart-empty {
+            display: grid;
+            place-items: center;
+            height: 260px;
+            color: #8996b3;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .dashboard-admin .dashboard-sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            clip: rect(0,0,0,0);
+            white-space: nowrap;
+        }
+
+        /* TAREAS PENDIENTES */
+
+        .dashboard-admin .dashboard-task {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 13px;
+            margin-bottom: 10px;
+            border-radius: 11px;
+            background: #162034;
+        }
+
+            .dashboard-admin .dashboard-task:last-child {
+                margin-bottom: 0;
+            }
+
+        .dashboard-admin .dashboard-task-icon {
+            flex: none;
+            font-size: 22px;
+        }
+
+        .dashboard-admin .dashboard-task-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+            .dashboard-admin .dashboard-task-info strong {
+                display: block;
+                color: #e9eefb;
+                font-size: 13.5px;
+                line-height: 1.4;
+            }
+
+            .dashboard-admin .dashboard-task-info small {
+                display: block;
+                margin-top: 3px;
+                color: #8996b3;
+                font-size: 12px;
+            }
+
+        .dashboard-admin .dashboard-task-button {
+            flex: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 33px;
+            padding: 7px 12px;
+            border: 1px solid transparent;
+            border-radius: 9px;
+            background: linear-gradient( 135deg, #2563ff, #1a4fd6 );
+            color: #fff;
+            font-size: 12px;
+            font-weight: 800;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+            .dashboard-admin .dashboard-task-button:hover {
+                filter: brightness(1.13);
+            }
+
+            .dashboard-admin .dashboard-task-button.secondary {
+                border-color: #22304c;
+                background: #1b2740;
+            }
+
+            .dashboard-admin .dashboard-task-button:focus-visible,
+            .dashboard-admin .sidebar-link:focus-visible,
+            .dashboard-admin .dashboard-menu-toggle:focus-visible {
+                outline: 2px solid #22d3ee;
+                outline-offset: 3px;
+            }
+
+        /* MENÚ MÓVIL DEL ADMINISTRADOR */
+
+        .dashboard-admin .dashboard-menu-toggle {
+            display: none;
+            flex: none;
+            width: 42px;
+            height: 42px;
+            place-items: center;
+            border: 1px solid #22304c;
+            border-radius: 11px;
+            background: #121a2b;
+            color: #e9eefb;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .dashboard-admin .dashboard-backdrop[hidden] {
+            display: none !important;
+        }
+
+        @media (min-width: 901px) {
+            .dashboard-admin .admin-sidebar {
+                position: sticky;
+                top: 66px;
+                align-self: flex-start;
+                height: calc(100vh - 66px);
+                min-height: 0;
+                overflow-y: auto;
+            }
+        }
+
+        @media (max-width: 1100px) {
+            .dashboard-admin .stats-grid {
+                grid-template-columns: repeat(2, minmax(0,1fr));
+            }
+
+            .dashboard-admin .dashboard-bottom {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .dashboard-admin .admin-navbar {
+                gap: 12px;
+                padding: 0 12px;
+            }
+
+            .dashboard-admin .dashboard-menu-toggle {
+                display: grid;
+            }
+
+            .dashboard-admin .admin-nav-links,
+            .dashboard-admin .admin-search {
+                display: none;
+            }
+
+            .dashboard-admin .admin-user {
+                margin-left: auto;
+            }
+
+            .dashboard-admin .admin-sidebar {
+                display: block;
+                position: fixed;
+                top: 66px;
+                left: 0;
+                bottom: 0;
+                z-index: 150;
+                width: min(252px,85vw);
+                height: calc(100vh - 66px);
+                min-height: 0;
+                overflow-y: auto;
+                visibility: hidden;
+                pointer-events: none;
+                transform: translateX(-110%);
+                transition: transform .28s ease, visibility .28s ease;
+                box-shadow: 12px 0 32px rgba(0,0,0,.45);
+            }
+
+            .dashboard-admin.menu-open .admin-sidebar {
+                visibility: visible;
+                pointer-events: auto;
+                transform: translateX(0);
+            }
+
+            .dashboard-admin .dashboard-backdrop:not([hidden]) {
+                display: block;
+                position: fixed;
+                inset: 66px 0 0;
+                z-index: 140;
+                background: rgba(0,0,0,.6);
+            }
+
+            .dashboard-admin.menu-open {
+                overflow: hidden;
+            }
+
+            .dashboard-admin .admin-main {
+                min-width: 0;
+                padding: 20px 16px 55px;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .dashboard-admin .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-admin .admin-logo-text,
+            .dashboard-admin .admin-user-name {
+                display: none;
+            }
+
+            .dashboard-admin .dashboard-task {
+                flex-wrap: wrap;
+            }
+
+            .dashboard-admin .dashboard-task-button {
+                margin-left: 33px;
+            }
+
+            .dashboard-admin .dashboard-bottom .panel {
+                padding: 17px;
+            }
+        }
+    </style>
 </head>
 
+<body class="dashboard-admin">
 
-<body>
-
-
-    <!-- =========================================
-         NAVBAR
-    ========================================= -->
+    <!-- ======================================
+         BARRA SUPERIOR
+         ====================================== -->
 
     <header class="admin-navbar">
 
+        <button type="button"
+                id="dashboard-menu-toggle"
+                class="dashboard-menu-toggle"
+                aria-controls="dashboard-sidebar"
+                aria-expanded="false"
+                aria-label="Abrir menú administrativo">
+            ☰
+        </button>
 
-        <a href="{% url 'catalog:inicio' %}"
-           class="admin-logo">
+        <a class="admin-logo"
+           href="{% url 'catalog:inicio' %}">
 
             <div class="admin-logo-icon">
                 M
             </div>
 
             <div class="admin-logo-text">
-
-                <strong>
-                    MARKETPLACE
-                </strong>
-
-                <span>
-                    COMPONENTES
-                </span>
-
+                <strong>MARKETPLACE</strong>
+                <span>COMPONENTES</span>
             </div>
-
         </a>
 
+        <nav class="admin-nav-links"
+             aria-label="Navegación principal">
 
-        <nav class="admin-nav-links">
-
-            <a href="{% url 'catalog:inicio' %}"
-               class="admin-nav-link">
+            <a class="admin-nav-link"
+               href="{% url 'catalog:inicio' %}">
                 Inicio
             </a>
 
-
-            <a href="{% url 'catalog:catalogo' %}"
-               class="admin-nav-link">
+            <a class="admin-nav-link"
+               href="{% url 'catalog:catalogo' %}">
                 Catálogo
             </a>
 
-
-            <a href="{% url 'management:dashboard' %}"
-               class="admin-nav-link active">
+            <a class="admin-nav-link active"
+               href="{% url 'management:dashboard' %}">
                 Administración
             </a>
-
         </nav>
 
+        <!-- BUSCADOR FUNCIONAL -->
+        <form class="admin-search"
+              method="get"
+              action="{% url 'catalog:catalogo' %}"
+              role="search">
 
-        <div class="admin-search">
-
-            <span>
+            <button type="submit"
+                    class="dashboard-search-button"
+                    aria-label="Buscar componentes">
                 🔍
-            </span>
+            </button>
 
-            <input type="text"
-                   placeholder="Buscar componentes, marcas, modelos...">
+            <input type="search"
+                   name="q"
+                   placeholder="Buscar componentes, marcas, modelos..."
+                   aria-label="Buscar componentes">
+        </form>
 
-        </div>
+        <a class="admin-user"
+           href="{% url 'management:perfil' %}"
+           aria-label="Ir a mi perfil">
 
-
-        <div class="admin-user">
-
-            <div class="admin-avatar">
-
-                {% if request.user.first_name %}
-
-                {{ request.user.first_name|slice:":1"|upper }}
-
+            <span class="admin-avatar">
+                {% if request.user.first_name or request.user.last_name %}
+                {{ request.user.first_name|slice:":1"|upper }}{{ request.user.last_name|slice:":1"|upper }}
                 {% else %}
-
-                {{ request.user.username|slice:":1"|upper }}
-
+                {{ request.user.username|slice:":2"|upper }}
                 {% endif %}
-
-            </div>
-
+            </span>
 
             <span class="admin-user-name">
-
-                {{ admin_name }}
-
+                {{ request.user.first_name|default:request.user.username }}
             </span>
 
-            <span>
-                ▾
-            </span>
-
-        </div>
-
-
+            <span aria-hidden="true">⌄</span>
+        </a>
     </header>
 
-
-
-    <!-- =========================================
-         LAYOUT GENERAL
-    ========================================= -->
+    <div class="dashboard-backdrop"
+         id="dashboard-backdrop"
+         hidden></div>
 
     <div class="admin-layout">
 
+        <!-- ======================================
+             SIDEBAR ADMINISTRADOR
+             ====================================== -->
 
-        <!-- =========================================
-             SIDEBAR
-        ========================================= -->
-
-        <aside class="admin-sidebar">
-
+        <aside class="admin-sidebar"
+               id="dashboard-sidebar"
+               aria-label="Menú administrativo">
 
             <div class="sidebar-user">
 
-
-                <div class="admin-avatar">
-
-                    {% if request.user.first_name %}
-
-                    {{ request.user.first_name|slice:":1"|upper }}
-
+                <span class="admin-avatar">
+                    {% if request.user.first_name or request.user.last_name %}
+                    {{ request.user.first_name|slice:":1"|upper }}{{ request.user.last_name|slice:":1"|upper }}
                     {% else %}
-
-                    {{ request.user.username|slice:":1"|upper }}
-
+                    {{ request.user.username|slice:":2"|upper }}
                     {% endif %}
-
-                </div>
-
+                </span>
 
                 <div>
-
                     <div class="sidebar-user-name">
-
-                        {{ admin_full_name }}
-
+                        {{ request.user.get_full_name|default:request.user.username }}
                     </div>
 
                     <div class="sidebar-user-role">
-
                         ADMINISTRADOR
-
                     </div>
+                </div>
+            </div>
 
+            <nav aria-label="Secciones administrativas">
+
+                <div class="sidebar-title">
+                    ADMINISTRACIÓN
                 </div>
 
+                <a class="sidebar-link active"
+                   href="{% url 'management:dashboard' %}"
+                   aria-current="page">
+                    📊 Dashboard
+                </a>
 
-            </div>
+                <a class="sidebar-link"
+                   href="{% url 'management:usuarios' %}">
+                    👥 Usuarios
+                </a>
 
+                <a class="sidebar-link"
+                   href="{% url 'management:solicitudes' %}">
+                    📨 Solicitudes
 
+                    {% if pending_requests %}
+                    <span class="sidebar-count">
+                        {{ pending_requests }}
+                    </span>
+                    {% endif %}
+                </a>
 
-            <div class="sidebar-title">
-                ADMINISTRACIÓN
-            </div>
+                <a class="sidebar-link"
+                   href="{% url 'management:productos' %}?status=PENDIENTE">
+                    ⏳ Productos pendientes
 
+                    {% if pending_products %}
+                    <span class="sidebar-count">
+                        {{ pending_products }}
+                    </span>
+                    {% endif %}
+                </a>
 
-            <a href="{% url 'management:dashboard' %}"
-               class="sidebar-link active">
-                📊 Dashboard
-            </a>
+                <a class="sidebar-link"
+                   href="{% url 'management:productos' %}">
+                    📦 Productos
+                </a>
 
+                <a class="sidebar-link"
+                   href="{% url 'management:categorias' %}">
+                    🗂️ Categorías
+                </a>
 
-            <a href="#"
-               class="sidebar-link">
-                👥 Usuarios
-            </a>
+                <a class="sidebar-link"
+                   href="{% url 'management:pedidos' %}">
+                    🧾 Órdenes
+                </a>
 
+                <div class="sidebar-title">
+                    CUENTA
+                </div>
 
-            <a href="#"
-               class="sidebar-link">
-                📨 Solicitudes
-            </a>
-
-
-            <a href="#"
-               class="sidebar-link">
-                ⏳ Productos pendientes
-            </a>
-
-
-            <a href="#"
-               class="sidebar-link">
-                📦 Productos
-            </a>
-
-
-            <a href="#"
-               class="sidebar-link">
-                🗂️ Categorías
-            </a>
-
-
-            <a href="#"
-               class="sidebar-link">
-                🧾 Órdenes
-            </a>
-
-
-
-            <div class="sidebar-title">
-                CUENTA
-            </div>
-
-
-            <a href="#"
-               class="sidebar-link">
-                👤 Perfil
-            </a>
-
-
+                <a class="sidebar-link"
+                   href="{% url 'management:perfil' %}">
+                    👤 Perfil
+                </a>
+            </nav>
 
             <div class="sidebar-footer">
 
-
-                <a href="{% url 'catalog:inicio' %}"
-                   class="sidebar-button">
+                <a class="sidebar-button"
+                   href="{% url 'catalog:inicio' %}">
                     🏠 Ir al marketplace
                 </a>
 
+                <form method="post"
+                      action="{% url 'accounts:logout' %}">
 
-                <a href="{% url 'accounts:logout' %}"
-                   class="sidebar-button">
-                    ⏻ Cerrar sesión
-                </a>
+                    {% csrf_token %}
 
-
+                    <button class="sidebar-button"
+                            type="submit">
+                        ⏻ Cerrar sesión
+                    </button>
+                </form>
             </div>
-
-
         </aside>
 
-
-
-        <!-- =========================================
+        <!-- ======================================
              CONTENIDO PRINCIPAL
-        ========================================= -->
+             ====================================== -->
 
         <main class="admin-main">
 
+            <!-- ENCABEZADO EXACTO DEL INDEX -->
+            <div class="dashboard-heading">
 
-            <div class="breadcrumb">
+                <div class="breadcrumb">
 
-                Inicio
-                /
-                Administración
+                    <a href="{% url 'catalog:inicio' %}">
+                        Inicio
+                    </a>
 
+                    &nbsp; / &nbsp; Administración
+                </div>
+
+                <h1 class="page-title">
+                    Panel de <span>administración</span>
+                </h1>
+
+                <p class="dashboard-description">
+                    Control total del marketplace: usuarios,
+                    vendedores, productos, categorías y órdenes.
+                </p>
             </div>
 
+            <!-- ==================================
+                 OCHO ESTADÍSTICAS REALES
+                 ================================== -->
 
-            <h1 class="page-title">
+            <section class="stats-grid"
+                     aria-label="Estadísticas del marketplace">
 
-                Panel de
-                <span>
-                    administración
-                </span>
-
-            </h1>
-
-
-            <p class="page-description">
-
-                Control general del marketplace:
-                usuarios, vendedores, productos,
-                categorías y órdenes.
-
-            </p>
-
-
-
-            <!-- =========================================
-                 TARJETAS
-            ========================================= -->
-
-            <section class="stats-grid">
-
-
+                <!-- USUARIOS -->
                 <div class="stat-card">
 
-                    <div class="stat-icon">
-                        👥
-                    </div>
+                    <div class="stat-icon">👥</div>
 
                     <div class="stat-label">
-                        USUARIOS REGISTRADOS
+                        Usuarios registrados
                     </div>
 
                     <div class="stat-value">
-                        0
+                        {{ users }}
                     </div>
-
                 </div>
 
-
-
+                <!-- COMPRADORES -->
                 <div class="stat-card">
 
-                    <div class="stat-icon">
-                        🛍️
-                    </div>
+                    <div class="stat-icon">🛍️</div>
 
                     <div class="stat-label">
-                        COMPRADORES
+                        Compradores
                     </div>
 
                     <div class="stat-value">
-                        0
+                        {{ buyers }}
                     </div>
-
                 </div>
 
-
-
+                <!-- VENDEDORES -->
                 <div class="stat-card green">
 
-                    <div class="stat-icon">
-                        🏪
-                    </div>
+                    <div class="stat-icon">🏪</div>
 
                     <div class="stat-label">
-                        VENDEDORES
+                        Vendedores
                     </div>
 
                     <div class="stat-value">
-                        0
+                        {{ sellers }}
                     </div>
-
                 </div>
 
-
-
+                <!-- SOLICITUDES -->
                 <div class="stat-card amber">
 
-                    <div class="stat-icon">
-                        📨
-                    </div>
+                    <div class="stat-icon">📨</div>
 
                     <div class="stat-label">
-                        SOLICITUDES PENDIENTES
+                        Solicitudes pendientes
                     </div>
 
                     <div class="stat-value">
-                        0
+                        {{ pending_requests }}
                     </div>
-
                 </div>
 
-
-
+                <!-- PRODUCTOS -->
                 <div class="stat-card">
 
-                    <div class="stat-icon">
-                        📦
-                    </div>
+                    <div class="stat-icon">📦</div>
 
                     <div class="stat-label">
-                        PRODUCTOS
+                        Productos
                     </div>
 
                     <div class="stat-value">
-                        0
+                        {{ products }}
                     </div>
-
                 </div>
 
-
-
+                <!-- PRODUCTOS PENDIENTES -->
                 <div class="stat-card amber">
 
-                    <div class="stat-icon">
-                        ⏳
-                    </div>
+                    <div class="stat-icon">⏳</div>
 
                     <div class="stat-label">
-                        PRODUCTOS PENDIENTES
+                        Productos pendientes
                     </div>
 
                     <div class="stat-value">
-                        0
+                        {{ pending_products }}
                     </div>
-
                 </div>
 
-
-
+                <!-- ÓRDENES -->
                 <div class="stat-card purple">
 
-                    <div class="stat-icon">
-                        🧾
-                    </div>
+                    <div class="stat-icon">🧾</div>
 
                     <div class="stat-label">
-                        ÓRDENES
+                        Órdenes
                     </div>
 
                     <div class="stat-value">
-                        0
+                        {{ orders }}
                     </div>
-
                 </div>
 
-
-
+                <!-- VENTAS TOTALES -->
                 <div class="stat-card green">
 
-                    <div class="stat-icon">
-                        💰
-                    </div>
+                    <div class="stat-icon">💰</div>
 
                     <div class="stat-label">
-                        VENTAS TOTALES
+                        Ventas totales
                     </div>
 
                     <div class="stat-value">
-                        $0.00
+                        ${{ revenue|floatformat:2 }}
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- ==================================
+                 GRÁFICA Y TAREAS PENDIENTES
+                 ================================== -->
+
+            <section class="dashboard-bottom"
+                     aria-label="Resumen de la administración">
+
+                <!-- PRODUCTOS POR CATEGORÍA -->
+                <div class="panel">
+
+                    <div class="dashboard-panel-header">
+
+                        <h2 class="dashboard-panel-title">
+                            📊 Productos por categoría
+                        </h2>
+
+                        <p class="dashboard-panel-subtitle">
+                            Distribución actual del catálogo
+                        </p>
+                    </div>
+
+                    {% if chart_data %}
+
+                    <div class="dashboard-chart-box">
+
+                        <canvas id="admin-chart"
+                                role="img"
+                                aria-label="Gráfica de barras con el número de productos por categoría">
+                        </canvas>
+
+                    </div>
+
+                    <!-- Datos accesibles del gráfico -->
+                    <ul class="dashboard-sr-only">
+                        {% for item in chart_data %}
+                        <li>
+                            {{ item.label }}:
+                            {{ item.value }} productos
+                        </li>
+                        {% endfor %}
+                    </ul>
+
+                    {% else %}
+
+                    <div class="dashboard-chart-empty">
+                        Aún no hay productos registrados
+                        para mostrar la distribución.
+                    </div>
+
+                    {% endif %}
+                </div>
+
+                <!-- TAREAS PENDIENTES -->
+                <div class="panel">
+
+                    <div class="dashboard-panel-header">
+                        <h2 class="dashboard-panel-title">
+                            ⚡ Tareas pendientes
+                        </h2>
+                    </div>
+
+                    <!-- SOLICITUDES DE VENDEDORES -->
+                    <div class="dashboard-task">
+
+                        <div class="dashboard-task-icon">
+                            📨
+                        </div>
+
+                        <div class="dashboard-task-info">
+
+                            <strong>
+                                Solicitudes de vendedores
+                            </strong>
+
+                            <small>
+                                {{ pending_requests }}
+                                pendientes de revisión
+                            </small>
+                        </div>
+
+                        <a class="dashboard-task-button"
+                           href="{% url 'management:solicitudes' %}">
+                            Revisar
+                        </a>
+                    </div>
+
+                    <!-- PRODUCTOS PENDIENTES -->
+                    <div class="dashboard-task">
+
+                        <div class="dashboard-task-icon">
+                            ⏳
+                        </div>
+
+                        <div class="dashboard-task-info">
+
+                            <strong>
+                                Productos pendientes
+                            </strong>
+
+                            <small>
+                                {{ pending_products }}
+                                esperando aprobación
+                            </small>
+                        </div>
+
+                        <a class="dashboard-task-button"
+                           href="{% url 'management:productos' %}?status=PENDIENTE">
+                            Revisar
+                        </a>
+                    </div>
+
+                    <!-- ÓRDENES -->
+                    <div class="dashboard-task">
+
+                        <div class="dashboard-task-icon">
+                            🧾
+                        </div>
+
+                        <div class="dashboard-task-info">
+
+                            <strong>
+                                Órdenes registradas
+                            </strong>
+
+                            <small>
+                                {{ orders }} en total
+                            </small>
+                        </div>
+
+                        <a class="dashboard-task-button secondary"
+                           href="{% url 'management:pedidos' %}">
+                            Ver
+                        </a>
                     </div>
 
                 </div>
-
-
             </section>
-
-
-
-            <!-- =========================================
-                 PARTE INFERIOR
-            ========================================= -->
-
-            <section class="dashboard-bottom">
-
-
-                <div class="panel">
-
-                    <h2>
-                        📊 Productos por categoría
-                    </h2>
-
-                    <p>
-                        Aquí mostraremos posteriormente
-                        la distribución real de productos.
-                    </p>
-
-                </div>
-
-
-                <div class="panel">
-
-                    <h2>
-                        ⚡ Tareas pendientes
-                    </h2>
-
-                    <p>
-                        Aquí aparecerán solicitudes,
-                        productos pendientes y órdenes.
-                    </p>
-
-                </div>
-
-
-            </section>
-
 
         </main>
-
-
     </div>
 
-
-
-    <!-- =========================================
-         TOAST BIENVENIDA
-    ========================================= -->
+    <!-- TOAST DE BIENVENIDA EXISTENTE -->
     {% if request.session.admin_welcome %}
 
     <div id="admin-toast"
-         class="admin-toast">
+         class="admin-toast"
+         role="status">
 
         <span class="toast-check">
             ✓
         </span>
 
         <span>
-            ¡Bienvenido, {{ admin_name }}!
+            ¡Bienvenido,
+            {{ request.user.first_name|default:request.user.username }}!
         </span>
-
     </div>
 
     {% endif %}
 
+    <!-- DATOS DEL GRÁFICO, GENERADOS POR DJANGO -->
+    {{ chart_data|json_script:"admin-chart-data" }}
 
+    <script>
+        (function () {
+            "use strict";
 
-    <script>const toast =
-        document.getElementById("admin-toast");
+            /* ============================
+               MENÚ MÓVIL
+               ============================ */
 
+            const body = document.body;
 
-    if (toast) {
+            const menuButton = document.getElementById(
+                "dashboard-menu-toggle"
+            );
 
-        setTimeout(() => {
+            const backdrop = document.getElementById(
+                "dashboard-backdrop"
+            );
 
-            toast.classList.add("hide");
+            function setMenuOpen(open) {
+                body.classList.toggle("menu-open", open);
+                backdrop.hidden = !open;
 
-            setTimeout(() => {
+                menuButton.setAttribute(
+                    "aria-expanded",
+                    String(open)
+                );
 
-                toast.remove();
+                menuButton.setAttribute(
+                    "aria-label",
+                    open
+                        ? "Cerrar menú administrativo"
+                        : "Abrir menú administrativo"
+                );
+            }
 
-            }, 350);
+            menuButton.addEventListener("click", function () {
+                setMenuOpen(
+                    !body.classList.contains("menu-open")
+                );
+            });
 
-        }, 3000);
+            backdrop.addEventListener("click", function () {
+                setMenuOpen(false);
+            });
 
-    }</script>
+            document.addEventListener("keydown", function (event) {
+                if (event.key === "Escape") {
+                    setMenuOpen(false);
+                }
+            });
 
+            window.addEventListener("resize", function () {
+                if (window.innerWidth > 900) {
+                    setMenuOpen(false);
+                }
+            });
+
+            /* ============================
+               GRÁFICA DEL INDEX
+               ============================ */
+
+            const canvas = document.getElementById(
+                "admin-chart"
+            );
+
+            const dataElement = document.getElementById(
+                "admin-chart-data"
+            );
+
+            if (canvas && dataElement) {
+
+                const chartData = JSON.parse(
+                    dataElement.textContent
+                );
+
+                const colors = [
+                    "#2563ff",
+                    "#22d3ee",
+                    "#a855f7",
+                    "#22c55e",
+                    "#f59e0b",
+                    "#ef4444",
+                    "#6366f1"
+                ];
+
+                function roundedBar(ctx, x, y, w, h, r) {
+                    const radius = Math.min(r, w / 2, h / 2);
+
+                    ctx.beginPath();
+                    ctx.moveTo(x + radius, y);
+                    ctx.lineTo(x + w - radius, y);
+                    ctx.quadraticCurveTo(
+                        x + w, y,
+                        x + w, y + radius
+                    );
+                    ctx.lineTo(x + w, y + h);
+                    ctx.lineTo(x, y + h);
+                    ctx.lineTo(x, y + radius);
+                    ctx.quadraticCurveTo(
+                        x, y,
+                        x + radius, y
+                    );
+                    ctx.closePath();
+                }
+
+                function drawChart() {
+                    const width = canvas.clientWidth;
+                    const height = canvas.clientHeight;
+
+                    if (!width || !height || !chartData.length) {
+                        return;
+                    }
+
+                    const dpr = window.devicePixelRatio || 1;
+
+                    canvas.width = Math.round(width * dpr);
+                    canvas.height = Math.round(height * dpr);
+
+                    const ctx = canvas.getContext("2d");
+
+                    if (!ctx) return;
+
+                    ctx.setTransform(
+                        dpr, 0, 0, dpr, 0, 0
+                    );
+
+                    ctx.clearRect(
+                        0, 0, width, height
+                    );
+
+                    const padLeft = 42;
+                    const padRight = 12;
+                    const padTop = 16;
+                    const padBottom = 38;
+
+                    const plotWidth =
+                        width - padLeft - padRight;
+
+                    const plotHeight =
+                        height - padTop - padBottom;
+
+                    if (plotWidth <= 0 || plotHeight <= 0) {
+                        return;
+                    }
+
+                    const maxValue = Math.max(
+                        1,
+                        ...chartData.map(
+                            item => Number(item.value) || 0
+                        )
+                    );
+
+                    const step = Math.max(
+                        1,
+                        Math.ceil(maxValue / 4)
+                    );
+
+                    const chartMax = step * 4;
+
+                    ctx.font =
+                        '11px "Segoe UI", Arial, sans-serif';
+
+                    // Líneas y cifras del eje vertical
+                    for (let i = 0; i <= 4; i++) {
+                        const y =
+                            padTop +
+                            plotHeight -
+                            (plotHeight / 4) * i;
+
+                        ctx.strokeStyle =
+                            "rgba(255,255,255,.06)";
+
+                        ctx.beginPath();
+                        ctx.moveTo(padLeft, y);
+                        ctx.lineTo(width - padRight, y);
+                        ctx.stroke();
+
+                        ctx.fillStyle = "#667089";
+                        ctx.textAlign = "right";
+
+                        ctx.fillText(
+                            String(step * i),
+                            padLeft - 8,
+                            y + 4
+                        );
+                    }
+
+                    const slot =
+                        plotWidth / chartData.length;
+
+                    const barWidth = Math.min(
+                        slot * .56,
+                        55
+                    );
+
+                    chartData.forEach(function (item, index) {
+                        const value = Number(item.value) || 0;
+
+                        const barHeight = Math.max(
+                            2,
+                            (value / chartMax) * plotHeight
+                        );
+
+                        const x =
+                            padLeft +
+                            index * slot +
+                            (slot - barWidth) / 2;
+
+                        const y =
+                            padTop +
+                            plotHeight -
+                            barHeight;
+
+                        const gradient =
+                            ctx.createLinearGradient(
+                                0, y,
+                                0, y + barHeight
+                            );
+
+                        gradient.addColorStop(
+                            0,
+                            colors[index % colors.length]
+                        );
+
+                        gradient.addColorStop(
+                            1,
+                            "rgba(37,99,255,.18)"
+                        );
+
+                        ctx.fillStyle = gradient;
+
+                        roundedBar(
+                            ctx,
+                            x,
+                            y,
+                            barWidth,
+                            barHeight,
+                            6
+                        );
+
+                        ctx.fill();
+
+                        // Nombres de las categorías
+                        const name = String(item.label);
+
+                        const shortName =
+                            name.length > 11
+                                ? name.slice(0, 10) + "…"
+                                : name;
+
+                        ctx.fillStyle = "#8996b3";
+                        ctx.textAlign = "center";
+
+                        ctx.fillText(
+                            shortName,
+                            x + barWidth / 2,
+                            height - 12,
+                            Math.max(20, slot - 6)
+                        );
+                    });
+                }
+
+                drawChart();
+
+                if ("ResizeObserver" in window) {
+                    const observer = new ResizeObserver(
+                        drawChart
+                    );
+                    observer.observe(canvas.parentElement);
+                } else {
+                    window.addEventListener(
+                        "resize",
+                        drawChart
+                    );
+                }
+            }
+
+            /* ============================
+               TOAST DE BIENVENIDA
+               ============================ */
+
+            const toast = document.getElementById(
+                "admin-toast"
+            );
+
+            if (toast) {
+                setTimeout(function () {
+                    toast.classList.add("hide");
+
+                    setTimeout(function () {
+                        toast.remove();
+                    }, 350);
+                }, 3000);
+            }
+
+        })();
+    </script>
 
 </body>
-
 </html>

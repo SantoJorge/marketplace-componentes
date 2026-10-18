@@ -1,0 +1,1597 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="dark">
+
+    <title>
+        Usuarios | Marketplace Componentes
+    </title>
+
+    <link rel="stylesheet"
+          href="{% static 'css/management.css' %}">
+
+    <style>
+        /* ======================================
+           FASE 5 - USUARIOS ADMINISTRADOR
+           Réplica del INDEX
+           ====================================== */
+
+        .users-admin .admin-sidebar {
+            width: 252px;
+        }
+
+        .users-admin .admin-user {
+            color: #e9eefb;
+            text-decoration: none;
+        }
+
+        .users-admin .sidebar-link {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+            .users-admin .sidebar-link.active {
+                color: white;
+                font-weight: 800;
+                background: linear-gradient( 90deg, rgba(37,99,255,.24), rgba(37,99,255,.05) );
+            }
+
+                .users-admin .sidebar-link.active::before {
+                    content: "";
+                    position: absolute;
+                    left: 0;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    width: 3px;
+                    height: 20px;
+                    border-radius: 0 4px 4px 0;
+                    background: #22d3ee;
+                }
+
+        .users-admin .sidebar-count {
+            margin-left: auto;
+            padding: 1px 7px;
+            border-radius: 20px;
+            background: #ef4444;
+            color: white;
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .users-admin .sidebar-footer form {
+            margin: 0;
+        }
+
+        .users-admin .sidebar-footer button {
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .users-admin .top-search-button {
+            position: absolute;
+            top: 50%;
+            left: 9px;
+            transform: translateY(-50%);
+            border: 0;
+            padding: 5px;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        /* ENCABEZADO IGUAL AL INDEX */
+
+        .users-admin .users-heading {
+            margin-bottom: 24px;
+        }
+
+            .users-admin .users-heading .breadcrumb {
+                margin-bottom: 9px;
+            }
+
+        .users-admin .users-description {
+            margin-top: 7px;
+            color: #8996b3;
+            font-size: 13.5px;
+        }
+
+        /* BUSCADOR Y FILTROS */
+
+        .users-admin .users-filter-panel {
+            margin-bottom: 18px;
+            padding: 16px;
+            border: 1px solid #1a2337;
+            border-radius: 14px;
+            background: linear-gradient( 160deg, #121a2b, #0d1220 );
+        }
+
+        .users-admin .users-filter-content {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .users-admin .users-search {
+            display: block;
+            width: min(100%, 340px);
+            min-height: 42px;
+            padding: 10px 13px;
+            border: 1px solid #22304c;
+            border-radius: 10px;
+            outline: none;
+            background: #121a2b;
+            color: #e9eefb;
+            font: 13px "Segoe UI", Arial, sans-serif;
+        }
+
+            .users-admin .users-search:focus {
+                border-color: #2563ff;
+                box-shadow: 0 0 0 3px rgba(37,99,255,.14);
+            }
+
+            .users-admin .users-search::placeholder {
+                color: #8996b3;
+            }
+
+        .users-admin .users-chips {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 7px;
+        }
+
+        .users-admin .users-chip {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 33px;
+            padding: 7px 13px;
+            border: 1px solid #22304c;
+            border-radius: 30px;
+            background: #162034;
+            color: #8996b3;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 700;
+            transition: .18s;
+        }
+
+            .users-admin .users-chip:hover {
+                color: white;
+                border-color: #2563ff;
+            }
+
+            .users-admin .users-chip.active {
+                color: #fff;
+                border-color: rgba(37,99,255,.55);
+                background: rgba(37,99,255,.2);
+            }
+
+        /* TABLA DEL INDEX */
+
+        .users-admin .users-table-wrap {
+            width: 100%;
+            overflow-x: auto;
+            border: 1px solid #1a2337;
+            border-radius: 14px;
+            background: #121a2b;
+        }
+
+        .users-admin .users-table {
+            width: 100%;
+            min-width: 940px;
+            border-collapse: collapse;
+            font-size: 13px;
+            text-align: left;
+        }
+
+            .users-admin .users-table th {
+                padding: 13px 15px;
+                border-bottom: 1px solid #22304c;
+                background: #162034;
+                color: #667089;
+                font-size: 10.5px;
+                font-weight: 800;
+                letter-spacing: 1.4px;
+                white-space: nowrap;
+                text-transform: uppercase;
+            }
+
+            .users-admin .users-table td {
+                padding: 13px 15px;
+                border-bottom: 1px solid #1a2337;
+                vertical-align: middle;
+            }
+
+            .users-admin .users-table tbody tr:hover {
+                background: rgba(37,99,255,.045);
+            }
+
+            .users-admin .users-table tbody tr:last-child td {
+                border-bottom: 0;
+            }
+
+        .users-admin .users-id {
+            color: #8996b3;
+            font-size: 11.5px;
+        }
+
+        .users-admin .users-cell {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            min-width: 185px;
+        }
+
+        .users-admin .users-avatar {
+            display: grid;
+            place-items: center;
+            flex: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: linear-gradient( 135deg, #2563ff, #22d3ee );
+            color: white;
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+            .users-admin .users-avatar.large {
+                width: 65px;
+                height: 65px;
+                font-size: 20px;
+            }
+
+        .users-admin .users-cell strong {
+            display: block;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .users-admin .users-cell small {
+            display: block;
+            margin-top: 3px;
+            color: #667089;
+            font-size: 11.5px;
+        }
+
+        .users-admin .users-date {
+            color: #8996b3;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        /* ETIQUETAS */
+
+        .users-admin .users-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border: 1px solid transparent;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .3px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+            .users-admin .users-badge.admin {
+                color: #c084fc;
+                background: rgba(168,85,247,.15);
+                border-color: rgba(168,85,247,.4);
+            }
+
+            .users-admin .users-badge.seller {
+                color: #7ba7ff;
+                background: rgba(37,99,255,.15);
+                border-color: rgba(37,99,255,.4);
+            }
+
+            .users-admin .users-badge.buyer {
+                color: #9aa6c0;
+                background: rgba(120,130,155,.14);
+                border-color: rgba(120,130,155,.3);
+            }
+
+            .users-admin .users-badge.enabled {
+                color: #4ade80;
+                background: rgba(34,197,94,.14);
+                border-color: rgba(34,197,94,.35);
+            }
+
+            .users-admin .users-badge.disabled {
+                color: #9aa6c0;
+                background: rgba(120,130,155,.14);
+                border-color: rgba(120,130,155,.3);
+            }
+
+        /* BOTONES */
+
+        .users-admin .users-actions {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .users-admin .users-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 32px;
+            padding: 7px 11px;
+            border: 1px solid #22304c;
+            border-radius: 8px;
+            background: #162034;
+            color: #e9eefb;
+            text-decoration: none;
+            font: 700 12px "Segoe UI", Arial, sans-serif;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+            .users-admin .users-button:hover {
+                background: #1b2740;
+                border-color: #2563ff;
+            }
+
+            .users-admin .users-button.primary {
+                border-color: transparent;
+                background: linear-gradient( 135deg, #2563ff, #1a4fd6 );
+                color: white;
+            }
+
+            .users-admin .users-button:focus-visible,
+            .users-admin .users-chip:focus-visible,
+            .users-admin .users-menu-toggle:focus-visible,
+            .users-admin .sidebar-link:focus-visible {
+                outline: 2px solid #22d3ee;
+                outline-offset: 3px;
+            }
+
+        .users-admin .users-protected {
+            color: #667089;
+            font-size: 12px;
+        }
+
+        .users-admin .users-empty {
+            padding: 35px !important;
+            color: #8996b3;
+            text-align: center;
+        }
+
+        .users-admin .users-list-note {
+            margin-top: 12px;
+            color: #8996b3;
+            font-size: 12px;
+        }
+
+        /* MENSAJES */
+
+        .users-admin .users-notices {
+            margin-bottom: 18px;
+        }
+
+        .users-admin .users-notice {
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border: 1px solid rgba(34,197,94,.4);
+            border-radius: 10px;
+            background: rgba(34,197,94,.09);
+            color: #a7f3bd;
+            font-size: 13px;
+        }
+
+            .users-admin .users-notice.error {
+                border-color: rgba(239,68,68,.4);
+                background: rgba(239,68,68,.1);
+                color: #ffc0c0;
+            }
+
+        /* VENTANAS EMERGENTES */
+
+        .users-admin .users-dialog {
+            position: fixed;
+            inset: 0;
+            margin: auto;
+            width: min(600px, calc(100vw - 28px));
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 0;
+            border: 1px solid #2a3a56;
+            border-radius: 16px;
+            background: #121a2b;
+            color: #e9eefb;
+            box-shadow: 0 24px 80px rgba(0,0,0,.75);
+        }
+
+            .users-admin .users-dialog::backdrop {
+                background: rgba(0,0,0,.72);
+                backdrop-filter: blur(4px);
+            }
+
+        .users-admin .users-dialog-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 19px 22px;
+            border-bottom: 1px solid #22304c;
+        }
+
+            .users-admin .users-dialog-header h2 {
+                margin: 0;
+                font-size: 18px;
+            }
+
+        .users-admin .users-dialog-close {
+            display: grid;
+            place-items: center;
+            width: 34px;
+            height: 34px;
+            border: 1px solid #22304c;
+            border-radius: 9px;
+            background: #162034;
+            color: #e9eefb;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        .users-admin .users-dialog-body {
+            padding: 22px;
+        }
+
+        .users-admin .users-detail-top {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .users-admin .users-detail-name {
+            margin-bottom: 5px;
+            font-size: 19px;
+            font-weight: 900;
+        }
+
+        .users-admin .users-detail-email {
+            color: #8996b3;
+            font-size: 13px;
+            overflow-wrap: anywhere;
+        }
+
+        .users-admin .users-detail-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            margin-top: 9px;
+        }
+
+        .users-admin .users-detail-specs {
+            border: 1px solid #22304c;
+            border-radius: 11px;
+            overflow: hidden;
+        }
+
+        .users-admin .users-detail-row {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 14px;
+            padding: 12px 15px;
+            border-bottom: 1px solid #22304c;
+            font-size: 13px;
+        }
+
+            .users-admin .users-detail-row:last-child {
+                border-bottom: 0;
+            }
+
+        .users-admin .users-detail-key {
+            color: #8996b3;
+        }
+
+        .users-admin .users-detail-value {
+            overflow-wrap: anywhere;
+            font-weight: 700;
+        }
+
+        .users-admin .users-dialog-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 9px;
+            flex-wrap: wrap;
+            margin-top: 19px;
+            padding-top: 17px;
+            border-top: 1px solid #22304c;
+        }
+
+        .users-admin .users-confirm-description {
+            color: #b8c4dc;
+            font-size: 13.5px;
+            line-height: 1.7;
+        }
+
+        /* MÓVIL */
+
+        .users-admin .users-menu-toggle {
+            display: none;
+            width: 42px;
+            height: 42px;
+            flex: none;
+            place-items: center;
+            border: 1px solid #22304c;
+            border-radius: 11px;
+            background: #121a2b;
+            color: #e9eefb;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .users-admin .users-backdrop[hidden] {
+            display: none !important;
+        }
+
+        @media (min-width: 901px) {
+            .users-admin .admin-sidebar {
+                position: sticky;
+                top: 66px;
+                align-self: flex-start;
+                height: calc(100vh - 66px);
+                overflow-y: auto;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .users-admin .admin-navbar {
+                gap: 12px;
+                padding: 0 12px;
+            }
+
+            .users-admin .users-menu-toggle {
+                display: grid;
+            }
+
+            .users-admin .admin-nav-links,
+            .users-admin .admin-search {
+                display: none;
+            }
+
+            .users-admin .admin-user {
+                margin-left: auto;
+            }
+
+            .users-admin .admin-sidebar {
+                display: block;
+                position: fixed;
+                left: 0;
+                top: 66px;
+                bottom: 0;
+                z-index: 150;
+                width: min(252px,85vw);
+                height: calc(100vh - 66px);
+                overflow-y: auto;
+                visibility: hidden;
+                pointer-events: none;
+                transform: translateX(-110%);
+                transition: transform .28s ease, visibility .28s ease;
+                box-shadow: 12px 0 32px rgba(0,0,0,.45);
+            }
+
+            .users-admin.menu-open .admin-sidebar {
+                visibility: visible;
+                pointer-events: auto;
+                transform: translateX(0);
+            }
+
+            .users-admin .users-backdrop:not([hidden]) {
+                display: block;
+                position: fixed;
+                inset: 66px 0 0;
+                z-index: 140;
+                background: rgba(0,0,0,.6);
+            }
+
+            .users-admin.menu-open {
+                overflow: hidden;
+            }
+
+            .users-admin .admin-main {
+                min-width: 0;
+                padding: 20px 16px 55px;
+            }
+        }
+
+        @media (max-width: 620px) {
+            .users-admin .admin-logo-text,
+            .users-admin .admin-user-name {
+                display: none;
+            }
+
+            .users-admin .users-search {
+                width: 100%;
+            }
+
+            .users-admin .users-dialog-header,
+            .users-admin .users-dialog-body {
+                padding: 16px;
+            }
+
+            .users-admin .users-detail-row {
+                grid-template-columns: 1fr;
+                gap: 3px;
+            }
+        }
+    </style>
+</head>
+
+<body class="users-admin">
+
+    <!-- BARRA SUPERIOR -->
+    <header class="admin-navbar">
+
+        <button type="button"
+                id="users-menu-toggle"
+                class="users-menu-toggle"
+                aria-label="Abrir menú administrativo"
+                aria-controls="users-sidebar"
+                aria-expanded="false">
+            ☰
+        </button>
+
+        <a class="admin-logo"
+           href="{% url 'catalog:inicio' %}">
+
+            <div class="admin-logo-icon">M</div>
+
+            <div class="admin-logo-text">
+                <strong>MARKETPLACE</strong>
+                <span>COMPONENTES</span>
+            </div>
+        </a>
+
+        <nav class="admin-nav-links"
+             aria-label="Navegación principal">
+
+            <a class="admin-nav-link"
+               href="{% url 'catalog:inicio' %}">
+                Inicio
+            </a>
+
+            <a class="admin-nav-link"
+               href="{% url 'catalog:catalogo' %}">
+                Catálogo
+            </a>
+
+            <a class="admin-nav-link active"
+               href="{% url 'management:dashboard' %}">
+                Administración
+            </a>
+        </nav>
+
+        <form class="admin-search"
+              method="get"
+              action="{% url 'catalog:catalogo' %}"
+              role="search">
+
+            <button type="submit"
+                    class="top-search-button"
+                    aria-label="Buscar componentes">
+                🔍
+            </button>
+
+            <input type="search"
+                   name="q"
+                   placeholder="Buscar componentes, marcas, modelos..."
+                   aria-label="Buscar componentes">
+        </form>
+
+        <a class="admin-user"
+           href="{% url 'management:perfil' %}"
+           aria-label="Mi perfil">
+
+            <span class="admin-avatar">
+                {% if request.user.first_name or request.user.last_name %}
+                {{ request.user.first_name|slice:":1"|upper }}{{ request.user.last_name|slice:":1"|upper }}
+                {% else %}
+                {{ request.user.username|slice:":2"|upper }}
+                {% endif %}
+            </span>
+
+            <span class="admin-user-name">
+                {{ request.user.first_name|default:request.user.username }}
+            </span>
+
+            <span aria-hidden="true">⌄</span>
+        </a>
+    </header>
+
+    <div class="users-backdrop"
+         id="users-backdrop"
+         hidden></div>
+
+    <div class="admin-layout">
+
+        <!-- MENÚ LATERAL ADMINISTRADOR -->
+        <aside class="admin-sidebar"
+               id="users-sidebar"
+               aria-label="Menú administrativo">
+
+            <div class="sidebar-user">
+                <span class="admin-avatar">
+                    {% if request.user.first_name or request.user.last_name %}
+                    {{ request.user.first_name|slice:":1"|upper }}{{ request.user.last_name|slice:":1"|upper }}
+                    {% else %}
+                    {{ request.user.username|slice:":2"|upper }}
+                    {% endif %}
+                </span>
+
+                <div>
+                    <div class="sidebar-user-name">
+                        {{ request.user.get_full_name|default:request.user.username }}
+                    </div>
+
+                    <div class="sidebar-user-role">
+                        ADMINISTRADOR
+                    </div>
+                </div>
+            </div>
+
+            <nav aria-label="Secciones administrativas">
+
+                <div class="sidebar-title">
+                    ADMINISTRACIÓN
+                </div>
+
+                <a class="sidebar-link"
+                   href="{% url 'management:dashboard' %}">
+                    📊 Dashboard
+                </a>
+
+                <a class="sidebar-link active"
+                   href="{% url 'management:usuarios' %}"
+                   aria-current="page">
+                    👥 Usuarios
+                </a>
+
+                <a class="sidebar-link"
+                   href="{% url 'management:solicitudes' %}">
+                    📨 Solicitudes
+
+                    {% if pending_requests %}
+                    <span class="sidebar-count">
+                        {{ pending_requests }}
+                    </span>
+                    {% endif %}
+                </a>
+
+                <a class="sidebar-link"
+                   href="{% url 'management:productos' %}?status=PENDIENTE">
+                    ⏳ Productos pendientes
+
+                    {% if pending_products %}
+                    <span class="sidebar-count">
+                        {{ pending_products }}
+                    </span>
+                    {% endif %}
+                </a>
+
+                <a class="sidebar-link"
+                   href="{% url 'management:productos' %}">
+                    📦 Productos
+                </a>
+
+                <a class="sidebar-link"
+                   href="{% url 'management:categorias' %}">
+                    🗂️ Categorías
+                </a>
+
+                <a class="sidebar-link"
+                   href="{% url 'management:pedidos' %}">
+                    🧾 Órdenes
+                </a>
+
+                <div class="sidebar-title">
+                    CUENTA
+                </div>
+
+                <a class="sidebar-link"
+                   href="{% url 'management:perfil' %}">
+                    👤 Perfil
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+
+                <a class="sidebar-button"
+                   href="{% url 'catalog:inicio' %}">
+                    🏠 Ir al marketplace
+                </a>
+
+                <form method="post"
+                      action="{% url 'accounts:logout' %}">
+
+                    {% csrf_token %}
+
+                    <button class="sidebar-button"
+                            type="submit">
+                        ⏻ Cerrar sesión
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="admin-main">
+
+            <!-- ENCABEZADO EXACTO DEL INDEX -->
+            <div class="users-heading">
+
+                <div class="breadcrumb">
+                    <a href="{% url 'management:dashboard' %}">
+                        Administración
+                    </a>
+
+                    &nbsp; / &nbsp; Usuarios
+                </div>
+
+                <h1 class="page-title">
+                    Gestión de <span>usuarios</span>
+                </h1>
+
+                <p class="users-description">
+                    {{ users_total }}
+                    usuarios registrados en la plataforma.
+                </p>
+            </div>
+
+            <!-- MENSAJES -->
+            {% if messages %}
+            <div class="users-notices"
+                 role="status"
+                 aria-live="polite">
+
+                {% for message in messages %}
+                <div class="users-notice {% if 'error' in message.tags %}error{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- BUSCADOR Y FILTROS DEL INDEX -->
+            <section class="users-filter-panel"
+                     aria-label="Buscar y filtrar usuarios">
+
+                <div class="users-filter-content">
+
+                    <form method="get"
+                          id="users-search-form"
+                          action="{% url 'management:usuarios' %}"
+                          role="search">
+
+                        <input type="hidden"
+                               name="role"
+                               value="{{ selected_role }}">
+
+                        <input class="users-search"
+                               id="admin-user-search"
+                               name="q"
+                               type="search"
+                               value="{{ query }}"
+                               maxlength="80"
+                               placeholder="🔍 Buscar por nombre, correo o usuario…"
+                               aria-label="Buscar usuarios"
+                               autocomplete="off">
+                    </form>
+
+                    <nav class="users-chips"
+                         aria-label="Filtrar por rol">
+
+                        <a href="{% url 'management:usuarios' %}?q={{ query|urlencode }}&role="
+                           class="users-chip{% if not selected_role %} active{% endif %}"
+                           {% if not selected_role %}aria-current="true" {% endif %}>
+                            Todos
+                        </a>
+
+                        <a href="{% url 'management:usuarios' %}?q={{ query|urlencode }}&role=COMPRADOR"
+                           class="users-chip{% if selected_role == 'COMPRADOR' %} active{% endif %}"
+                           {% if selected_role == 'COMPRADOR' %}aria-current="true" {% endif %}>
+                            COMPRADOR
+                        </a>
+
+                        <a href="{% url 'management:usuarios' %}?q={{ query|urlencode }}&role=VENDEDOR"
+                           class="users-chip{% if selected_role == 'VENDEDOR' %} active{% endif %}"
+                           {% if selected_role == 'VENDEDOR' %}aria-current="true" {% endif %}>
+                            VENDEDOR
+                        </a>
+
+                        <a href="{% url 'management:usuarios' %}?q={{ query|urlencode }}&role=ADMINISTRADOR"
+                           class="users-chip{% if selected_role == 'ADMINISTRADOR' %} active{% endif %}"
+                           {% if selected_role == 'ADMINISTRADOR' %}aria-current="true" {% endif %}>
+                            ADMINISTRADOR
+                        </a>
+
+                    </nav>
+                </div>
+            </section>
+
+            <!-- TABLA DE SIETE COLUMNAS -->
+            <section class="users-table-wrap"
+                     aria-label="Usuarios de la plataforma">
+
+                <table class="users-table">
+
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Usuario</th>
+                            <th>Correo</th>
+                            <th>Rol</th>
+                            <th>Estado</th>
+                            <th>Registro</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for u in users %}
+                        <tr>
+
+                            <!-- ID -->
+                            <td>
+                                <code class="users-id">
+                                    {{ u.pk }}
+                                </code>
+                            </td>
+
+                            <!-- USUARIO -->
+                            <td>
+                                <div class="users-cell">
+
+                                    <div class="users-avatar"
+                                         aria-hidden="true">
+                                        {{ u.admin_initials }}
+                                    </div>
+
+                                    <div>
+                                        <strong>
+                                            {{ u.admin_display_name }}
+                                        </strong>
+
+                                        <small>
+                                            @{{ u.username }}
+                                        </small>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <!-- CORREO -->
+                            <td>
+                                {{ u.email|default:"—" }}
+                            </td>
+
+                            <!-- ROL -->
+                            <td>
+
+                                {% if u.admin_role == "ADMINISTRADOR" %}
+                                <span class="users-badge admin">
+                                    ADMINISTRADOR
+                                </span>
+
+                                {% elif u.admin_role == "VENDEDOR" %}
+                                <span class="users-badge seller">
+                                    VENDEDOR
+                                </span>
+
+                                {% else %}
+                                <span class="users-badge buyer">
+                                    COMPRADOR
+                                </span>
+                                {% endif %}
+
+                            </td>
+
+                            <!-- ESTADO -->
+                            <td>
+
+                                {% if u.admin_active %}
+                                <span class="users-badge enabled">
+                                    ACTIVO
+                                </span>
+
+                                {% else %}
+                                <span class="users-badge disabled">
+                                    INACTIVO
+                                </span>
+                                {% endif %}
+
+                            </td>
+
+                            <!-- FECHA -->
+                            <td>
+                                <span class="users-date">
+                                    {{ u.date_joined|date:"d/m/Y" }}
+                                </span>
+                            </td>
+
+                            <!-- ACCIONES -->
+                            <td>
+                                <div class="users-actions">
+
+                                    <button type="button"
+                                            class="users-button"
+                                            data-user-detail="user-detail-{{ u.pk }}">
+
+                                        👁 Ver
+                                    </button>
+
+                                    {% if u.admin_can_toggle %}
+
+                                    <button type="button"
+                                            class="users-button"
+                                            data-toggle-user
+                                            data-action-url="{% url 'management:usuario_estado' u.pk %}"
+                                            data-user-name="{{ u.admin_display_name }}"
+                                            data-new-state="{% if u.admin_active %}desactivar{% else %}activar{% endif %}">
+
+                                        {% if u.admin_active %}
+                                        ⏸ Desactivar
+                                        {% else %}
+                                        ▶ Activar
+                                        {% endif %}
+                                    </button>
+
+                                    {% else %}
+
+                                    <span class="users-protected">
+                                        {% if u.admin_role != 'ADMINISTRADOR' %}
+                                        Protegida
+                                        {% endif %}
+                                    </span>
+
+                                    {% endif %}
+
+                                </div>
+                            </td>
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+                            <td colspan="7"
+                                class="users-empty">
+                                Sin resultados
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+
+            {% if users_filtered_total > 150 %}
+            <p class="users-list-note">
+                Se muestran los primeros 150 usuarios
+                de {{ users_filtered_total }} coincidencias.
+            </p>
+            {% endif %}
+
+        </main>
+    </div>
+
+    <!-- ======================================
+         DATOS PARA EL MODAL DE CADA USUARIO
+         ====================================== -->
+    {% for u in users %}
+
+    <template id="user-detail-{{ u.pk }}">
+
+        <div class="users-detail-top">
+
+            <div class="users-avatar large"
+                 aria-hidden="true">
+                {{ u.admin_initials }}
+            </div>
+
+            <div>
+
+                <div class="users-detail-name">
+                    {{ u.admin_display_name }}
+                </div>
+
+                <div class="users-detail-email">
+                    @{{ u.username }}
+                    ·
+                    {{ u.email|default:"—" }}
+                </div>
+
+                <div class="users-detail-badges">
+
+                    {% if u.admin_role == "ADMINISTRADOR" %}
+                    <span class="users-badge admin">
+                        ADMINISTRADOR
+                    </span>
+
+                    {% elif u.admin_role == "VENDEDOR" %}
+                    <span class="users-badge seller">
+                        VENDEDOR
+                    </span>
+
+                    {% else %}
+                    <span class="users-badge buyer">
+                        COMPRADOR
+                    </span>
+                    {% endif %}
+
+                    {% if u.admin_active %}
+                    <span class="users-badge enabled">
+                        ACTIVO
+                    </span>
+                    {% else %}
+                    <span class="users-badge disabled">
+                        INACTIVO
+                    </span>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+
+        <div class="users-detail-specs">
+
+            <div class="users-detail-row">
+                <span class="users-detail-key">
+                    Teléfono
+                </span>
+
+                <span class="users-detail-value">
+                    {{ u.admin_phone|default:"—" }}
+                </span>
+            </div>
+
+            <div class="users-detail-row">
+                <span class="users-detail-key">
+                    Provincia
+                </span>
+
+                <span class="users-detail-value">
+                    {{ u.admin_province|default:"—" }}
+                </span>
+            </div>
+
+            <div class="users-detail-row">
+                <span class="users-detail-key">
+                    Registro
+                </span>
+
+                <span class="users-detail-value">
+                    {{ u.date_joined|date:"d/m/Y H:i" }}
+                </span>
+            </div>
+
+            <div class="users-detail-row">
+                <span class="users-detail-key">
+                    Órdenes como comprador
+                </span>
+
+                <span class="users-detail-value">
+                    {{ u.admin_orders_count }}
+                </span>
+            </div>
+
+            <div class="users-detail-row">
+                <span class="users-detail-key">
+                    Productos como vendedor
+                </span>
+
+                <span class="users-detail-value">
+                    {{ u.admin_products_count }}
+                </span>
+            </div>
+
+            {% if u.admin_business_name %}
+            <div class="users-detail-row">
+                <span class="users-detail-key">
+                    Negocio
+                </span>
+
+                <span class="users-detail-value">
+                    {{ u.admin_business_name }}
+                </span>
+            </div>
+            {% endif %}
+
+        </div>
+
+    </template>
+
+    {% endfor %}
+
+    <!-- MODAL INFORMACIÓN DEL USUARIO -->
+    <dialog class="users-dialog"
+            id="user-detail-dialog"
+            aria-labelledby="user-detail-title">
+
+        <div class="users-dialog-header">
+
+            <h2 id="user-detail-title">
+                Información del usuario
+            </h2>
+
+            <button type="button"
+                    class="users-dialog-close"
+                    id="user-detail-close"
+                    aria-label="Cerrar ventana">
+                ×
+            </button>
+        </div>
+
+        <div class="users-dialog-body">
+
+            <div id="user-detail-content"></div>
+
+            <div class="users-dialog-footer">
+                <button type="button"
+                        class="users-button"
+                        id="user-detail-dismiss">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </dialog>
+
+    <!-- MODAL CONFIRMAR CAMBIO DE ESTADO -->
+    <dialog class="users-dialog"
+            id="user-confirm-dialog"
+            aria-labelledby="user-confirm-title">
+
+        <div class="users-dialog-header">
+
+            <h2 id="user-confirm-title">
+                Cambiar estado del usuario
+            </h2>
+
+            <button type="button"
+                    class="users-dialog-close"
+                    id="user-confirm-close"
+                    aria-label="Cerrar confirmación">
+                ×
+            </button>
+        </div>
+
+        <div class="users-dialog-body">
+
+            <p class="users-confirm-description">
+                ¿Deseas cambiar el estado de esta cuenta?
+            </p>
+
+            <form method="post"
+                  id="user-confirm-form"
+                  action="">
+
+                {% csrf_token %}
+
+                <input type="hidden"
+                       name="q"
+                       value="{{ query }}">
+
+                <input type="hidden"
+                       name="role"
+                       value="{{ selected_role }}">
+
+                <div class="users-dialog-footer">
+
+                    <button type="button"
+                            class="users-button"
+                            id="user-confirm-cancel">
+                        Cancelar
+                    </button>
+
+                    <button type="submit"
+                            class="users-button primary">
+                        Confirmar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <script>(function () {
+            "use strict";
+
+            /* ============================
+               MENÚ LATERAL MÓVIL
+               ============================ */
+
+            const body = document.body;
+
+            const menuButton = document.getElementById(
+                "users-menu-toggle"
+            );
+
+            const backdrop = document.getElementById(
+                "users-backdrop"
+            );
+
+            function setMenuOpen(open) {
+                body.classList.toggle(
+                    "menu-open",
+                    open
+                );
+
+                backdrop.hidden = !open;
+
+                menuButton.setAttribute(
+                    "aria-expanded",
+                    String(open)
+                );
+
+                menuButton.setAttribute(
+                    "aria-label",
+                    open
+                        ? "Cerrar menú administrativo"
+                        : "Abrir menú administrativo"
+                );
+            }
+
+            menuButton.addEventListener(
+                "click",
+                function () {
+                    setMenuOpen(
+                        !body.classList.contains("menu-open")
+                    );
+                }
+            );
+
+            backdrop.addEventListener(
+                "click",
+                function () {
+                    setMenuOpen(false);
+                }
+            );
+
+            document.addEventListener(
+                "keydown",
+                function (event) {
+                    if (event.key === "Escape") {
+                        setMenuOpen(false);
+                    }
+                }
+            );
+
+            window.addEventListener(
+                "resize",
+                function () {
+                    if (window.innerWidth > 900) {
+                        setMenuOpen(false);
+                    }
+                }
+            );
+
+            /* ============================
+               BUSCADOR
+               ============================ */
+
+            const searchForm = document.getElementById(
+                "users-search-form"
+            );
+
+            const searchInput = document.getElementById(
+                "admin-user-search"
+            );
+
+            let searchTimer = null;
+
+            // Filtrar automáticamente como en el INDEX.
+            // Las búsquedas se realizan en Django para
+            // incluir también registros fuera de los
+            // primeros 150 mostrados.
+
+            searchInput.addEventListener(
+                "input",
+                function () {
+                    clearTimeout(searchTimer);
+
+                    searchTimer = setTimeout(
+                        function () {
+                            try {
+                                sessionStorage.setItem(
+                                    "admin-user-search-focus",
+                                    "1"
+                                );
+                            } catch (error) {
+                                // La búsqueda funciona también
+                                // sin almacenamiento del navegador.
+                            }
+
+                            searchForm.requestSubmit();
+                        },
+                        450
+                    );
+                }
+            );
+
+            // Recuperar el cursor tras la búsqueda GET.
+            try {
+                if (
+                    sessionStorage.getItem(
+                        "admin-user-search-focus"
+                    ) === "1"
+                ) {
+                    sessionStorage.removeItem(
+                        "admin-user-search-focus"
+                    );
+
+                    searchInput.focus();
+
+                    const length = searchInput.value.length;
+
+                    searchInput.setSelectionRange(
+                        length,
+                        length
+                    );
+                }
+            } catch (error) {
+                // No afecta el funcionamiento.
+            }
+
+            /* ============================
+               INFORMACIÓN DEL USUARIO
+               ============================ */
+
+            const detailDialog = document.getElementById(
+                "user-detail-dialog"
+            );
+
+            const detailContent = document.getElementById(
+                "user-detail-content"
+            );
+
+            const detailClose = document.getElementById(
+                "user-detail-close"
+            );
+
+            const detailDismiss = document.getElementById(
+                "user-detail-dismiss"
+            );
+
+            let previousDetailFocus = null;
+
+            document.querySelectorAll(
+                "[data-user-detail]"
+            ).forEach(function (button) {
+
+                button.addEventListener(
+                    "click",
+                    function () {
+                        const templateId = button.getAttribute(
+                            "data-user-detail"
+                        );
+
+                        const template = document.getElementById(
+                            templateId
+                        );
+
+                        if (!template) return;
+
+                        previousDetailFocus = button;
+
+                        detailContent.replaceChildren(
+                            template.content.cloneNode(true)
+                        );
+
+                        detailDialog.showModal();
+                    }
+                );
+            });
+
+            detailClose.addEventListener(
+                "click",
+                function () {
+                    detailDialog.close();
+                }
+            );
+
+            detailDismiss.addEventListener(
+                "click",
+                function () {
+                    detailDialog.close();
+                }
+            );
+
+            detailDialog.addEventListener(
+                "close",
+                function () {
+                    detailContent.replaceChildren();
+
+                    if (previousDetailFocus) {
+                        previousDetailFocus.focus();
+                        previousDetailFocus = null;
+                    }
+                }
+            );
+
+            /* ============================
+               ACTIVAR / DESACTIVAR
+               ============================ */
+
+            const confirmDialog = document.getElementById(
+                "user-confirm-dialog"
+            );
+
+            const confirmForm = document.getElementById(
+                "user-confirm-form"
+            );
+
+            const confirmClose = document.getElementById(
+                "user-confirm-close"
+            );
+
+            const confirmCancel = document.getElementById(
+                "user-confirm-cancel"
+            );
+
+            let previousConfirmFocus = null;
+
+            document.querySelectorAll(
+                "[data-toggle-user]"
+            ).forEach(function (button) {
+
+                button.addEventListener(
+                    "click",
+                    function () {
+                        previousConfirmFocus = button;
+
+                        // La ruta proviene de Django y está
+                        // vinculada al usuario de esta fila.
+                        confirmForm.action =
+                            button.dataset.actionUrl;
+
+                        confirmDialog.showModal();
+                    }
+                );
+            });
+
+            confirmClose.addEventListener(
+                "click",
+                function () {
+                    confirmDialog.close();
+                }
+            );
+
+            confirmCancel.addEventListener(
+                "click",
+                function () {
+                    confirmDialog.close();
+                }
+            );
+
+            confirmDialog.addEventListener(
+                "close",
+                function () {
+                    if (previousConfirmFocus) {
+                        previousConfirmFocus.focus();
+                        previousConfirmFocus = null;
+                    }
+                }
+            );
+
+            // No modificamos usuarios mediante JavaScript.
+            // Django recibe el POST, verifica el rol,
+            // actualiza la cuenta y devuelve el resultado.
+
+        })();</script>
+
+</body>
+</html>
+
+
+

@@ -1,0 +1,808 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="dark">
+
+    <title>Mi perfil | Marketplace Componentes</title>
+
+    <link rel="stylesheet"
+          href="{% static 'css/management.css' %}">
+    <link rel="stylesheet"
+          href="{% static 'css/perfil_admin.css' %}">
+
+    <style>
+        /* FASE 5 - SOLO PERFIL ADMINISTRADOR */
+
+        .admin-profile-page .admin-sidebar {
+            width: 252px;
+        }
+
+        .admin-profile-page .sidebar-link {
+            position: relative;
+        }
+
+            .admin-profile-page .sidebar-link.active {
+                color: #fff;
+                font-weight: 800;
+                background: linear-gradient( 90deg, rgba(37, 99, 255, .24), rgba(37, 99, 255, .05) );
+            }
+
+                .admin-profile-page .sidebar-link.active::before {
+                    content: "";
+                    position: absolute;
+                    left: 0;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    width: 3px;
+                    height: 20px;
+                    border-radius: 0 4px 4px 0;
+                    background: #22d3ee;
+                }
+
+            .admin-profile-page .sidebar-link:focus-visible,
+            .admin-profile-page .sidebar-button:focus-visible,
+            .admin-profile-page .profile-admin-menu-toggle:focus-visible {
+                outline: 2px solid #22d3ee;
+                outline-offset: 3px;
+            }
+
+        .admin-profile-page .sidebar-count {
+            margin-left: auto;
+            padding: 1px 7px;
+            border-radius: 20px;
+            color: white;
+            background: #ef4444;
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .admin-profile-page .admin-search {
+            position: relative;
+        }
+
+        .admin-profile-page .profile-search-button {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 0;
+            background: transparent;
+            cursor: pointer;
+            padding: 4px;
+            color: #8996b3;
+        }
+
+        .admin-profile-page .admin-search input {
+            padding-left: 42px;
+        }
+
+        .admin-profile-page .profile-admin-menu-toggle {
+            display: none;
+            flex: none;
+            width: 42px;
+            height: 42px;
+            place-items: center;
+            border: 1px solid #22304c;
+            border-radius: 11px;
+            background: #121a2b;
+            color: #e9eefb;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .admin-profile-page .profile-sidebar-backdrop[hidden] {
+            display: none !important;
+        }
+
+        .admin-profile-page .profile-mobile-back {
+            display: none !important;
+        }
+
+        .admin-profile-page .sidebar-footer form {
+            margin: 0;
+        }
+
+        .admin-profile-page .sidebar-footer button {
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        @media (min-width: 901px) {
+            .admin-profile-page .admin-sidebar {
+                position: sticky;
+                top: 66px;
+                align-self: flex-start;
+                height: calc(100vh - 66px);
+                overflow-y: auto;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .admin-profile-page .admin-navbar {
+                gap: 12px;
+                padding: 0 12px;
+            }
+
+            .admin-profile-page .profile-admin-menu-toggle {
+                display: grid;
+            }
+
+            .admin-profile-page .admin-nav-links,
+            .admin-profile-page .admin-search {
+                display: none;
+            }
+
+            .admin-profile-page .admin-user {
+                margin-left: auto;
+            }
+
+            .admin-profile-page .admin-sidebar {
+                display: block;
+                position: fixed;
+                left: 0;
+                top: 66px;
+                bottom: 0;
+                z-index: 150;
+                width: min(252px, 85vw);
+                height: calc(100vh - 66px);
+                min-height: 0;
+                overflow-y: auto;
+                transform: translateX(-110%);
+                visibility: hidden;
+                pointer-events: none;
+                transition: transform .28s ease, visibility .28s ease;
+                box-shadow: 12px 0 32px rgba(0,0,0,.4);
+            }
+
+            .admin-profile-page.admin-menu-open .admin-sidebar {
+                transform: translateX(0);
+                visibility: visible;
+                pointer-events: auto;
+            }
+
+            .admin-profile-page .profile-sidebar-backdrop:not([hidden]) {
+                display: block;
+                position: fixed;
+                inset: 66px 0 0;
+                z-index: 140;
+                background: rgba(0, 0, 0, .58);
+            }
+
+            .admin-profile-page.admin-menu-open {
+                overflow: hidden;
+            }
+
+            .admin-profile-page .admin-main {
+                width: 100%;
+                min-width: 0;
+                padding: 20px 16px 55px;
+            }
+
+            .admin-profile-page .sidebar-user {
+                display: flex;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .admin-profile-page .admin-logo-text {
+                display: none;
+            }
+
+            .admin-profile-page .admin-user-name {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body class="admin-profile-page">
+
+    <!-- BARRA SUPERIOR -->
+    <header class="admin-navbar">
+
+        <button type="button"
+                id="profile-admin-menu-toggle"
+                class="profile-admin-menu-toggle"
+                aria-label="Abrir menú administrativo"
+                aria-controls="profile-admin-sidebar"
+                aria-expanded="false">
+            ☰
+        </button>
+
+        <a class="admin-logo"
+           href="{% url 'catalog:inicio' %}">
+
+            <div class="admin-logo-icon">M</div>
+
+            <div class="admin-logo-text">
+                <strong>MARKETPLACE</strong>
+                <span>COMPONENTES</span>
+            </div>
+        </a>
+
+        <nav class="admin-nav-links"
+             aria-label="Navegación principal">
+
+            <a href="{% url 'catalog:inicio' %}"
+               class="admin-nav-link">
+                Inicio
+            </a>
+
+            <a href="{% url 'catalog:catalogo' %}"
+               class="admin-nav-link">
+                Catálogo
+            </a>
+
+            <a href="{% url 'management:dashboard' %}"
+               class="admin-nav-link active">
+                Administración
+            </a>
+        </nav>
+
+        <!-- BUSCADOR REAL DEL CATÁLOGO -->
+        <form method="get"
+              action="{% url 'catalog:catalogo' %}"
+              class="admin-search"
+              role="search">
+
+            <button type="submit"
+                    class="profile-search-button"
+                    aria-label="Buscar productos">
+                🔍
+            </button>
+
+            <input type="search"
+                   name="q"
+                   placeholder="Buscar componentes, marcas, modelos..."
+                   aria-label="Buscar componentes"
+                   autocomplete="off">
+        </form>
+
+        <a class="admin-user profile-user-link"
+           href="{% url 'management:perfil' %}"
+           aria-label="Mi perfil administrativo">
+
+            <span class="admin-avatar">
+                {{ admin_iniciales }}
+            </span>
+
+            <span class="admin-user-name">
+                {{ request.user.first_name|default:request.user.username }}
+            </span>
+
+            <span aria-hidden="true">⌄</span>
+        </a>
+    </header>
+
+    <!-- FONDO DEL MENÚ MÓVIL -->
+    <div id="profile-sidebar-backdrop"
+         class="profile-sidebar-backdrop"
+         hidden></div>
+
+    <div class="admin-layout">
+
+        <!-- PANEL LATERAL ADMINISTRADOR -->
+        <aside id="profile-admin-sidebar"
+               class="admin-sidebar"
+               aria-label="Menú administrativo">
+
+            <div class="sidebar-user">
+
+                <span class="admin-avatar">
+                    {{ admin_iniciales }}
+                </span>
+
+                <div>
+                    <div class="sidebar-user-name">
+                        {{ admin_nombre }}
+                    </div>
+
+                    <div class="sidebar-user-role">
+                        ADMINISTRADOR
+                    </div>
+                </div>
+            </div>
+
+            <nav aria-label="Secciones administrativas">
+
+                <div class="sidebar-title">
+                    ADMINISTRACIÓN
+                </div>
+
+                <a href="{% url 'management:dashboard' %}"
+                   class="sidebar-link{% if request.resolver_match.view_name == 'management:dashboard' %} active{% endif %}">
+                    📊 Dashboard
+                </a>
+
+                <a href="{% url 'management:usuarios' %}"
+                   class="sidebar-link{% if request.resolver_match.view_name == 'management:usuarios' %} active{% endif %}">
+                    👥 Usuarios
+                </a>
+
+                <a href="{% url 'management:solicitudes' %}"
+                   class="sidebar-link{% if request.resolver_match.view_name == 'management:solicitudes' %} active{% endif %}">
+                    📨 Solicitudes
+                    {% if pending_requests %}
+                    <span class="sidebar-count">
+                        {{ pending_requests }}
+                    </span>
+                    {% endif %}
+                </a>
+
+                <a href="{% url 'management:productos' %}?status=PENDIENTE"
+                   class="sidebar-link{% if request.resolver_match.view_name == 'management:productos' and request.GET.status == 'PENDIENTE' %} active{% endif %}">
+                    ⏳ Productos pendientes
+                    {% if pending_products %}
+                    <span class="sidebar-count">
+                        {{ pending_products }}
+                    </span>
+                    {% endif %}
+                </a>
+
+                <a href="{% url 'management:productos' %}"
+                   class="sidebar-link{% if request.resolver_match.view_name == 'management:productos' and request.GET.status != 'PENDIENTE' %} active{% endif %}">
+                    📦 Productos
+                </a>
+
+                <a href="{% url 'management:categorias' %}"
+                   class="sidebar-link{% if request.resolver_match.view_name == 'management:categorias' or request.resolver_match.view_name == 'management:categoria_nueva' or request.resolver_match.view_name == 'management:categoria_editar' %} active{% endif %}">
+                    🗂️ Categorías
+                </a>
+
+                <a href="{% url 'management:pedidos' %}"
+                   class="sidebar-link{% if request.resolver_match.view_name == 'management:pedidos' %} active{% endif %}">
+                    🧾 Órdenes
+                </a>
+
+                <div class="sidebar-title">
+                    CUENTA
+                </div>
+
+                <a href="{% url 'management:perfil' %}"
+                   class="sidebar-link active"
+                   aria-current="page">
+                    👤 Perfil
+                </a>
+
+            </nav>
+
+            <div class="sidebar-footer">
+
+                <a href="{% url 'catalog:inicio' %}"
+                   class="sidebar-button">
+                    🏠 Ir al marketplace
+                </a>
+
+                <form method="post"
+                      action="{% url 'accounts:logout' %}">
+
+                    {% csrf_token %}
+
+                    <button type="submit"
+                            class="sidebar-button profile-logout">
+                        ⏻ Cerrar sesión
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- CONTENIDO DEL PERFIL -->
+        <main class="admin-main profile-main">
+
+
+            <!-- ENCABEZADO FIEL AL INDEX ORIGINAL -->
+            <div class="page-head" style="margin-bottom:24px;">
+
+                <div class="breadcrumb">
+                    <a href="{% url 'catalog:inicio' %}">
+                        Inicio
+                    </a>
+                    &nbsp; / &nbsp; Mi perfil
+                </div>
+
+                <h1 class="page-title">
+                    Mi <span>perfil</span>
+                </h1>
+
+            </div>
+
+
+            <!-- MENSAJES DJANGO -->
+            {% if messages %}
+            <div class="profile-notices"
+                 role="status"
+                 aria-live="polite">
+
+                {% for message in messages %}
+                <div class="profile-notice {% if 'error' in message.tags %}is-error{% else %}is-success{% endif %}">
+
+                    {% if 'error' in message.tags %}
+                    ⚠️
+                    {% else %}
+                    ✓
+                    {% endif %}
+
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- RESUMEN DE LA CUENTA -->
+            <section class="panel profile-summary"
+                     aria-label="Datos de la cuenta">
+
+                <div class="profile-avatar-large"
+                     aria-hidden="true">
+                    {{ admin_iniciales }}
+                </div>
+
+                <div class="profile-summary-info">
+
+                    <h2>{{ admin_nombre }}</h2>
+
+                    <p>
+                        {{ request.user.email|default:"Sin correo registrado" }}
+                        &nbsp;·&nbsp;
+                        @{{ request.user.username }}
+                    </p>
+
+                    <div class="profile-tags">
+
+                        <span class="profile-tag tag-role">
+                            Administrador
+                        </span>
+
+                        {% if cuenta_activa %}
+                        <span class="profile-tag tag-active">
+                            Activo
+                        </span>
+                        {% else %}
+                        <span class="profile-tag tag-inactive">
+                            Inactivo
+                        </span>
+                        {% endif %}
+
+                        <span class="profile-tag tag-date">
+                            Miembro desde
+                            {{ request.user.date_joined|date:"d M, Y" }}
+                        </span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- EDITAR DATOS PERSONALES -->
+            <section class="panel profile-edit"
+                     aria-labelledby="profile-edit-title">
+
+                <h2 id="profile-edit-title"
+                    class="profile-card-title">
+                    ✏️ Editar información personal
+                </h2>
+
+                <form method="post"
+                      action="{% url 'management:perfil' %}"
+                      novalidate>
+
+                    {% csrf_token %}
+
+                    <input type="hidden"
+                           name="action"
+                           value="guardar_perfil">
+
+                    {% if perfil_form.non_field_errors %}
+                    <div class="profile-form-error">
+                        {{ perfil_form.non_field_errors }}
+                    </div>
+                    {% endif %}
+
+                    <div class="profile-fields-2">
+
+                        <div class="profile-field">
+                            <label for="{{ perfil_form.first_name.id_for_label }}">
+                                Nombre
+                            </label>
+
+                            {{ perfil_form.first_name }}
+
+                            {% for error in perfil_form.first_name.errors %}
+                            <small class="profile-error">
+                                {{ error }}
+                            </small>
+                            {% endfor %}
+                        </div>
+
+                        <div class="profile-field">
+                            <label for="{{ perfil_form.last_name.id_for_label }}">
+                                Apellido
+                            </label>
+
+                            {{ perfil_form.last_name }}
+
+                            {% for error in perfil_form.last_name.errors %}
+                            <small class="profile-error">
+                                {{ error }}
+                            </small>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="profile-field">
+                        <label for="{{ perfil_form.email.id_for_label }}">
+                            Correo electrónico
+                        </label>
+
+                        {{ perfil_form.email }}
+
+                        {% for error in perfil_form.email.errors %}
+                        <small class="profile-error">
+                            {{ error }}
+                        </small>
+                        {% endfor %}
+                    </div>
+
+                    <div class="profile-fields-2">
+
+                        <div class="profile-field">
+                            <label for="{{ perfil_form.phone.id_for_label }}">
+                                Teléfono
+                            </label>
+
+                            {{ perfil_form.phone }}
+
+                            {% for error in perfil_form.phone.errors %}
+                            <small class="profile-error">
+                                {{ error }}
+                            </small>
+                            {% endfor %}
+                        </div>
+
+                        <div class="profile-field">
+                            <label for="{{ perfil_form.province.id_for_label }}">
+                                Provincia
+                            </label>
+
+                            {{ perfil_form.province }}
+
+                            {% for error in perfil_form.province.errors %}
+                            <small class="profile-error">
+                                {{ error }}
+                            </small>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <button class="profile-primary"
+                            type="submit">
+                        💾 Guardar cambios
+                    </button>
+                </form>
+            </section>
+
+            <!-- SEGURIDAD DE LA CUENTA -->
+            <section class="panel profile-security"
+                     aria-labelledby="profile-security-title">
+
+                <div class="profile-security-head">
+                    <div>
+                        <h2 id="profile-security-title"
+                            class="profile-card-title">
+                            🔐 Seguridad de la cuenta
+                        </h2>
+
+                        <p>
+                            Actualiza tu contraseña de acceso.
+                            Tu rol y nombre de usuario no se
+                            modifican desde esta sección.
+                        </p>
+                    </div>
+                </div>
+
+                <form method="post"
+                      action="{% url 'management:perfil' %}"
+                      novalidate>
+
+                    {% csrf_token %}
+
+                    <input type="hidden"
+                           name="action"
+                           value="cambiar_password">
+
+                    {% if password_form.non_field_errors %}
+                    <div class="profile-form-error">
+                        {{ password_form.non_field_errors }}
+                    </div>
+                    {% endif %}
+
+                    <div class="profile-field">
+
+                        <label for="{{ password_form.old_password.id_for_label }}">
+                            Contraseña actual
+                        </label>
+
+                        <div class="profile-password-wrap">
+
+                            {{ password_form.old_password }}
+
+                            <button type="button"
+                                    class="profile-toggle-password"
+                                    data-toggle-password="{{ password_form.old_password.id_for_label }}"
+                                    aria-label="Mostrar u ocultar contraseña actual"
+                                    aria-pressed="false">
+                                👁
+                            </button>
+                        </div>
+
+                        {% for error in password_form.old_password.errors %}
+                        <small class="profile-error">
+                            {{ error }}
+                        </small>
+                        {% endfor %}
+                    </div>
+
+                    <div class="profile-fields-2">
+
+                        <div class="profile-field">
+
+                            <label for="{{ password_form.new_password1.id_for_label }}">
+                                Nueva contraseña
+                            </label>
+
+                            <div class="profile-password-wrap">
+
+                                {{ password_form.new_password1 }}
+
+                                <button type="button"
+                                        class="profile-toggle-password"
+                                        data-toggle-password="{{ password_form.new_password1.id_for_label }}"
+                                        aria-label="Mostrar u ocultar nueva contraseña"
+                                        aria-pressed="false">
+                                    👁
+                                </button>
+                            </div>
+
+                            {% for error in password_form.new_password1.errors %}
+                            <small class="profile-error">
+                                {{ error }}
+                            </small>
+                            {% endfor %}
+                        </div>
+
+                        <div class="profile-field">
+
+                            <label for="{{ password_form.new_password2.id_for_label }}">
+                                Confirmar nueva contraseña
+                            </label>
+
+                            <div class="profile-password-wrap">
+
+                                {{ password_form.new_password2 }}
+
+                                <button type="button"
+                                        class="profile-toggle-password"
+                                        data-toggle-password="{{ password_form.new_password2.id_for_label }}"
+                                        aria-label="Mostrar u ocultar confirmación"
+                                        aria-pressed="false">
+                                    👁
+                                </button>
+                            </div>
+
+                            {% for error in password_form.new_password2.errors %}
+                            <small class="profile-error">
+                                {{ error }}
+                            </small>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    {% if password_form.new_password1.help_text %}
+                    <div class="profile-password-hints">
+                        {{ password_form.new_password1.help_text|safe }}
+                    </div>
+                    {% endif %}
+
+                    <button class="profile-primary"
+                            type="submit">
+                        🔒 Actualizar contraseña
+                    </button>
+                </form>
+            </section>
+
+            <p class="profile-footer-note">
+                Esta información se guarda en tu cuenta
+                de Marketplace Componentes.
+            </p>
+
+        </main>
+    </div>
+
+    <!-- INTERACCIONES DEL PERFIL -->
+    <script>
+        (function () {
+            "use strict";
+
+            // Mostrar y ocultar contraseñas
+            document.querySelectorAll(
+                "[data-toggle-password]"
+            ).forEach(function (button) {
+
+                button.addEventListener("click", function () {
+                    const fieldId = button.getAttribute(
+                        "data-toggle-password"
+                    );
+                    const input = document.getElementById(fieldId);
+
+                    if (!input) return;
+
+                    const show = input.type === "password";
+                    input.type = show ? "text" : "password";
+
+                    button.setAttribute(
+                        "aria-pressed",
+                        String(show)
+                    );
+                });
+            });
+
+            // Menú administrativo para móviles
+            const menuButton = document.getElementById(
+                "profile-admin-menu-toggle"
+            );
+            const backdrop = document.getElementById(
+                "profile-sidebar-backdrop"
+            );
+            const body = document.body;
+
+            if (menuButton && backdrop) {
+
+                function setMenuOpen(open) {
+                    body.classList.toggle("admin-menu-open", open);
+                    backdrop.hidden = !open;
+
+                    menuButton.setAttribute(
+                        "aria-expanded",
+                        String(open)
+                    );
+                    menuButton.setAttribute(
+                        "aria-label",
+                        open
+                            ? "Cerrar menú administrativo"
+                            : "Abrir menú administrativo"
+                    );
+                }
+
+                menuButton.addEventListener("click", function () {
+                    const open = !body.classList.contains(
+                        "admin-menu-open"
+                    );
+                    setMenuOpen(open);
+                });
+
+                backdrop.addEventListener("click", function () {
+                    setMenuOpen(false);
+                });
+
+                document.addEventListener("keydown", function (event) {
+                    if (event.key === "Escape" &&
+                        body.classList.contains("admin-menu-open")) {
+                        setMenuOpen(false);
+                        menuButton.focus();
+                    }
+                });
+
+                window.addEventListener("resize", function () {
+                    if (window.innerWidth > 900 &&
+                        body.classList.contains("admin-menu-open")) {
+                        setMenuOpen(false);
+                    }
+                });
+            }
+        })();
+    </script>
+
+</body>
+</html>

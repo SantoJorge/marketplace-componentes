@@ -1,0 +1,330 @@
+{% extends 'base.html' %}
+
+{% block title %}Solicitud de vendedor | Marketplace Componentes{% endblock %}
+
+{% block content %}
+
+<style id="mc-seller-dialog-css">
+    .mc-seller-dialog {
+        position: fixed;
+        inset: 0;
+        margin: auto;
+        width: min(560px, calc(100vw - 24px));
+        max-width: 560px;
+        max-height: calc(100dvh - 28px);
+        overflow-y: auto;
+        padding: 0;
+        background: #121a2b;
+        color: #e9eefb;
+        border: 1px solid #293b5c;
+        border-radius: 16px;
+        box-shadow: 0 24px 75px #000a;
+        font-family: 'Segoe UI', Arial, sans-serif;
+        z-index: 10000;
+    }
+
+        .mc-seller-dialog::backdrop {
+            background: rgba(2, 6, 16, .78);
+            backdrop-filter: blur(5px);
+        }
+
+        .mc-seller-dialog .mc-seller-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            padding: 19px 22px;
+            border-bottom: 1px solid #293b5c;
+        }
+
+        .mc-seller-dialog h2 {
+            font-size: 18px;
+            font-weight: 850;
+            margin: 0;
+            line-height: 1.35;
+        }
+
+        .mc-seller-dialog .mc-seller-close {
+            flex: none;
+            width: 32px;
+            height: 32px;
+            border: 0;
+            border-radius: 8px;
+            background: #202c42;
+            color: #ffffff;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .mc-seller-dialog .mc-seller-body {
+            padding: 22px;
+        }
+
+        .mc-seller-dialog .mc-seller-description {
+            margin: 0 0 20px;
+            font-size: 13px;
+            line-height: 1.75;
+            color: #aebcd7;
+        }
+
+        .mc-seller-dialog .mc-field {
+            margin-bottom: 17px;
+        }
+
+            .mc-seller-dialog .mc-field label {
+                display: block;
+                margin-bottom: 7px;
+                color: #c5d1e9;
+                font-size: 12px;
+                font-weight: 750;
+                text-transform: none;
+                letter-spacing: 0;
+            }
+
+        .mc-seller-dialog .mc-input {
+            display: block;
+            width: 100%;
+            min-height: 43px;
+            padding: 11px 13px;
+            border: 1px solid #30415e;
+            border-radius: 9px;
+            background: #0c1424;
+            color: #ffffff;
+            outline: none;
+            font: inherit;
+            box-sizing: border-box;
+        }
+
+        .mc-seller-dialog textarea.mc-input {
+            min-height: 105px;
+            resize: vertical;
+        }
+
+        .mc-seller-dialog .mc-input:focus {
+            border-color: #3479ff;
+            box-shadow: 0 0 0 3px #2863ee22;
+        }
+
+        .mc-seller-dialog .mc-seller-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .mc-seller-dialog .mc-seller-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding-top: 17px;
+            border-top: 1px solid #293b5c;
+        }
+
+        .mc-seller-dialog .mc-seller-btn {
+            padding: 11px 15px;
+            border-radius: 9px;
+            border: 1px solid #30415e;
+            background: #1b2740;
+            color: white;
+            font-weight: 800;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+            .mc-seller-dialog .mc-seller-btn.primary {
+                background: #2563eb;
+                border-color: #2563eb;
+            }
+
+            .mc-seller-dialog .mc-seller-btn:disabled {
+                opacity: .55;
+                cursor: wait;
+            }
+
+        .mc-seller-dialog .mc-seller-error {
+            color: #fca5a5;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .mc-seller-dialog .mc-seller-status {
+            padding: 16px;
+            background: #16243a;
+            border: 1px solid #344b83;
+            border-radius: 12px;
+            line-height: 1.7;
+        }
+
+    @media (max-width: 580px) {
+        .mc-seller-dialog .mc-seller-row {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+
+        .mc-seller-dialog .mc-seller-head,
+        .mc-seller-dialog .mc-seller-body {
+            padding: 16px;
+        }
+
+        .mc-seller-dialog .mc-seller-footer {
+            flex-wrap: wrap;
+        }
+    }
+</style>
+
+
+<dialog id="mc-seller-dialog"
+        class="mc-seller-dialog"
+        open
+        aria-labelledby="mc-seller-title"
+        data-cancel-url="{% url 'catalog:inicio' %}">
+
+
+    <div class="mc-seller-head">
+        <h2 id="mc-seller-title">
+            Solicitud para convertirse en vendedor
+        </h2>
+
+        <button type="button"
+                class="mc-seller-close"
+                data-mc-seller-close
+                aria-label="Cerrar ventana">
+            ×
+        </button>
+    </div>
+
+    <div class="mc-seller-body">
+
+        {% if existing and existing.status == 'PENDIENTE' %}
+
+        <div class="mc-seller-status">
+            <strong>⏳ Solicitud en revisión</strong>
+            <p>
+                Tu solicitud fue recibida correctamente.
+                La administración está revisando
+                la información de tu negocio.
+            </p>
+            <p>
+                Nombre comercial:
+                <strong>{{ existing.business_name|default:"No indicado" }}</strong>
+            </p>
+        </div>
+
+        {% elif existing and existing.status == 'APROBADA' %}
+
+        <div class="mc-seller-status">
+            <strong>✅ Solicitud aprobada</strong>
+            <p>
+                Tu solicitud ha sido aprobada.
+                La habilitación de vendedor corresponde
+                al proceso administrativo.
+            </p>
+        </div>
+
+        {% else %}
+
+        <p class="mc-seller-description">
+            Completa la siguiente información.
+            Un administrador revisará tu solicitud y,
+            si es aprobada, tu cuenta podrá pasar
+            al rol <strong>VENDEDOR</strong>.
+        </p>
+
+        {% if existing and existing.status == 'RECHAZADA' %}
+        <div class="mc-seller-status" style="margin-bottom:18px">
+            <strong>Solicitud anterior rechazada</strong>
+            <p>Puedes corregir la información y volver a solicitar.</p>
+            {% if existing.review_note %}
+            <p>{{ existing.review_note }}</p>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <form method="post"
+              action="{% url 'accounts:ser_vendedor' %}"
+              data-mc-seller-form>
+
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+            <div class="mc-seller-error">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+
+            <div class="mc-field">
+                <label for="{{ form.business_name.id_for_label }}">
+                    Nombre comercial (opcional)
+                </label>
+                {{ form.business_name }}
+                {% for error in form.business_name.errors %}
+                <p class="mc-seller-error">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <div class="mc-field">
+                <label for="{{ form.business_description.id_for_label }}">
+                    Descripción de tu actividad *
+                </label>
+                {{ form.business_description }}
+                {% for error in form.business_description.errors %}
+                <p class="mc-seller-error">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <div class="mc-seller-row">
+                <div class="mc-field">
+                    <label for="{{ form.business_phone.id_for_label }}">
+                        Teléfono de contacto *
+                    </label>
+                    {{ form.business_phone }}
+                    {% for error in form.business_phone.errors %}
+                    <p class="mc-seller-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <div class="mc-field">
+                    <label for="{{ form.location.id_for_label }}">
+                        Ubicación *
+                    </label>
+                    {{ form.location }}
+                    {% for error in form.location.errors %}
+                    <p class="mc-seller-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div id="mc-seller-network-error"
+                 class="mc-seller-error"
+                 role="alert"></div>
+
+            <div class="mc-seller-footer">
+                <button type="button"
+                        class="mc-seller-btn"
+                        data-mc-seller-close>
+                    Cancelar
+                </button>
+
+                <button type="submit"
+                        class="mc-seller-btn primary">
+                    📨 Enviar solicitud
+                </button>
+            </div>
+
+        </form>
+
+        {% endif %}
+
+        {% if existing and existing.status == 'PENDIENTE' or existing and existing.status == 'APROBADA' %}
+        <div class="mc-seller-footer">
+            <button type="button"
+                    class="mc-seller-btn"
+                    data-mc-seller-close>
+                Cerrar
+            </button>
+        </div>
+        {% endif %}
+
+    </div>
+</dialog>
+
+{% endblock %}

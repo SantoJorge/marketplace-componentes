@@ -1,0 +1,764 @@
+{# MarketplaceComponentes - Panel lateral unificado - Fase 4.1 #}
+
+<aside class="mc-sidebar{% if current_role == 'COMPRADOR' %} mc-buyer-sidebar{% elif current_role == 'VENDEDOR' %} mc-seller-sidebar{% endif %}">
+
+    {% if current_role == 'ADMINISTRADOR' %}
+
+    <div class="mc-side-person">
+        <span class="mc-avatar big">
+            {{ user.username|slice:':2'|upper }}
+        </span>
+        <span>
+            <strong>{{ user.get_full_name|default:user.username }}</strong>
+            <small>ADMINISTRADOR</small>
+        </span>
+    </div>
+
+    <p class="mc-navcap">ADMINISTRACIÓN</p>
+
+    <a href="{% url 'management:dashboard' %}">
+        📊 <span>Dashboard</span>
+    </a>
+
+    <a href="{% url 'management:usuarios' %}">
+        👥 <span>Usuarios</span>
+    </a>
+
+    <a href="{% url 'management:solicitudes' %}">
+        📨 <span>Solicitudes</span>
+        {% if pending_requests %}
+        <b>{{ pending_requests }}</b>
+        {% endif %}
+    </a>
+
+    <a href="{% url 'management:productos' %}?status=PENDIENTE">
+        ⏳ <span>Productos pendientes</span>
+        {% if pending_products %}
+        <b>{{ pending_products }}</b>
+        {% endif %}
+    </a>
+
+    <a href="{% url 'management:productos' %}">
+        📦 <span>Productos</span>
+    </a>
+
+    <a href="{% url 'management:categorias' %}">
+        🗂️ <span>Categorías</span>
+    </a>
+
+    <a href="{% url 'management:pedidos' %}">
+        🧾 <span>Pedidos</span>
+    </a>
+
+    <p class="mc-navcap">CUENTA</p>
+
+    <a href="{% url 'management:perfil' %}">
+        👤 <span>Mi perfil</span>
+    </a>
+
+    <div class="mc-side-bottom">
+
+        <a href="{% url 'catalog:inicio' %}">
+            🏠 <span>Ir al marketplace</span>
+        </a>
+
+        <form method="post"
+              action="{% url 'accounts:logout' %}"
+              class="mc-logout-form">
+
+            {% csrf_token %}
+
+            <button type="submit">
+                ⏻ Cerrar sesión
+            </button>
+        </form>
+
+    </div>
+
+    {% elif current_role == 'VENDEDOR' %}
+
+    <!-- MENÚ MÓVIL DEL VENDEDOR -->
+
+    <button type="button"
+            id="mc-seller-menu-toggle"
+            class="mc-seller-menu-toggle"
+            aria-expanded="false"
+            aria-controls="mc-seller-menu">
+        ☰ Menú del vendedor
+    </button>
+
+    <div id="mc-seller-menu" class="mc-seller-menu">
+
+        <!-- IDENTIDAD DEL VENDEDOR -->
+
+        <div class="mc-side-person">
+
+            <span class="mc-avatar big">
+                {% if user.first_name or user.last_name %}
+                {{ user.first_name|slice:':1'|upper }}{{ user.last_name|slice:':1'|upper }}
+                {% else %}
+                {{ user.username|slice:':2'|upper }}
+                {% endif %}
+            </span>
+
+            <span>
+                <strong>{{ user.get_full_name|default:user.username }}</strong>
+                <small>VENDEDOR</small>
+            </span>
+
+        </div>
+
+        <!-- NAVEGACIÓN DEL VENDEDOR -->
+
+        <nav class="mc-seller-nav"
+             aria-label="Navegación del vendedor">
+
+            <p class="mc-navcap">VENDEDOR</p>
+
+            <!-- DASHBOARD -->
+
+            <a href="{% url 'catalog:vendedor_dashboard' %}"
+               class="{% if request.resolver_match.view_name == 'catalog:vendedor_dashboard' %}active{% endif %}"
+               {% if request.resolver_match.view_name == 'catalog:vendedor_dashboard' %}
+               aria-current="page"
+               {% endif %}>
+
+                <span class="mc-seller-icon">📊</span>
+                <span>Dashboard</span>
+
+            </a>
+
+            <!-- MIS PRODUCTOS -->
+
+            <a href="{% url 'catalog:vendedor_productos' %}"
+               class="{% if request.resolver_match.view_name == 'catalog:vendedor_productos' and request.GET.vista != 'inventario' or request.resolver_match.view_name == 'catalog:vendedor_producto_editar' %}active{% endif %}">
+
+                <span class="mc-seller-icon">📦</span>
+                <span>Mis productos</span>
+
+            </a>
+
+            <!-- PUBLICAR PRODUCTO -->
+
+            <a href="{% url 'catalog:vendedor_producto_nuevo' %}"
+               class="{% if request.resolver_match.view_name == 'catalog:vendedor_producto_nuevo' %}active{% endif %}">
+
+                <span class="mc-seller-icon">➕</span>
+                <span>Publicar producto</span>
+
+            </a>
+
+            <!-- VENTAS -->
+
+            <a href="{% url 'orders:vendedor_ventas' %}"
+               class="{% if request.resolver_match.view_name == 'orders:vendedor_ventas' %}active{% endif %}">
+
+                <span class="mc-seller-icon">🧾</span>
+                <span>Ventas</span>
+
+            </a>
+
+            <!-- INVENTARIO: ENLACE PROVISIONAL -->
+
+            <a href="{% url 'catalog:vendedor_productos' %}?vista=inventario"
+               class="{% if request.resolver_match.view_name == 'catalog:vendedor_productos' and request.GET.vista == 'inventario' %}active{% endif %}">
+
+                <span class="mc-seller-icon">📋</span>
+                <span>Inventario</span>
+
+            </a>
+
+            <!-- MI NEGOCIO -->
+
+            <a href="{% url 'accounts:negocio' %}"
+               class="{% if request.resolver_match.view_name == 'accounts:negocio' %}active{% endif %}">
+
+                <span class="mc-seller-icon">🏪</span>
+                <span>Mi negocio</span>
+
+            </a>
+
+            <p class="mc-navcap">CUENTA</p>
+
+            <!-- PERFIL -->
+
+            <a href="{% url 'accounts:perfil' %}"
+               class="{% if request.resolver_match.view_name == 'accounts:perfil' %}active{% endif %}">
+
+                <span class="mc-seller-icon">👤</span>
+                <span>Perfil</span>
+
+            </a>
+
+            <!-- MIS COMPRAS -->
+
+            <a href="{% url 'orders:mis_pedidos' %}"
+               class="{% if request.resolver_match.view_name == 'orders:mis_pedidos' or request.resolver_match.view_name == 'orders:pedido_detalle' %}active{% endif %}">
+
+                <span class="mc-seller-icon">🛍️</span>
+                <span>Mis compras</span>
+
+            </a>
+
+        </nav>
+
+        <!-- PIE DEL VENDEDOR -->
+
+        <div class="mc-side-bottom mc-seller-bottom">
+
+            <a href="{% url 'catalog:inicio' %}">
+                🏠 <span>Ir al marketplace</span>
+            </a>
+
+            <form method="post"
+                  action="{% url 'accounts:logout' %}"
+                  class="mc-logout-form">
+
+                {% csrf_token %}
+
+                <button type="submit">
+                    ⏻ Cerrar sesión
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    {% elif current_role == 'COMPRADOR' %}
+
+    <!-- MENÚ MÓVIL DEL COMPRADOR -->
+
+    <button type="button"
+            id="mc-buyer-menu-toggle"
+            class="mc-buyer-menu-toggle"
+            aria-expanded="false"
+            aria-controls="mc-buyer-menu">
+        ☰ Menú de mi cuenta
+    </button>
+
+    <div id="mc-buyer-menu" class="mc-buyer-menu">
+
+        <!-- IDENTIDAD DEL COMPRADOR -->
+
+        <div class="mc-side-person">
+
+            <span class="mc-avatar big">
+                {% if user.first_name or user.last_name %}
+                {{ user.first_name|slice:':1'|upper }}{{ user.last_name|slice:':1'|upper }}
+                {% else %}
+                {{ user.username|slice:':2'|upper }}
+                {% endif %}
+            </span>
+
+            <span>
+                <strong>{{ user.get_full_name|default:user.username }}</strong>
+                <small>COMPRADOR</small>
+            </span>
+
+        </div>
+
+        <p class="mc-navcap">MI CUENTA</p>
+
+        <!-- MI PERFIL -->
+
+        <a href="{% url 'accounts:perfil' %}"
+           class="{% if request.resolver_match.view_name == 'accounts:perfil' %}active{% endif %}"
+           {% if request.resolver_match.view_name == 'accounts:perfil' %}
+           aria-current="page"
+           {% endif %}>
+
+            👤 <span>Mi perfil</span>
+
+        </a>
+
+        <!-- MIS COMPRAS -->
+
+        <a href="{% url 'orders:mis_pedidos' %}"
+           class="{% if request.resolver_match.view_name == 'orders:mis_pedidos' or request.resolver_match.view_name == 'orders:pedido_detalle' %}active{% endif %}"
+           {% if request.resolver_match.view_name == 'orders:mis_pedidos' or request.resolver_match.view_name == 'orders:pedido_detalle' %}
+           aria-current="page"
+           {% endif %}>
+
+            🧾 <span>Mis compras</span>
+
+            <b class="mc-buyer-count">
+                {{ buyer_orders_count|default:0 }}
+            </b>
+
+        </a>
+
+        <!-- CARRITO -->
+
+        <a href="{% url 'orders:cart_detail' %}">
+            🛒 <span>Carrito</span>
+        </a>
+
+        <p class="mc-navcap">VENDER</p>
+
+        <!-- QUIERO VENDER -->
+
+        <a href="{% url 'accounts:ser_vendedor' %}">
+            🏪 <span>Quiero vender</span>
+        </a>
+
+        <!-- PIE DEL COMPRADOR -->
+
+        <div class="mc-side-bottom">
+
+            <a href="{% url 'catalog:inicio' %}">
+                🏠 <span>Ir al marketplace</span>
+            </a>
+
+            <form method="post"
+                  action="{% url 'accounts:logout' %}"
+                  class="mc-logout-form">
+
+                {% csrf_token %}
+
+                <button type="submit">
+                    ⏻ Cerrar sesión
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+</aside>
+
+
+<!-- ==========================================
+     ESTILOS EXCLUSIVOS DEL VENDEDOR
+     ========================================== -->
+{% if current_role == 'VENDEDOR' %}
+
+<style>
+
+    .mc-seller-sidebar .mc-seller-menu-toggle {
+        display: none;
+    }
+
+    .mc-seller-sidebar .mc-seller-menu {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        width: 100%;
+        min-height: 0;
+    }
+
+    /* IDENTIDAD */
+
+    .mc-seller-sidebar .mc-side-person {
+        margin-bottom: 12px;
+        border: 1px solid #26487c;
+        border-radius: 13px;
+        background: linear-gradient(135deg, #162747, #102236);
+    }
+
+        .mc-seller-sidebar .mc-side-person strong {
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .mc-seller-sidebar .mc-side-person small {
+            color: #22d3ee;
+            font-size: 10px;
+            font-weight: 900;
+        }
+
+    /* TÍTULOS */
+
+    .mc-seller-sidebar .mc-navcap {
+        margin: 20px 12px 9px;
+        color: #8391af;
+        font-size: 10px;
+        font-weight: 900;
+        letter-spacing: 1.8px;
+    }
+
+    /* ENLACES */
+
+    .mc-seller-sidebar .mc-seller-nav a {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        width: 100%;
+        min-height: 43px;
+        margin: 2px 0;
+        padding: 10px 12px;
+        border: 1px solid transparent;
+        border-radius: 10px;
+        background: transparent;
+        color: #9fb2d6;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background .18s, color .18s, border-color .18s;
+    }
+
+        .mc-seller-sidebar .mc-seller-nav a:hover {
+            background: #17233b;
+            color: #ffffff;
+        }
+
+        /* OPCIÓN ACTIVA */
+
+        .mc-seller-sidebar .mc-seller-nav a.active {
+            border-color: rgba(37, 99, 255, .18);
+            background: linear-gradient( 90deg, rgba(37, 99, 255, .25), rgba(37, 99, 255, .06) );
+            color: #ffffff;
+            font-weight: 800;
+        }
+
+            .mc-seller-sidebar .mc-seller-nav a.active::before {
+                content: "";
+                position: absolute;
+                left: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 3px;
+                height: 22px;
+                border-radius: 0 5px 5px 0;
+                background: #22d3ee;
+            }
+
+    /* ICONOS */
+
+    .mc-seller-sidebar .mc-seller-icon {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        flex: 0 0 23px;
+        width: 23px;
+        font-size: 15px;
+    }
+
+    .mc-seller-sidebar .mc-seller-nav a span:last-child {
+        flex: 1;
+        min-width: 0;
+    }
+
+    /* BOTONES INFERIORES */
+
+    .mc-seller-sidebar .mc-seller-bottom {
+        margin-top: auto;
+        padding-top: 15px;
+        border-top: 1px solid #22304a;
+    }
+
+        .mc-seller-sidebar .mc-seller-bottom .mc-logout-form {
+            display: block;
+            width: 100%;
+            margin: 8px 0 0;
+            padding: 0;
+        }
+
+            .mc-seller-sidebar .mc-seller-bottom > a,
+            .mc-seller-sidebar .mc-seller-bottom .mc-logout-form > button {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 7px;
+                box-sizing: border-box;
+                width: 100%;
+                min-height: 35px;
+                margin: 0;
+                padding: 8px 12px;
+                border: 1px solid #344b83;
+                border-radius: 9px;
+                background: #141e31;
+                color: #ffffff;
+                font-family: inherit;
+                font-size: 12px;
+                font-weight: 800;
+                line-height: 1.3;
+                text-align: center;
+                text-decoration: none;
+                cursor: pointer;
+            }
+
+                .mc-seller-sidebar .mc-seller-bottom > a:hover,
+                .mc-seller-sidebar .mc-seller-bottom .mc-logout-form > button:hover {
+                    border-color: #60a5fa;
+                    background: #203453;
+                    color: #ffffff;
+                }
+
+    .mc-seller-sidebar a:focus-visible,
+    .mc-seller-sidebar button:focus-visible {
+        outline: 2px solid #22d3ee;
+        outline-offset: 2px;
+    }
+
+    /* ESCRITORIO */
+
+    @media (min-width: 851px) {
+
+        .mc-sidebar.mc-seller-sidebar {
+            position: sticky;
+            top: 66px;
+            align-self: flex-start;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 66px);
+            min-height: 0;
+            overflow-y: auto;
+        }
+    }
+
+    /* CELULARES Y TABLETAS */
+
+    @media (max-width: 850px) {
+
+        #layout.mc-shell > .mc-sidebar.mc-seller-sidebar {
+            position: static;
+            display: block;
+            box-sizing: border-box;
+            width: 100%;
+            height: auto;
+            min-height: 0;
+            padding: 10px 14px;
+            overflow: visible;
+            border-right: 0;
+            border-bottom: 1px solid #22304c;
+        }
+
+        .mc-seller-sidebar .mc-seller-menu-toggle {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #344b83;
+            border-radius: 10px;
+            background: #162747;
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 800;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .mc-seller-sidebar .mc-seller-menu {
+            display: none;
+        }
+
+        .mc-seller-sidebar.is-open .mc-seller-menu {
+            display: block;
+            margin-top: 10px;
+        }
+
+        .mc-seller-sidebar .mc-side-person {
+            display: flex;
+        }
+
+        .mc-seller-sidebar .mc-navcap {
+            display: block;
+        }
+
+        .mc-seller-sidebar .mc-seller-bottom {
+            display: block;
+            margin-top: 16px;
+        }
+
+        .mc-seller-sidebar .mc-seller-nav a,
+        .mc-seller-sidebar .mc-logout-form button {
+            white-space: normal;
+        }
+    }
+</style>
+
+<script>
+    (function () {
+        "use strict";
+
+        const sidebar = document.querySelector(".mc-seller-sidebar");
+        const button = document.getElementById("mc-seller-menu-toggle");
+
+        if (!sidebar || !button) {
+            return;
+        }
+
+        button.addEventListener("click", function () {
+            const opened = sidebar.classList.toggle("is-open");
+            button.setAttribute("aria-expanded", String(opened));
+        });
+
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Escape") {
+                sidebar.classList.remove("is-open");
+                button.setAttribute("aria-expanded", "false");
+            }
+        });
+    })();
+</script>
+
+{% endif %}
+
+
+<!-- ==========================================
+     ESTILOS DEL COMPRADOR - FASE 3
+     ========================================== -->
+{% if current_role == 'COMPRADOR' %}
+
+<style>
+
+    .mc-buyer-sidebar .mc-buyer-menu-toggle {
+        display: none;
+    }
+
+    .mc-buyer-sidebar .mc-buyer-menu {
+        display: block;
+    }
+
+    /* ENLACE ACTIVO */
+
+    .mc-buyer-sidebar a.active {
+        background: linear-gradient( 135deg, rgba(37, 99, 255, .24), rgba(34, 211, 238, .08) );
+        border: 1px solid rgba(37, 99, 255, .45);
+        color: #ffffff;
+        font-weight: 800;
+    }
+
+    /* CONTADOR DE COMPRAS */
+
+    .mc-buyer-sidebar .mc-buyer-count {
+        flex: none;
+        min-width: 22px;
+        padding: 2px 7px;
+        border-radius: 20px;
+        background: #2563eb;
+        color: #ffffff;
+        font-size: 11px;
+        text-align: center;
+    }
+
+    /* BOTONES INFERIORES */
+
+    .mc-buyer-sidebar .mc-side-bottom .mc-logout-form {
+        display: block;
+        width: 100%;
+        margin: 8px 0 0;
+        padding: 0;
+    }
+
+        .mc-buyer-sidebar .mc-side-bottom > a,
+        .mc-buyer-sidebar .mc-side-bottom .mc-logout-form > button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            box-sizing: border-box;
+            width: 100%;
+            min-height: 34px;
+            margin: 0;
+            padding: 8px 12px;
+            border: 1px solid #344b83;
+            border-radius: 9px;
+            background: #141e31;
+            color: #ffffff;
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 800;
+            line-height: 1.3;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background .2s ease, border-color .2s ease;
+        }
+
+            .mc-buyer-sidebar .mc-side-bottom > a:hover,
+            .mc-buyer-sidebar .mc-side-bottom .mc-logout-form > button:hover {
+                border-color: #60a5fa;
+                background: #203453;
+                color: #ffffff;
+            }
+
+            .mc-buyer-sidebar .mc-side-bottom > a:focus-visible,
+            .mc-buyer-sidebar .mc-side-bottom .mc-logout-form > button:focus-visible {
+                outline: 2px solid #22d3ee;
+                outline-offset: 2px;
+            }
+
+    /* MÓVIL */
+
+    @media (max-width: 850px) {
+
+        #layout.mc-shell > .mc-sidebar.mc-buyer-sidebar {
+            display: block;
+            width: 100%;
+            min-height: 0;
+            padding: 10px 14px;
+            overflow: visible;
+            border-right: 0;
+        }
+
+        .mc-buyer-sidebar .mc-buyer-menu-toggle {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #344b83;
+            border-radius: 10px;
+            background: #162747;
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .mc-buyer-sidebar .mc-buyer-menu {
+            display: none;
+        }
+
+        .mc-buyer-sidebar.is-open .mc-buyer-menu {
+            display: block;
+            margin-top: 10px;
+        }
+
+        .mc-buyer-sidebar .mc-side-person {
+            display: flex;
+        }
+
+        .mc-buyer-sidebar .mc-navcap,
+        .mc-buyer-sidebar .mc-side-bottom {
+            display: block;
+        }
+
+        .mc-buyer-sidebar a,
+        .mc-buyer-sidebar .mc-logout-form button {
+            white-space: normal;
+        }
+    }
+</style>
+
+<script>
+    (function () {
+        "use strict";
+
+        const sidebar = document.querySelector(".mc-buyer-sidebar");
+        const button = document.getElementById("mc-buyer-menu-toggle");
+
+        if (!sidebar || !button) {
+            return;
+        }
+
+        button.addEventListener("click", function () {
+            const opened = sidebar.classList.toggle("is-open");
+            button.setAttribute("aria-expanded", String(opened));
+        });
+
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Escape") {
+                sidebar.classList.remove("is-open");
+                button.setAttribute("aria-expanded", "false");
+            }
+        });
+    })();
+</script>
+
+{% endif %}

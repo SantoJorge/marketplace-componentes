@@ -1,0 +1,804 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} | Marketplace Componentes{% endblock %}
+
+{% block content %}
+
+<style>
+        /* ==========================================
+       FASE PUBLICA 2.2
+       FICHA FIEL AL LAYOUT DEL INDEX
+    ========================================== */
+
+        #mc-pd {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 28px 24px 65px;
+            color: #e9eefb;
+        }
+
+            #mc-pd * {
+                box-sizing: border-box;
+            }
+
+            #mc-pd a {
+                text-decoration: none;
+            }
+
+            #mc-pd .pd-ruta {
+                display: flex;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 9px;
+                margin-bottom: 25px;
+                font-size: 12px;
+                color: #8996b3;
+            }
+
+                #mc-pd .pd-ruta a {
+                    color: #8996b3;
+                }
+
+                    #mc-pd .pd-ruta a:hover {
+                        color: #22d3ee;
+                    }
+
+            /* DOS COLUMNAS PRINCIPALES */
+
+            #mc-pd .pd-grid {
+                display: grid;
+                grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+                gap: 30px;
+                align-items: start;
+            }
+
+            #mc-pd .pd-left,
+            #mc-pd .pd-right {
+                min-width: 0;
+            }
+
+            /* IMAGEN: 400 PX COMO EL INDEX */
+
+            #mc-pd .pd-media {
+                height: 400px;
+                display: grid;
+                place-items: center;
+                overflow: hidden;
+                border: 1px solid #22304c;
+                border-radius: 18px;
+                background: radial-gradient( circle at 50% 40%, #1c2942, #0b1120 );
+            }
+
+                #mc-pd .pd-media img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
+                }
+
+            #mc-pd .pd-placeholder {
+                font-size: 115px;
+                line-height: 1;
+                opacity: .8;
+            }
+
+            /* PANELES */
+
+            #mc-pd .pd-panel {
+                background: #111827;
+                border: 1px solid #22304c;
+                border-radius: 15px;
+                padding: 22px;
+            }
+
+            #mc-pd .pd-description {
+                margin-top: 18px;
+            }
+
+            #mc-pd .pd-panel-title {
+                margin: 0 0 15px;
+                color: #e9eefb;
+                font-size: 17px;
+                font-weight: 900;
+            }
+
+            #mc-pd .pd-text {
+                margin: 0;
+                font-size: 13.8px;
+                line-height: 1.8;
+                color: #b8c4dc;
+                overflow-wrap: anywhere;
+            }
+
+            /* TABLA TECNICA */
+
+            #mc-pd .pd-spec-title {
+                margin: 24px 0 12px;
+                font-size: 16px;
+                font-weight: 900;
+            }
+
+            #mc-pd .pd-specs {
+                border: 1px solid #22304c;
+                border-radius: 12px;
+                overflow: hidden;
+            }
+
+            #mc-pd .pd-spec-row {
+                display: grid;
+                grid-template-columns: 170px minmax(0, 1fr);
+                border-bottom: 1px solid #22304c;
+            }
+
+                #mc-pd .pd-spec-row:last-child {
+                    border-bottom: none;
+                }
+
+            #mc-pd .pd-spec-key {
+                padding: 12px 14px;
+                background: #172135;
+                color: #9aadd0;
+                font-size: 11px;
+                font-weight: 900;
+                text-transform: uppercase;
+            }
+
+            #mc-pd .pd-spec-value {
+                padding: 12px 14px;
+                color: #e9eefb;
+                font-size: 12.5px;
+                overflow-wrap: anywhere;
+            }
+
+            /* PANEL DE COMPRA */
+
+            #mc-pd .pd-purchase {
+                padding: 22px;
+            }
+
+            #mc-pd .pd-tags {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                margin-bottom: 13px;
+            }
+
+            #mc-pd .pd-tag {
+                padding: 6px 11px;
+                border: 1px solid #166d4e;
+                border-radius: 20px;
+                background: #103a2e;
+                color: #4ade80;
+                font-size: 10px;
+                font-weight: 900;
+            }
+
+            #mc-pd .pd-tag-usado {
+                border-color: #865e23;
+                background: #332615;
+                color: #fbbf24;
+            }
+
+            #mc-pd .pd-tag-reacondicionado {
+                border-color: #286878;
+                background: #153039;
+                color: #67e8f9;
+            }
+
+            #mc-pd .pd-name {
+                margin: 0 0 9px;
+                color: white;
+                font-size: 25px;
+                line-height: 1.2;
+                font-weight: 900;
+                overflow-wrap: anywhere;
+            }
+
+            #mc-pd .pd-subtitle {
+                color: #8996b3;
+                font-size: 13px;
+                line-height: 1.6;
+            }
+
+            #mc-pd .pd-price {
+                margin: 14px 0 5px;
+                color: white;
+                font-size: 38px;
+                line-height: 1;
+                font-weight: 900;
+            }
+
+            #mc-pd .pd-stock {
+                color: #4ade80;
+                font-size: 13px;
+                font-weight: 800;
+                margin-top: 10px;
+            }
+
+            /* VENDEDOR DEBAJO DEL PRECIO */
+
+            #mc-pd .pd-seller {
+                display: flex;
+                align-items: center;
+                gap: 13px;
+                margin-top: 20px;
+                padding: 15px;
+                border: 1px solid #22304c;
+                border-radius: 13px;
+                background: #172135;
+            }
+
+            #mc-pd .pd-avatar {
+                flex-shrink: 0;
+                display: grid;
+                place-items: center;
+                width: 37px;
+                height: 37px;
+                border-radius: 50%;
+                background: #2563ff;
+                color: white;
+                font-size: 12px;
+                font-weight: 900;
+            }
+
+            #mc-pd .pd-seller-label {
+                color: #8996b3;
+                font-size: 10px;
+                font-weight: 900;
+                letter-spacing: 1px;
+            }
+
+            #mc-pd .pd-seller-name {
+                margin: 4px 0;
+                color: white;
+                font-size: 14px;
+                font-weight: 900;
+                overflow-wrap: anywhere;
+            }
+
+            #mc-pd .pd-seller-meta {
+                color: #8996b3;
+                font-size: 11px;
+                line-height: 1.5;
+            }
+
+            /* CANTIDAD */
+
+            #mc-pd .pd-quantity-area {
+                display: flex;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 13px;
+                margin-top: 20px;
+            }
+
+            #mc-pd .pd-quantity {
+                display: inline-flex;
+                align-items: center;
+                overflow: hidden;
+                border: 1px solid #22304c;
+                border-radius: 11px;
+                background: #111827;
+            }
+
+                #mc-pd .pd-quantity button {
+                    width: 40px;
+                    height: 44px;
+                    background: transparent;
+                    border: 0;
+                    color: #a9b6d1;
+                    font-size: 18px;
+                    font-weight: 800;
+                    cursor: pointer;
+                }
+
+                    #mc-pd .pd-quantity button:hover {
+                        background: #22304c;
+                        color: white;
+                    }
+
+                #mc-pd .pd-quantity input {
+                    width: 58px;
+                    height: 44px;
+                    padding: 0;
+                    border: 0;
+                    background: transparent;
+                    color: white;
+                    font-size: 15px;
+                    font-weight: 900;
+                    text-align: center;
+                    outline: none;
+                    appearance: textfield;
+                    -moz-appearance: textfield;
+                }
+
+                    #mc-pd .pd-quantity input::-webkit-inner-spin-button,
+                    #mc-pd .pd-quantity input::-webkit-outer-spin-button {
+                        -webkit-appearance: none;
+                    }
+
+            #mc-pd .pd-quantity-limit {
+                font-size: 12px;
+                color: #8996b3;
+            }
+
+            /* BOTONES */
+
+            #mc-pd .pd-actions {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                margin-top: 18px;
+            }
+
+            #mc-pd .pd-button {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 7px;
+                min-height: 44px;
+                padding: 12px 18px;
+                border: 0;
+                border-radius: 10px;
+                font-size: 12.5px;
+                font-weight: 900;
+                cursor: pointer;
+            }
+
+            #mc-pd .pd-add {
+                color: white;
+                background: #2563eb;
+                box-shadow: 0 6px 17px rgba(37, 99, 235, .25);
+            }
+
+                #mc-pd .pd-add:hover {
+                    background: #1d4ed8;
+                }
+
+            #mc-pd .pd-buy {
+                background: #06b6d4;
+                color: #07121f;
+            }
+
+                #mc-pd .pd-buy:disabled {
+                    cursor: not-allowed;
+                    opacity: .65;
+                }
+
+            #mc-pd .pd-cartlink {
+                display: inline-block;
+                margin-top: 14px;
+                color: #8bb8ff;
+                font-size: 12px;
+            }
+
+            #mc-pd .pd-own {
+                margin-top: 20px;
+                padding: 14px;
+                border: 1px solid #865e23;
+                border-radius: 11px;
+                background: #332615;
+                color: #fbbf24;
+                font-size: 13px;
+            }
+
+            #mc-pd .pd-note {
+                margin: 12px 0 0;
+                color: #8996b3;
+                font-size: 11px;
+            }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 950px) {
+            #mc-pd .pd-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            #mc-pd {
+                padding: 18px 12px 55px;
+            }
+
+                #mc-pd .pd-media {
+                    height: 290px;
+                }
+
+                #mc-pd .pd-panel {
+                    padding: 17px;
+                }
+
+                #mc-pd .pd-name {
+                    font-size: 23px;
+                }
+
+                #mc-pd .pd-price {
+                    font-size: 33px;
+                }
+
+                #mc-pd .pd-spec-row {
+                    grid-template-columns: 115px minmax(0, 1fr);
+                }
+
+                #mc-pd .pd-actions {
+                    flex-direction: column;
+                }
+
+                #mc-pd .pd-button {
+                    width: 100%;
+                }
+        }
+</style>
+
+
+<div id="mc-pd">
+
+    <!-- MIGAJAS -->
+
+    <nav class="pd-ruta" aria-label="Navegación">
+
+        <a href="{% url 'catalog:inicio' %}">
+            Inicio
+        </a>
+
+        <span>/</span>
+
+        <a href="{% url 'catalog:catalogo' %}">
+            Catálogo
+        </a>
+
+        <span>/</span>
+
+        <a href="{% url 'catalog:catalogo' %}?categoria={{ product.category.pk }}">
+            {{ product.category.name }}
+        </a>
+
+        <span>/</span>
+
+        <span>{{ product.name }}</span>
+
+    </nav>
+
+
+    <div class="pd-grid">
+
+        <!-- =================================
+             COLUMNA IZQUIERDA
+        ================================= -->
+
+        <div class="pd-left">
+
+            <!-- IMAGEN -->
+
+            <div class="pd-media">
+
+                {% if product.image %}
+
+                <img src="{{ product.image.url }}"
+                     alt="{{ product.name }}">
+
+                {% else %}
+
+                <div class="pd-placeholder"
+                     aria-label="Sin fotografía">
+                    {{ product.category.icon|default:"🖥️" }}
+                </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- DESCRIPCION BAJO LA IMAGEN -->
+
+            <section class="pd-panel pd-description">
+
+                <h2 class="pd-panel-title">
+                    📋 Descripción
+                </h2>
+
+                <p class="pd-text">
+                    {% if product.description %}
+                    {{ product.description|linebreaksbr }}
+                    {% else %}
+                    No hay descripción disponible.
+                    {% endif %}
+                </p>
+
+
+                <!-- ESPECIFICACIONES REALES -->
+
+                <h3 class="pd-spec-title">
+                    ⚙️ Especificaciones técnicas
+                </h3>
+
+                <div class="pd-specs">
+
+                    <div class="pd-spec-row">
+                        <div class="pd-spec-key">
+                            Categoría
+                        </div>
+                        <div class="pd-spec-value">
+                            {{ product.category.name }}
+                        </div>
+                    </div>
+
+                    <div class="pd-spec-row">
+                        <div class="pd-spec-key">
+                            Marca
+                        </div>
+                        <div class="pd-spec-value">
+                            {{ product.brand }}
+                        </div>
+                    </div>
+
+                    {% if product.model %}
+                    <div class="pd-spec-row">
+                        <div class="pd-spec-key">
+                            Modelo
+                        </div>
+                        <div class="pd-spec-value">
+                            {{ product.model }}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="pd-spec-row">
+                        <div class="pd-spec-key">
+                            Condición
+                        </div>
+                        <div class="pd-spec-value">
+                            {{ product.get_condition_display }}
+                        </div>
+                    </div>
+
+                    {% if product.location %}
+                    <div class="pd-spec-row">
+                        <div class="pd-spec-key">
+                            Ubicación
+                        </div>
+                        <div class="pd-spec-value">
+                            {{ product.location }}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                </div>
+
+            </section>
+
+        </div>
+
+
+        <!-- =================================
+             COLUMNA DERECHA
+        ================================= -->
+
+        <div class="pd-right">
+
+            <section class="pd-panel pd-purchase">
+
+                <!-- ESTADO Y CATEGORIA -->
+
+                <div class="pd-tags">
+
+                    <span class="pd-tag pd-tag-{{ product.condition|lower }}">
+                        {{ product.get_condition_display|upper }}
+                    </span>
+
+                    <span class="pd-tag">
+                        {{ product.category.name|upper }}
+                    </span>
+
+                </div>
+
+
+                <!-- NOMBRE -->
+
+                <h1 class="pd-name">
+                    {{ product.name }}
+                </h1>
+
+                <div class="pd-subtitle">
+
+                    {{ product.brand }}
+
+                    {% if product.model %}
+                    · {{ product.model }}
+                    {% endif %}
+
+                </div>
+
+
+                <!-- PRECIO -->
+
+                <div class="pd-price">
+                    ${{ product.price|floatformat:2 }}
+                </div>
+
+                <div class="pd-stock">
+                    ● Disponible (Stock: {{ product.stock }})
+                </div>
+
+
+                <!-- VENDEDOR -->
+
+                <div class="pd-seller">
+
+                    <div class="pd-avatar">
+                        {{ product.seller.username|slice:":2"|upper }}
+                    </div>
+
+                    <div>
+
+                        <div class="pd-seller-label">
+                            VENDIDO POR
+                        </div>
+
+                        <div class="pd-seller-name">
+
+                            {% if product.seller.seller_profile.business_name %}
+
+                            {{ product.seller.seller_profile.business_name }}
+
+                            {% else %}
+
+                            {{ product.seller.username }}
+
+                            {% endif %}
+
+                        </div>
+
+                        <div class="pd-seller-meta">
+
+                            {% if product.seller.seller_profile.location %}
+
+                            📍 {{ product.seller.seller_profile.location }}
+
+                            {% elif product.location %}
+
+                            📍 {{ product.location }}
+
+                            {% endif %}
+
+                            · Miembro desde
+                            {{ product.seller.date_joined|date:"d M Y" }}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- COMPRAS -->
+                {% if request.user.is_authenticated and request.user == product.seller %}
+
+                <div class="pd-own">
+                    ⚠️ Este es tu propio producto.
+                    No puedes comprarlo.
+                </div>
+
+                {% else %}
+
+                <form method="post"
+                      action="{% url 'orders:cart_add' product.pk %}">
+
+                    {% csrf_token %}
+
+                    <div class="pd-quantity-area">
+
+                        <div class="pd-quantity">
+
+                            <button type="button"
+                                    id="mc-pd-minus"
+                                    aria-label="Reducir cantidad">
+                                −
+                            </button>
+
+                            <input type="number"
+                                   id="mc-pd-qty"
+                                   name="quantity"
+                                   value="1"
+                                   min="1"
+                                   max="{% if product.stock > 100 %}100{% else %}{{ product.stock }}{% endif %}"
+                                   readonly
+                                   required
+                                   aria-label="Cantidad">
+
+                            <button type="button"
+                                    id="mc-pd-plus"
+                                    aria-label="Aumentar cantidad">
+                                +
+                            </button>
+
+                        </div>
+
+                        <div class="pd-quantity-limit">
+                            Máx.
+                            {% if product.stock > 100 %}
+                            100
+                            {% else %}
+                            {{ product.stock }}
+                            {% endif %}
+                            unidades por solicitud
+                        </div>
+
+                    </div>
+
+
+                    <div class="pd-actions">
+
+                        <button class="pd-button pd-add"
+                                type="submit">
+                            🛒 Añadir al carrito
+                        </button>
+
+                        <button class="pd-button pd-buy"
+                                type="button"
+                                disabled
+                                title="Disponible cuando integremos el checkout">
+                            ⚡ Comprar ahora
+                        </button>
+
+                    </div>
+
+                </form>
+
+                <a class="pd-cartlink"
+                   href="{% url 'orders:cart_detail' %}">
+                    Ver mi carrito →
+                </a>
+
+                {% endif %}
+
+            </section>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- CONTROL DE CANTIDAD -->
+
+<script>
+    (function () {
+        "use strict";
+
+        const input = document.getElementById("mc-pd-qty");
+        const minus = document.getElementById("mc-pd-minus");
+        const plus = document.getElementById("mc-pd-plus");
+
+        if (!input || !minus || !plus) {
+            return;
+        }
+
+        const max = Math.max(
+            1,
+            parseInt(input.max, 10) || 1
+        );
+
+        function valorActual() {
+            return Math.max(
+                1,
+                Math.min(
+                    max,
+                    parseInt(input.value, 10) || 1
+                )
+            );
+        }
+
+        minus.addEventListener("click", function () {
+            input.value = Math.max(1, valorActual() - 1);
+        });
+
+        plus.addEventListener("click", function () {
+            input.value = Math.min(max, valorActual() + 1);
+        });
+    })();
+</script>
+
+{% endblock %}

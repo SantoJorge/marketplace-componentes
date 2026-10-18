@@ -1,0 +1,464 @@
+{% extends "base.html" %}
+
+{% block title %}Finalizar compra | Marketplace Componentes{% endblock %}
+
+{% block content %}
+<style>
+    #mc24 {
+        max-width: 1300px;
+        margin: 0 auto;
+        padding: 28px 24px 70px;
+        color: #e9eefb;
+    }
+
+        #mc24 * {
+            box-sizing: border-box;
+        }
+
+        #mc24 a {
+            text-decoration: none;
+        }
+
+        #mc24 .breadcrumb {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            color: #8996b3;
+            font-size: 12px;
+            margin-bottom: 16px;
+        }
+
+            #mc24 .breadcrumb a {
+                color: #9fc4ff;
+            }
+
+        #mc24 h1 {
+            color: white;
+            font-size: 30px;
+            font-weight: 900;
+            margin: 0 0 8px;
+        }
+
+            #mc24 h1 span {
+                color: #22d3ee;
+            }
+
+        #mc24 .subtitle {
+            color: #9aa8c3;
+            font-size: 13px;
+            margin: 0 0 28px;
+        }
+
+        #mc24 .layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 348px;
+            gap: 24px;
+            align-items: start;
+        }
+
+        #mc24 .panel {
+            background: #121a2b;
+            border: 1px solid #263650;
+            border-radius: 15px;
+            padding: 23px;
+            min-width: 0;
+        }
+
+        #mc24 .panel-title {
+            color: white;
+            font-size: 17px;
+            font-weight: 900;
+            margin: 0 0 20px;
+        }
+
+        #mc24 .fields {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 17px;
+        }
+
+        #mc24 .field {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            min-width: 0;
+        }
+
+            #mc24 .field.wide {
+                grid-column: 1 / -1;
+            }
+
+            #mc24 .field label {
+                color: #b6c3dc;
+                font-size: 12px;
+                font-weight: 800;
+            }
+
+            #mc24 .field input,
+            #mc24 .field select,
+            #mc24 .field textarea {
+                display: block;
+                width: 100%;
+                min-height: 43px;
+                padding: 11px 13px;
+                background: #0b1323;
+                border: 1px solid #30415f;
+                border-radius: 10px;
+                color: #ffffff;
+                font: inherit;
+                font-size: 13px;
+                outline: none;
+            }
+
+            #mc24 .field textarea {
+                min-height: 90px;
+                resize: vertical;
+            }
+
+                #mc24 .field input:focus,
+                #mc24 .field select:focus,
+                #mc24 .field textarea:focus {
+                    border-color: #3b82f6;
+                }
+
+        #mc24 .error {
+            color: #fca5a5;
+            font-size: 12px;
+        }
+
+        #mc24 .notice {
+            margin-top: 21px;
+            padding: 14px;
+            border: 1px solid #31415d;
+            border-radius: 11px;
+            background: #17233a;
+            color: #b9c8df;
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        #mc24 .summary {
+            position: sticky;
+            top: 95px;
+            background: linear-gradient(165deg, #121a2b, #0d1424);
+        }
+
+        #mc24 .product {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 12px 0;
+            border-bottom: 1px solid #25324a;
+        }
+
+        #mc24 .thumb {
+            width: 46px;
+            height: 46px;
+            flex-shrink: 0;
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+            border-radius: 9px;
+            background: #1b2942;
+            font-size: 22px;
+        }
+
+            #mc24 .thumb img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+        #mc24 .product-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        #mc24 .product-name {
+            color: white;
+            font-size: 12px;
+            font-weight: 800;
+            overflow-wrap: anywhere;
+        }
+
+        #mc24 .product-qty {
+            color: #8996b3;
+            font-size: 11px;
+            margin-top: 4px;
+        }
+
+        #mc24 .product-price {
+            color: #e9eefb;
+            font-size: 12px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        #mc24 .row {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 10px 0;
+            color: #9aa8c3;
+            font-size: 13px;
+        }
+
+            #mc24 .row strong {
+                color: #e9eefb;
+            }
+
+            #mc24 .row.total {
+                border-top: 1px solid #30415f;
+                margin-top: 9px;
+                padding-top: 17px;
+                color: white;
+                font-size: 19px;
+                font-weight: 900;
+            }
+
+                #mc24 .row.total strong {
+                    color: #22d3ee;
+                    font-size: 23px;
+                }
+
+        #mc24 .btn {
+            display: flex;
+            width: 100%;
+            justify-content: center;
+            align-items: center;
+            padding: 13px;
+            min-height: 45px;
+            border-radius: 10px;
+            border: 1px solid transparent;
+            font-size: 13px;
+            font-weight: 900;
+            cursor: pointer;
+        }
+
+        #mc24 .btn-primary {
+            margin-top: 19px;
+            color: white;
+            background: #2563eb;
+        }
+
+            #mc24 .btn-primary:hover {
+                background: #1d4ed8;
+            }
+
+        #mc24 .btn-secondary {
+            margin-top: 10px;
+            color: #e9eefb;
+            background: #182238;
+            border-color: #30415f;
+        }
+
+        #mc24 .footnote {
+            color: #8996b3;
+            margin-top: 14px;
+            font-size: 11px;
+            text-align: center;
+            line-height: 1.7;
+        }
+
+    @media (max-width: 850px) {
+        #mc24 .layout {
+            grid-template-columns: 1fr;
+        }
+
+        #mc24 .summary {
+            position: static;
+        }
+    }
+
+    @media (max-width: 600px) {
+        #mc24 {
+            padding: 20px 12px 55px;
+        }
+
+            #mc24 h1 {
+                font-size: 26px;
+            }
+
+            #mc24 .fields {
+                grid-template-columns: 1fr;
+            }
+
+            #mc24 .field.wide {
+                grid-column: auto;
+            }
+
+            #mc24 .panel {
+                padding: 17px;
+            }
+    }
+</style>
+
+<div id="mc24">
+
+    <nav class="breadcrumb" aria-label="Ruta de navegación">
+        <a href="{% url 'catalog:inicio' %}">Inicio</a>
+        <span>/</span>
+        <a href="{% url 'orders:cart_detail' %}">Carrito</a>
+        <span>/</span>
+        <span>Checkout</span>
+    </nav>
+
+    <h1>Finalizar <span>compra</span></h1>
+
+    <p class="subtitle">
+        Revisa tus componentes y completa los datos
+        para coordinar la entrega.
+    </p>
+
+    <form method="post"
+          id="mc24-form"
+          action="{% url 'orders:checkout' %}">
+
+        {% csrf_token %}
+
+        <div class="layout">
+
+            <section class="panel">
+                <h2 class="panel-title">
+                    📦 Datos de entrega
+                </h2>
+
+                {% if form.non_field_errors %}
+                <div class="error">
+                    {{ form.non_field_errors }}
+                </div>
+                {% endif %}
+
+                <div class="fields">
+
+                    {% for field in form %}
+
+                    <div class="field{% if field.name == 'address' or field.name == 'comments' %} wide{% endif %}">
+
+                        <label for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                        </label>
+
+                        {{ field }}
+
+                        {% for error in field.errors %}
+                        <span class="error">
+                            {{ error }}
+                        </span>
+                        {% endfor %}
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+                <div class="notice">
+                    🔒 El pedido se registra en MarketplaceComponentes.
+                    El pago y la entrega se coordinarán con el vendedor.
+                    No se realizará ningún cobro electrónico
+                    al confirmar.
+                </div>
+
+            </section>
+
+            <aside class="panel summary">
+
+                <h2 class="panel-title">
+                    Resumen del pedido
+                </h2>
+
+                {% for item in items %}
+
+                <div class="product">
+
+                    <div class="thumb">
+                        {% if item.product.image %}
+                        <img src="{{ item.product.image.url }}"
+                             alt="{{ item.product.name }}">
+                        {% else %}
+                        {{ item.product.category.icon|default:"🖥️" }}
+                        {% endif %}
+                    </div>
+
+                    <div class="product-info">
+                        <div class="product-name">
+                            {{ item.product.name }}
+                        </div>
+                        <div class="product-qty">
+                            {{ item.quantity }} ×
+                            ${{ item.product.price|floatformat:"2u" }}
+                        </div>
+                    </div>
+
+                    <div class="product-price">
+                        ${{ item.subtotal|floatformat:"2u" }}
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+                <div class="row">
+                    <span>Subtotal</span>
+                    <strong>${{ total|floatformat:"2u" }}</strong>
+                </div>
+
+                <div class="row">
+                    <span>Artículos</span>
+                    <strong>{{ cantidad_articulos }}</strong>
+                </div>
+
+                <div class="row">
+                    <span>Envío</span>
+                    <strong>A coordinar</strong>
+                </div>
+
+                <div class="row total">
+                    <span>Total</span>
+                    <strong>${{ total|floatformat:"2u" }}</strong>
+                </div>
+
+                <button type="submit"
+                        id="mc24-confirmar"
+                        class="btn btn-primary">
+                    ✅ Registrar pedido sin pagar
+                </button>
+
+                <a class="btn btn-secondary"
+                   href="{% url 'orders:cart_detail' %}">
+                    ← Volver al carrito
+                </a>
+
+                <p class="footnote">
+                    El total mostrado no incluye
+                    gastos de envío aún no acordados.
+                </p>
+
+            </aside>
+
+        </div>
+
+    </form>
+
+</div>
+
+<script>(function () {
+    const form = document.getElementById("mc24-form");
+    const button = document.getElementById("mc24-confirmar");
+
+    if (!form || !button) return;
+
+    // Evitar doble clic sobre el boton de compra.
+    form.addEventListener("submit", function (event) {
+        if (form.dataset.enviando === "1") {
+            event.preventDefault();
+            return;
+        }
+
+        form.dataset.enviando = "1";
+        button.disabled = true;
+        button.textContent = "Registrando pedido...";
+    });
+})();</script>
+{% endblock %}

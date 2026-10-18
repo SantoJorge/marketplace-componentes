@@ -1,438 +1,761 @@
 {% extends "base.html" %}
 
+{% block title %}Mi carrito | Marketplace Componentes{% endblock %}
+
 {% block content %}
 
 <style>
+    /* ==========================================
+       MARKETPLACE COMPONENTES
+       FASE PUBLICA 2.3.2 - CARRITO
+       DISENO BASADO EN EL INDEX ORIGINAL
+    ========================================== */
 
-    .cart-v2-page {
-        width: 100%;
-        max-width: 1350px;
+    #mc-cart2 {
+        max-width: 1300px;
         margin: 0 auto;
-        padding: 34px 28px 70px;
+        padding: 28px 24px 70px;
+        color: #e9eefb;
     }
 
-    .cart-v2-title {
-        font-size: 30px;
-        font-weight: 900;
-        margin-bottom: 8px;
-    }
-
-    .cart-v2-description {
-        color: #8996b3;
-        margin-bottom: 25px;
-    }
-
-    .cart-v2-layout {
-        display: grid;
-        grid-template-columns: minmax(0,1fr) 350px;
-        gap: 24px;
-        align-items: start;
-    }
-
-    .cart-v2-item {
-        display: grid;
-        grid-template-columns: 90px 1fr auto;
-        gap: 16px;
-        align-items: center;
-        padding: 16px;
-        background: #121a2b;
-        border: 1px solid #1a2337;
-        border-radius: 14px;
-        margin-bottom: 12px;
-    }
-
-    .cart-v2-image {
-        width: 90px;
-        height: 90px;
-        border-radius: 11px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: radial-gradient( circle at 50% 40%, #1c2942, #0d1424 );
-        font-size: 35px;
-        overflow: hidden;
-    }
-
-        .cart-v2-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        #mc-cart2 * {
+            box-sizing: border-box;
         }
 
-    .cart-v2-name {
-        font-size: 15px;
-        font-weight: 800;
-        margin-bottom: 6px;
-    }
+        #mc-cart2 a {
+            text-decoration: none;
+        }
 
-    .cart-v2-meta {
-        color: #8996b3;
-        font-size: 12px;
-    }
-
-    .cart-v2-price {
-        margin-top: 8px;
-        font-size: 14px;
-        font-weight: 800;
-    }
-
-    .cart-v2-controls {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin-top: 10px;
-    }
-
-        .cart-v2-controls a {
-            width: 34px;
-            height: 34px;
+        #mc-cart2 .mc2-breadcrumb {
             display: flex;
             align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            background: #162034;
+            flex-wrap: wrap;
+            gap: 9px;
+            margin-bottom: 15px;
+            color: #8996b3;
+            font-size: 12px;
+        }
+
+            #mc-cart2 .mc2-breadcrumb a {
+                color: #8996b3;
+            }
+
+                #mc-cart2 .mc2-breadcrumb a:hover {
+                    color: #22d3ee;
+                }
+
+        #mc-cart2 .mc2-title {
+            margin: 0 0 8px;
+            color: #ffffff;
+            font-size: 29px;
+            font-weight: 900;
+            line-height: 1.2;
+        }
+
+            #mc-cart2 .mc2-title span {
+                color: #22d3ee;
+            }
+
+        #mc-cart2 .mc2-subtitle {
+            margin: 0 0 27px;
+            color: #8996b3;
+            font-size: 13px;
+        }
+
+        /* ==========================================
+       DISTRIBUCION ORIGINAL DEL INDEX
+    ========================================== */
+
+        #mc-cart2 .mc2-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 348px;
+            gap: 24px;
+            align-items: start;
+        }
+
+        #mc-cart2 .mc2-products {
+            min-width: 0;
+        }
+
+        /* TARJETA INDIVIDUAL */
+
+        #mc-cart2 .mc2-item {
+            display: grid;
+            grid-template-columns: 86px minmax(0, 1fr) auto;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 15px;
             border: 1px solid #22304c;
-            color: #fff;
-            text-decoration: none;
+            border-radius: 13px;
+            background: #121a2b;
+            transition: border-color .18s;
+        }
+
+            #mc-cart2 .mc2-item:hover {
+                border-color: #2d3f63;
+            }
+
+        #mc-cart2 .mc2-thumb {
+            display: grid;
+            place-items: center;
+            width: 86px;
+            height: 86px;
+            overflow: hidden;
+            border-radius: 11px;
+            background: radial-gradient( circle at 50% 40%, #1c2942, #0d1424 );
+            font-size: 34px;
+        }
+
+            #mc-cart2 .mc2-thumb img {
+                display: block;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+        #mc-cart2 .mc2-category {
+            color: #22d3ee;
+            font-size: 10.5px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
             font-weight: 900;
         }
 
-    .cart-v2-quantity {
-        min-width: 30px;
-        text-align: center;
-        font-weight: 800;
-    }
-
-    .cart-v2-remove {
-        display: inline-block;
-        margin-top: 10px;
-        color: #f87171;
-        font-size: 11px;
-        text-decoration: none;
-    }
-
-    .cart-v2-subtotal {
-        text-align: right;
-    }
-
-        .cart-v2-subtotal span {
+        #mc-cart2 .mc2-name {
             display: block;
+            margin: 5px 0;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 800;
+            line-height: 1.4;
+            overflow-wrap: anywhere;
+        }
+
+            #mc-cart2 .mc2-name:hover {
+                color: #8bb8ff;
+            }
+
+        #mc-cart2 .mc2-seller {
+            color: #8996b3;
+            font-size: 11.5px;
+            line-height: 1.6;
+        }
+
+            #mc-cart2 .mc2-seller strong {
+                color: #9fc4ff;
+            }
+
+        #mc-cart2 .mc2-stock {
+            margin-top: 5px;
+            color: #8996b3;
+            font-size: 11.5px;
+        }
+
+            #mc-cart2 .mc2-stock.low {
+                color: #fbbf24;
+            }
+
+        #mc-cart2 .mc2-item-actions {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        /* SELECTOR DE CANTIDAD */
+
+        #mc-cart2 .mc2-qty {
+            display: inline-flex;
+            align-items: center;
+            overflow: hidden;
+            border: 1px solid #22304c;
+            border-radius: 11px;
+            background: #0d1424;
+        }
+
+            #mc-cart2 .mc2-qty form {
+                margin: 0;
+            }
+
+            #mc-cart2 .mc2-qty button {
+                width: 39px;
+                height: 40px;
+                padding: 0;
+                border: none;
+                background: transparent;
+                color: #a9b6d1;
+                font-size: 18px;
+                font-weight: 900;
+                cursor: pointer;
+            }
+
+                #mc-cart2 .mc2-qty button:hover:not(:disabled) {
+                    background: #22304c;
+                    color: white;
+                }
+
+                #mc-cart2 .mc2-qty button:disabled {
+                    opacity: .35;
+                    cursor: not-allowed;
+                }
+
+        #mc-cart2 .mc2-qty-count {
+            display: grid;
+            place-items: center;
+            min-width: 45px;
+            height: 40px;
+            color: white;
+            font-size: 14px;
+            font-weight: 900;
+        }
+
+        #mc-cart2 .mc2-remove {
+            padding: 7px 10px;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            background: transparent;
+            color: #a9b6d1;
+            font-size: 11.5px;
+            cursor: pointer;
+        }
+
+            #mc-cart2 .mc2-remove:hover {
+                color: #f87171;
+                border-color: #7f3440;
+                background: #321c26;
+            }
+
+        /* PRECIO DEL ARTICULO */
+
+        #mc-cart2 .mc2-item-price {
+            min-width: 100px;
+            text-align: right;
+            align-self: center;
+        }
+
+        #mc-cart2 .mc2-unit-price {
+            margin-bottom: 6px;
+            color: #8996b3;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        #mc-cart2 .mc2-line-total {
+            color: white;
+            font-size: 19px;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        /* VACIAR CARRITO */
+
+        #mc-cart2 .mc2-clear-form {
+            margin-top: 9px;
+        }
+
+        #mc-cart2 .mc2-clear {
+            padding: 10px 12px;
+            border: 1px solid transparent;
+            border-radius: 9px;
+            background: transparent;
+            color: #a9b6d1;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+            #mc-cart2 .mc2-clear:hover {
+                color: #f87171;
+                border-color: #7f3440;
+            }
+
+        /* ==========================================
+       RESUMEN LATERAL
+    ========================================== */
+
+        #mc-cart2 .mc2-summary {
+            min-width: 0;
+            padding: 21px;
+            border: 1px solid #22304c;
+            border-radius: 15px;
+            background: linear-gradient( 165deg, #121a2b, #0d1424 );
+            position: sticky;
+            top: 95px;
+        }
+
+        #mc-cart2 .mc2-summary-title {
+            margin: 0 0 16px;
+            color: white;
+            font-size: 17px;
+            font-weight: 900;
+        }
+
+        #mc-cart2 .mc2-summary-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 10px 0;
+            color: #9aa8c3;
+            font-size: 13px;
+        }
+
+            #mc-cart2 .mc2-summary-row strong {
+                color: #e9eefb;
+                font-weight: 800;
+            }
+
+        #mc-cart2 .mc2-summary-total {
+            margin-top: 10px;
+            padding-top: 18px;
+            border-top: 1px solid #22304c;
+            color: #ffffff;
+            font-size: 19px;
+            font-weight: 900;
+        }
+
+            #mc-cart2 .mc2-summary-total strong {
+                color: #22d3ee;
+                font-size: 23px;
+            }
+
+        #mc-cart2 .mc2-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            min-height: 44px;
+            padding: 12px 16px;
+            border: 1px solid transparent;
+            border-radius: 10px;
+            font-size: 12.5px;
+            font-weight: 900;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        #mc-cart2 .mc2-primary {
+            margin-top: 20px;
+            color: white;
+            background: #2563eb;
+        }
+
+            #mc-cart2 .mc2-primary:hover {
+                background: #1d4ed8;
+            }
+
+        #mc-cart2 .mc2-secondary {
+            margin-top: 9px;
+            border-color: #22304c;
+            background: #182238;
+            color: #e9eefb;
+        }
+
+            #mc-cart2 .mc2-secondary:hover {
+                border-color: #2563eb;
+            }
+
+        #mc-cart2 .mc2-summary-note {
+            margin-top: 14px;
             color: #8996b3;
             font-size: 11px;
+            line-height: 1.6;
+            text-align: center;
         }
 
-        .cart-v2-subtotal strong {
-            display: block;
-            margin-top: 4px;
-            font-size: 18px;
+        /* ==========================================
+       CARRITO VACIO
+    ========================================== */
+
+        #mc-cart2 .mc2-empty {
+            max-width: 700px;
+            margin: 15px auto 0;
+            padding: 55px 25px;
+            border: 1px solid #22304c;
+            border-radius: 17px;
+            background: #121a2b;
+            text-align: center;
         }
 
-    .cart-v2-summary {
-        position: sticky;
-        top: 85px;
-        padding: 22px;
-        background: linear-gradient( 165deg, #121a2b, #0d1220 );
-        border: 1px solid #1a2337;
-        border-radius: 14px;
-    }
-
-        .cart-v2-summary h3 {
-            margin-bottom: 18px;
+        #mc-cart2 .mc2-empty-icon {
+            font-size: 70px;
+            margin-bottom: 15px;
         }
 
-    .cart-v2-row {
-        display: flex;
-        justify-content: space-between;
-        padding: 9px 0;
-        color: #8996b3;
-    }
-
-    .cart-v2-total {
-        margin-top: 8px;
-        padding-top: 15px;
-        border-top: 1px solid #22304c;
-        display: flex;
-        justify-content: space-between;
-        font-size: 20px;
-        font-weight: 900;
-    }
-
-        .cart-v2-total span:last-child {
-            color: #22d3ee;
+        #mc-cart2 .mc2-empty h2 {
+            margin: 0 0 10px;
+            color: white;
+            font-size: 23px;
         }
 
-    .cart-v2-checkout {
-        display: block;
-        margin-top: 18px;
-        padding: 12px;
-        border-radius: 10px;
-        text-align: center;
-        background: linear-gradient( 135deg, #2563ff, #1a4fd6 );
-        color: white;
-        text-decoration: none;
-        font-weight: 800;
-    }
-
-    .cart-v2-empty {
-        padding: 70px 20px;
-        text-align: center;
-        background: #121a2b;
-        border: 1px solid #1a2337;
-        border-radius: 14px;
-    }
-
-        .cart-v2-empty h3 {
-            margin-bottom: 10px;
-        }
-
-        .cart-v2-empty p {
+        #mc-cart2 .mc2-empty p {
+            margin: 0 0 23px;
             color: #8996b3;
+            font-size: 13px;
+            line-height: 1.6;
         }
 
-    .cart-v2-back {
-        display: inline-block;
-        margin-top: 18px;
-        color: #22d3ee;
-        text-decoration: none;
+        #mc-cart2 .mc2-empty .mc2-button {
+            width: max-content;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+    /* ==========================================
+       PANTALLAS PEQUENAS
+    ========================================== */
+
+    @media (max-width: 1050px) {
+        #mc-cart2 .mc2-layout {
+            grid-template-columns: minmax(0, 1fr) 300px;
+        }
     }
 
-    @media(max-width:900px) {
-
-        .cart-v2-layout {
+    @media (max-width: 850px) {
+        #mc-cart2 .mc2-layout {
             grid-template-columns: 1fr;
         }
 
-        .cart-v2-summary {
+        #mc-cart2 .mc2-summary {
             position: static;
         }
     }
 
-    @media(max-width:600px) {
-
-        .cart-v2-item {
-            grid-template-columns: 70px 1fr;
+    @media (max-width: 600px) {
+        #mc-cart2 {
+            padding: 18px 12px 55px;
         }
 
-        .cart-v2-image {
-            width: 70px;
-            height: 70px;
-        }
+            #mc-cart2 .mc2-title {
+                font-size: 25px;
+            }
 
-        .cart-v2-subtotal {
-            grid-column: 2;
-            text-align: left;
-        }
+            #mc-cart2 .mc2-item {
+                grid-template-columns: 72px minmax(0, 1fr);
+                gap: 12px;
+                align-items: start;
+            }
+
+            #mc-cart2 .mc2-thumb {
+                width: 72px;
+                height: 72px;
+                font-size: 28px;
+            }
+
+            #mc-cart2 .mc2-item-price {
+                grid-column: 1 / -1;
+                padding-top: 10px;
+                border-top: 1px solid #22304c;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                text-align: left;
+            }
+
+            #mc-cart2 .mc2-unit-price {
+                margin: 0;
+            }
+
+            #mc-cart2 .mc2-line-total {
+                font-size: 18px;
+            }
     }
 </style>
 
 
-<div class="cart-v2-page">
+<div id="mc-cart2">
 
-    <h1 class="cart-v2-title">
-        Mi carrito
+    <!-- ENCABEZADO -->
+
+    <nav class="mc2-breadcrumb"
+         aria-label="Ruta de navegación">
+
+        <a href="{% url 'catalog:inicio' %}">
+            Inicio
+        </a>
+
+        <span>/</span>
+
+        <span>Carrito</span>
+
+    </nav>
+
+    <h1 class="mc2-title">
+        Mi <span>carrito</span>
     </h1>
 
-    <p class="cart-v2-description">
-        Revisa los productos antes de continuar con tu compra.
+    {% if items %}
+
+    <p class="mc2-subtitle">
+        {{ cantidad_articulos }}
+        artículo{{ cantidad_articulos|pluralize }}
+        en tu carrito.
     </p>
 
+    <!-- CARRITO CON PRODUCTOS -->
 
-    <div class="cart-v2-layout">
+    <div class="mc2-layout">
 
+        <section class="mc2-products"
+                 aria-label="Productos del carrito">
 
-        <section>
+            {% for i in items %}
 
+            <article class="mc2-item">
 
-            {% if items %}
+                <!-- FOTO -->
 
+                <a class="mc2-thumb"
+                   href="{% url 'catalog:producto' i.product.pk %}"
+                   aria-label="Ver {{ i.product.name }}">
 
-            {% for item in items %}
+                    {% if i.product.image %}
 
-
-            <article class="cart-v2-item">
-
-
-                <div class="cart-v2-image">
-
-                    {% if item.product.image %}
-
-                    <img src="{{ item.product.image.url }}"
-                         alt="{{ item.product.name }}">
+                    <img src="{{ i.product.image.url }}"
+                         alt="{{ i.product.name }}"
+                         loading="lazy">
 
                     {% else %}
 
-                    {{ item.product.category.icon|default:"📦" }}
+                    <span>
+                        {{ i.product.category.icon|default:"🖥️" }}
+                    </span>
 
                     {% endif %}
 
-                </div>
+                </a>
 
+                <!-- DATOS DEL PRODUCTO -->
 
-                <div>
+                <div class="mc2-item-data">
 
-
-                    <div class="cart-v2-name">
-
-                        {{ item.product.name }}
-
+                    <div class="mc2-category">
+                        {{ i.product.category.name }}
                     </div>
 
-
-                    <div class="cart-v2-meta">
-
-                        {{ item.product.brand }}
-
-                        {% if item.product.model %}
-                        · {{ item.product.model }}
-                        {% endif %}
-
-                    </div>
-
-
-                    <div class="cart-v2-price">
-
-                        ${{ item.product.price }}
-                        c/u
-
-                    </div>
-
-
-                    <div class="cart-v2-controls">
-
-                        <a href="{% url 'orders:decrease_quantity' item.id %}">
-                            −
-                        </a>
-
-                        <span class="cart-v2-quantity">
-
-                            {{ item.quantity }}
-
-                        </span>
-
-                        <a href="{% url 'orders:increase_quantity' item.id %}">
-                            +
-                        </a>
-
-                    </div>
-
-
-                    <a href="{% url 'orders:remove_from_cart' item.id %}"
-                       class="cart-v2-remove">
-                        Eliminar producto
+                    <a class="mc2-name"
+                       href="{% url 'catalog:producto' i.product.pk %}">
+                        {{ i.product.name }}
                     </a>
 
+                    <div class="mc2-seller">
+
+                        Vendido por
+
+                        <strong>
+                            {% if i.product.seller.seller_profile.business_name %}
+                            {{ i.product.seller.seller_profile.business_name }}
+                            {% else %}
+                            {{ i.product.seller.username }}
+                            {% endif %}
+                        </strong>
+
+                        · {{ i.product.get_condition_display }}
+
+                    </div>
+
+                    <div class="mc2-stock{% if i.product.stock <= 3 %} low{% endif %}">
+                        Stock disponible: {{ i.product.stock }}
+                    </div>
+
+                    <!-- CONTROL DE CANTIDAD -->
+
+                    <div class="mc2-item-actions">
+
+                        <div class="mc2-qty"
+                             aria-label="Cantidad del producto">
+
+                            <form method="post"
+                                  action="{% url 'orders:cart_change' i.pk %}">
+
+                                {% csrf_token %}
+
+                                <button type="submit"
+                                        name="action"
+                                        value="minus"
+                                        aria-label="Disminuir cantidad">
+                                    −
+                                </button>
+
+                            </form>
+
+                            <span class="mc2-qty-count">
+                                {{ i.quantity }}
+                            </span>
+
+                            <form method="post"
+                                  action="{% url 'orders:cart_change' i.pk %}">
+
+                                {% csrf_token %}
+
+                                <button type="submit"
+                                        name="action"
+                                        value="plus"
+                                        aria-label="Aumentar cantidad"
+                                        {% if i.quantity >= i.product.stock %}disabled{% endif %}>
+                                    +
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                        <!-- QUITAR PRODUCTO -->
+
+                        <form method="post"
+                              action="{% url 'orders:cart_change' i.pk %}">
+
+                            {% csrf_token %}
+
+                            <button type="submit"
+                                    name="action"
+                                    value="delete"
+                                    class="mc2-remove">
+                                🗑 Quitar
+                            </button>
+
+                        </form>
+
+                    </div>
 
                 </div>
 
+                <!-- PRECIOS -->
 
-                <div class="cart-v2-subtotal">
+                <div class="mc2-item-price">
 
-                    <span>
-                        Subtotal
-                    </span>
+                    <div class="mc2-unit-price">
+                        ${{ i.product.price|floatformat:"2u" }} c/u
+                    </div>
 
-                    <strong>
-                        ${{ item.subtotal }}
-                    </strong>
+                    <div class="mc2-line-total">
+                        ${{ i.subtotal|floatformat:"2u" }}
+                    </div>
 
                 </div>
-
 
             </article>
-
 
             {% endfor %}
 
 
-            {% else %}
+            <!-- VACIAR TODO EL CARRITO -->
 
+            <form class="mc2-clear-form"
+                  method="post"
+                  action="{% url 'orders:cart_clear' %}"
+                  onsubmit="return confirm('¿Seguro que deseas vaciar el carrito?');">
 
-            <div class="cart-v2-empty">
+                {% csrf_token %}
 
-                <h3>
-                    Tu carrito está vacío
-                </h3>
+                <button type="submit"
+                        class="mc2-clear">
+                    🗑 Vaciar carrito
+                </button>
 
-                <p>
-                    Agrega productos desde el catálogo.
-                </p>
-
-
-                <a href="{% url 'catalog:catalogo' %}"
-                   class="cart-v2-back">
-                    Ir al catálogo
-                </a>
-
-            </div>
-
-
-            {% endif %}
+            </form>
 
 
         </section>
 
 
+        <!-- RESUMEN DEL PEDIDO -->
 
-        <aside class="cart-v2-summary">
+        <aside class="mc2-summary">
 
-            <h3>
+            <h2 class="mc2-summary-title">
                 Resumen del pedido
-            </h3>
+            </h2>
 
+            <div class="mc2-summary-row">
+                <span>Subtotal</span>
+                <strong>
+                    ${{ total|floatformat:"2u" }}
+                </strong>
+            </div>
 
-            <div class="cart-v2-row">
+            <div class="mc2-summary-row">
+                <span>Artículos</span>
+                <strong>
+                    {{ cantidad_articulos }}
+                </strong>
+            </div>
 
-                <span>
-                    Productos
-                </span>
+            <div class="mc2-summary-row">
+                <span>Envío</span>
+                <strong>A calcular</strong>
+            </div>
 
-                <span>
-                    {{ items|length }}
-                </span>
-
+            <div class="mc2-summary-row mc2-summary-total">
+                <span>Total</span>
+                <strong>
+                    ${{ total|floatformat:"2u" }}
+                </strong>
             </div>
 
 
-            <div class="cart-v2-row">
+            <!-- CONTINUAR COMPRA -->
+            {% if user.is_authenticated %}
 
-                <span>
-                    Subtotal
-                </span>
+            <a href="{% url 'orders:checkout' %}"
+               class="mc2-button mc2-primary">
+                Continuar al checkout →
+            </a>
 
-                <span>
-                    ${{ cart.total }}
-                </span>
+            {% else %}
 
-            </div>
-
-
-            <div class="cart-v2-total">
-
-                <span>
-                    Total
-                </span>
-
-                <span>
-                    ${{ cart.total }}
-                </span>
-
-            </div>
-
-
-            {% if items %}
-
-            <a href="#"
-               class="cart-v2-checkout">
-                Continuar al checkout
+            <a href="{% url 'accounts:login' %}"
+               class="mc2-button mc2-primary">
+                Iniciar sesión para comprar →
             </a>
 
             {% endif %}
 
 
+            <a href="{% url 'catalog:catalogo' %}"
+               class="mc2-button mc2-secondary">
+                Seguir comprando
+            </a>
+
+            <div class="mc2-summary-note">
+                El envío se determinará durante
+                el proceso de compra.
+            </div>
+
         </aside>
 
-
     </div>
+
+    {% else %}
+
+    <!-- ESTADO VACIO -->
+
+    <section class="mc2-empty">
+
+        <div class="mc2-empty-icon">
+            🛒
+        </div>
+
+        <h2>
+            Tu carrito está vacío
+        </h2>
+
+        <p>
+            Añade componentes desde el catálogo
+            para comenzar tu compra.
+        </p>
+
+        <a href="{% url 'catalog:catalogo' %}"
+           class="mc2-button mc2-primary">
+            Explorar catálogo
+        </a>
+
+    </section>
+
+    {% endif %}
 
 </div>
 

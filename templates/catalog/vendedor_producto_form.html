@@ -1,0 +1,780 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{ title }} | Marketplace Componentes
+{% endblock %}
+
+{% block content %}
+
+<style>
+    /* FASE 4.2 - FORMULARIO EXCLUSIVO DEL VENDEDOR */
+
+    .mc-publish {
+        width: 100%;
+        max-width: 1050px;
+        margin: 0 auto;
+        color: #e9eefb;
+    }
+
+        .mc-publish * {
+            box-sizing: border-box;
+        }
+
+    .mc-publish-heading {
+        margin-bottom: 23px;
+    }
+
+    .mc-publish-breadcrumb {
+        margin: 0 0 12px;
+        color: #91a3c2;
+        font-size: 12px;
+    }
+
+        .mc-publish-breadcrumb a {
+            color: #91a3c2;
+            text-decoration: none;
+        }
+
+            .mc-publish-breadcrumb a:hover {
+                color: #22d3ee;
+            }
+
+    .mc-publish-heading h1 {
+        margin: 0 0 9px;
+        font-size: clamp(24px, 3vw, 32px);
+        font-weight: 900;
+        letter-spacing: -.7px;
+    }
+
+        .mc-publish-heading h1 span {
+            background: linear-gradient(90deg, #3475ff, #22d3ee);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+    .mc-publish-heading p:last-child {
+        color: #98a9c7;
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    .mc-publish-card {
+        overflow: hidden;
+        border: 1px solid #273753;
+        border-radius: 17px;
+        background: #121a2b;
+        box-shadow: 0 15px 50px #0003;
+    }
+
+    .mc-publish-card-head {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        padding: 21px 26px;
+        border-bottom: 1px solid #293850;
+        background: linear-gradient(110deg, #172747, #121a2b);
+    }
+
+    .mc-publish-card-icon {
+        display: grid;
+        place-items: center;
+        flex: 0 0 42px;
+        width: 42px;
+        height: 42px;
+        border: 1px solid #375ca2;
+        border-radius: 12px;
+        background: #203969;
+        font-size: 22px;
+    }
+
+    .mc-publish-card-head h2 {
+        margin: 0 0 3px;
+        color: #fff;
+        font-size: 17px;
+        font-weight: 850;
+    }
+
+    .mc-publish-card-head p {
+        margin: 0;
+        color: #96aacb;
+        font-size: 12px;
+    }
+
+    .mc-publish-form {
+        padding: 27px;
+    }
+
+    .mc-publish-section {
+        margin: 0 0 20px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #26354e;
+        color: #c6d7f5;
+        font-size: 12px;
+        font-weight: 850;
+        letter-spacing: .7px;
+        text-transform: uppercase;
+    }
+
+    .mc-publish-field {
+        min-width: 0;
+        margin-bottom: 19px;
+    }
+
+        .mc-publish-field > label {
+            display: block;
+            margin-bottom: 8px;
+            color: #d9e4f8;
+            font-size: 12px;
+            font-weight: 750;
+        }
+
+    .mc-required {
+        color: #60a5fa;
+    }
+
+    .mc-publish-grid-2 {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0 20px;
+    }
+
+    .mc-publish-grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0 20px;
+    }
+
+    .mc-publish-field input:not([type="checkbox"]):not([type="file"]),
+    .mc-publish-field select,
+    .mc-publish-field textarea {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        min-height: 43px;
+        padding: 11px 13px;
+        border: 1px solid #344663;
+        border-radius: 10px;
+        outline: none;
+        background: #0c1424;
+        color: #fff;
+        font: inherit;
+        font-size: 13px;
+        transition: border-color .18s, box-shadow .18s;
+    }
+
+    .mc-publish-field textarea {
+        min-height: 120px;
+        resize: vertical;
+        line-height: 1.6;
+    }
+
+        .mc-publish-field input:focus,
+        .mc-publish-field select:focus,
+        .mc-publish-field textarea:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px #2563eb24;
+        }
+
+    .mc-publish-field select option {
+        background: #121a2b;
+        color: #fff;
+    }
+
+    .mc-publish-field input[type="file"] {
+        display: block;
+        width: 100%;
+        padding: 12px;
+        border: 1px dashed #38527a;
+        border-radius: 10px;
+        background: #0c1424;
+        color: #b8c9e4;
+        font-size: 12px;
+    }
+
+        .mc-publish-field input[type="file"]::file-selector-button {
+            margin-right: 12px;
+            padding: 9px 12px;
+            border: 1px solid #375384;
+            border-radius: 8px;
+            background: #21365d;
+            color: #fff;
+            cursor: pointer;
+        }
+
+    .mc-publish-help {
+        margin-top: 7px;
+        color: #8fa2c2;
+        font-size: 11px;
+        line-height: 1.6;
+    }
+
+    .mc-publish-error {
+        margin: 6px 0;
+        color: #fca5a5;
+        font-size: 12px;
+    }
+
+    .mc-publish-alert {
+        margin-bottom: 20px;
+        padding: 13px 15px;
+        border: 1px solid #8d414b;
+        border-radius: 10px;
+        background: #3b1d2a;
+        color: #fecaca;
+        font-size: 13px;
+    }
+
+    .mc-publish-photo {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+    }
+
+    .mc-publish-preview {
+        display: grid;
+        place-items: center;
+        flex: 0 0 112px;
+        width: 112px;
+        height: 112px;
+        overflow: hidden;
+        border: 1px solid #344663;
+        border-radius: 13px;
+        background: radial-gradient(circle, #1c2942, #0b1120);
+        font-size: 40px;
+    }
+
+        .mc-publish-preview img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .mc-publish-photo-text {
+        flex: 1;
+        min-width: 180px;
+        color: #99acce;
+        font-size: 12px;
+        line-height: 1.7;
+    }
+
+    .mc-publish-switch {
+        display: flex;
+        align-items: flex-start;
+        gap: 11px;
+        padding: 17px;
+        border: 1px solid #2a3d5e;
+        border-radius: 11px;
+        background: #0d182c;
+    }
+
+        .mc-publish-switch input {
+            flex: none;
+            width: 18px;
+            height: 18px;
+            margin-top: 2px;
+            accent-color: #2563eb;
+        }
+
+        .mc-publish-switch strong {
+            display: block;
+            color: #fff;
+            font-size: 13px;
+        }
+
+        .mc-publish-switch p {
+            margin: 4px 0 0;
+            color: #96a7c7;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+    .mc-publish-notice {
+        margin-top: 22px;
+        padding: 15px;
+        border: 1px solid #594b27;
+        border-radius: 11px;
+        background: #292414;
+        color: #f5d894;
+        font-size: 12px;
+        line-height: 1.7;
+    }
+
+    .mc-publish-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 11px;
+        flex-wrap: wrap;
+        margin-top: 25px;
+        padding-top: 22px;
+        border-top: 1px solid #26354e;
+    }
+
+    .mc-publish-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 43px;
+        padding: 11px 18px;
+        border: 1px solid #344663;
+        border-radius: 10px;
+        background: #1b2940;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 800;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+        .mc-publish-btn:hover {
+            filter: brightness(1.16);
+            color: #fff;
+        }
+
+    .mc-publish-btn-primary {
+        border-color: #3475ff;
+        background: linear-gradient(130deg, #316aff, #1e50d6);
+    }
+
+    @media (max-width: 760px) {
+        .mc-publish-grid-2,
+        .mc-publish-grid-3 {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+
+        .mc-publish-form {
+            padding: 18px;
+        }
+
+        .mc-publish-card-head {
+            padding: 18px;
+        }
+
+        .mc-publish-actions {
+            flex-direction: column-reverse;
+        }
+
+        .mc-publish-btn {
+            width: 100%;
+        }
+    }
+</style>
+
+
+<div class="mc-publish">
+
+    <!-- ENCABEZADO -->
+
+    <div class="mc-publish-heading">
+
+        <p class="mc-publish-breadcrumb">
+            <a href="{% url 'catalog:vendedor_dashboard' %}">
+                Vendedor
+            </a>
+            /
+            <a href="{% url 'catalog:vendedor_productos' %}">
+                Mis productos
+            </a>
+            /
+            {{ title }}
+        </p>
+
+        <h1>
+            {% if form.instance.pk %}
+            Editar <span>producto</span>
+            {% else %}
+            Publicar <span>producto</span>
+            {% endif %}
+        </h1>
+
+        <p>
+            Completa la información de tu componente.
+            Los datos serán enviados a revisión administrativa.
+        </p>
+
+    </div>
+
+    <!-- TARJETA DEL FORMULARIO -->
+
+    <section class="mc-publish-card">
+
+        <div class="mc-publish-card-head">
+
+            <div class="mc-publish-card-icon">
+                📦
+            </div>
+
+            <div>
+                <h2>
+                    {% if form.instance.pk %}
+                    Editar componente
+                    {% else %}
+                    Publicar nuevo componente
+                    {% endif %}
+                </h2>
+
+                <p>
+                    Los campos con * son obligatorios.
+                </p>
+            </div>
+
+        </div>
+
+        <form method="post"
+              enctype="multipart/form-data"
+              class="mc-publish-form">
+
+            {% csrf_token %}
+
+            <!-- ERRORES GENERALES -->
+            {% if form.non_field_errors %}
+            <div class="mc-publish-alert">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+
+            <!-- INFORMACIÓN PRINCIPAL -->
+
+            <h3 class="mc-publish-section">
+                Información del producto
+            </h3>
+
+            <div class="mc-publish-field">
+
+                <label for="{{ form.name.id_for_label }}">
+                    Nombre del producto
+                    <span class="mc-required">*</span>
+                </label>
+
+                {{ form.name }}
+
+                {% for error in form.name.errors %}
+                <p class="mc-publish-error">{{ error }}</p>
+                {% endfor %}
+
+            </div>
+
+            <div class="mc-publish-grid-2">
+
+                <div class="mc-publish-field">
+
+                    <label for="{{ form.category.id_for_label }}">
+                        Categoría
+                        <span class="mc-required">*</span>
+                    </label>
+
+                    {{ form.category }}
+
+                    {% for error in form.category.errors %}
+                    <p class="mc-publish-error">{{ error }}</p>
+                    {% endfor %}
+
+                </div>
+
+                <div class="mc-publish-field">
+
+                    <label for="{{ form.condition.id_for_label }}">
+                        Condición
+                        <span class="mc-required">*</span>
+                    </label>
+
+                    {{ form.condition }}
+
+                    {% for error in form.condition.errors %}
+                    <p class="mc-publish-error">{{ error }}</p>
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+            <div class="mc-publish-grid-2">
+
+                <div class="mc-publish-field">
+
+                    <label for="{{ form.brand.id_for_label }}">
+                        Marca
+                        <span class="mc-required">*</span>
+                    </label>
+
+                    {{ form.brand }}
+
+                    {% for error in form.brand.errors %}
+                    <p class="mc-publish-error">{{ error }}</p>
+                    {% endfor %}
+
+                </div>
+
+                <div class="mc-publish-field">
+
+                    <label for="{{ form.model.id_for_label }}">
+                        Modelo
+                    </label>
+
+                    {{ form.model }}
+
+                    <p class="mc-publish-help">
+                        Indica el número o referencia del modelo, si lo conoces.
+                    </p>
+
+                    {% for error in form.model.errors %}
+                    <p class="mc-publish-error">{{ error }}</p>
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+            <div class="mc-publish-field">
+
+                <label for="{{ form.description.id_for_label }}">
+                    Descripción
+                    <span class="mc-required">*</span>
+                </label>
+
+                {{ form.description }}
+
+                <p class="mc-publish-help">
+                    Describe las características, el estado del
+                    componente y cualquier detalle importante.
+                </p>
+
+                {% for error in form.description.errors %}
+                <p class="mc-publish-error">{{ error }}</p>
+                {% endfor %}
+
+            </div>
+
+            <!-- PRECIO Y EXISTENCIAS -->
+
+            <h3 class="mc-publish-section">
+                Precio y disponibilidad
+            </h3>
+
+            <div class="mc-publish-grid-3">
+
+                <div class="mc-publish-field">
+
+                    <label for="{{ form.price.id_for_label }}">
+                        Precio (USD)
+                        <span class="mc-required">*</span>
+                    </label>
+
+                    {{ form.price }}
+
+                    {% for error in form.price.errors %}
+                    <p class="mc-publish-error">{{ error }}</p>
+                    {% endfor %}
+
+                </div>
+
+                <div class="mc-publish-field">
+
+                    <label for="{{ form.stock.id_for_label }}">
+                        Stock
+                        <span class="mc-required">*</span>
+                    </label>
+
+                    {{ form.stock }}
+
+                    {% for error in form.stock.errors %}
+                    <p class="mc-publish-error">{{ error }}</p>
+                    {% endfor %}
+
+                </div>
+
+                <div class="mc-publish-field">
+
+                    <label for="{{ form.location.id_for_label }}">
+                        Ubicación
+                    </label>
+
+                    {{ form.location }}
+
+                    {% for error in form.location.errors %}
+                    <p class="mc-publish-error">{{ error }}</p>
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+            <!-- FOTOGRAFÍA -->
+
+            <h3 class="mc-publish-section">
+                Fotografía del componente
+            </h3>
+
+            <div class="mc-publish-photo">
+
+                <div class="mc-publish-preview"
+                     id="mc-product-image-preview">
+
+                    {% if form.instance.image %}
+
+                    <img src="{{ form.instance.image.url }}"
+                         alt="Fotografía actual del producto">
+
+                    {% else %}
+
+                    📷
+
+                    {% endif %}
+
+                </div>
+
+                <div class="mc-publish-photo-text">
+                    Sube una fotografía clara de tu componente.
+                    Podrás verla antes de enviar el formulario.
+                    Si ya existe una imagen, puedes conservarla.
+                </div>
+
+            </div>
+
+            <div class="mc-publish-field">
+
+                <label for="{{ form.image.id_for_label }}">
+                    Imagen del producto
+                </label>
+
+                {{ form.image }}
+
+                {% for error in form.image.errors %}
+                <p class="mc-publish-error">{{ error }}</p>
+                {% endfor %}
+
+            </div>
+
+            <!-- VISIBILIDAD -->
+
+            <h3 class="mc-publish-section">
+                Visibilidad de la publicación
+            </h3>
+
+            <div class="mc-publish-switch">
+
+                {{ form.active }}
+
+                <div>
+
+                    <label for="{{ form.active.id_for_label }}">
+                        <strong>Producto activo</strong>
+                    </label>
+
+                    <p>
+                        Los productos activos podrán aparecer en el catálogo
+                        una vez aprobados por un administrador y cuando
+                        tengan unidades disponibles.
+                    </p>
+
+                </div>
+
+            </div>
+
+            {% for error in form.active.errors %}
+            <p class="mc-publish-error">{{ error }}</p>
+            {% endfor %}
+
+            <!-- AVISO DE REVISIÓN -->
+
+            <div class="mc-publish-notice">
+                ⏳ <strong>Revisión administrativa:</strong>
+                al guardar, el producto quedará en estado pendiente.
+                No aparecerá públicamente hasta que sea aprobado.
+                Si estás editando un producto, deberá revisarse nuevamente.
+            </div>
+
+            <!-- ACCIONES -->
+
+            <div class="mc-publish-actions">
+
+                <a href="{% url 'catalog:vendedor_productos' %}"
+                   class="mc-publish-btn">
+                    Cancelar
+                </a>
+
+                <button type="submit"
+                        class="mc-publish-btn mc-publish-btn-primary">
+
+                    {% if form.instance.pk %}
+                    💾 Guardar cambios
+                    {% else %}
+                    📤 Enviar a revisión
+                    {% endif %}
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </section>
+
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script>(function () {
+    "use strict";
+
+    const input = document.querySelector(
+        'input[type="file"][name="image"]'
+    );
+
+    const preview = document.getElementById(
+        "mc-product-image-preview"
+    );
+
+    if (!input || !preview) {
+        return;
+    }
+
+    const originalContent = preview.innerHTML;
+    let temporaryUrl = null;
+
+    input.addEventListener("change", function () {
+
+        if (temporaryUrl) {
+            URL.revokeObjectURL(temporaryUrl);
+            temporaryUrl = null;
+        }
+
+        const file = input.files && input.files[0];
+
+        if (!file) {
+            preview.innerHTML = originalContent;
+            return;
+        }
+
+        if (!file.type.startsWith("image/")) {
+            preview.innerHTML = originalContent;
+            return;
+        }
+
+        temporaryUrl = URL.createObjectURL(file);
+
+        const image = document.createElement("img");
+
+        image.alt = "Vista previa de la fotografía";
+        image.src = temporaryUrl;
+
+        preview.replaceChildren(image);
+    });
+
+    window.addEventListener("pagehide", function () {
+        if (temporaryUrl) {
+            URL.revokeObjectURL(temporaryUrl);
+        }
+    });
+
+})();</script>
+
+{% endblock %}

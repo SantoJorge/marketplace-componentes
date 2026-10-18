@@ -1,197 +1,696 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>
-        {% block title %}
-        Marketplace Componentes
-        {% endblock %}
-    </title>
-
-    <link rel="stylesheet"
-          href="{% static 'css/marketplace.css' %}?v=7">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Marketplace Componentes{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/marketplace.css' %}?v=7">
+    {% if panel_mode %}
+    <link rel="stylesheet" href="{% static 'css/paneles.css' %}">
+    {% endif %}
+    <link rel="stylesheet" href="{% static 'css/navbar_unificada.css' %}?v=1">
+    {% block extra_css %}{% endblock %}
 </head>
-
-
 <body>
+    <!-- UNA SOLA BARRA, COMPARTIDA POR TODAS LAS APPS -->
+    <header class="navbar marketplace-navbar">
+        <button type="button" class="nav-toggle" id="nav-toggle"
+                aria-label="Abrir menú principal" aria-expanded="false"
+                aria-controls="main-nav">
+            ☰
+        </button>
 
-    <header class="navbar">
-
-        <!-- ==========================================
-             LOGO
-        =========================================== -->
         <div class="logo">
-
-            <a href="{% url 'catalog:inicio' %}"
-               class="logo-link">
-
-                <div class="logo-mark">
-                    M
-                </div>
-
-                <div class="logo-text">
+            <a href="{% url 'catalog:inicio' %}" class="logo-link" aria-label="Marketplace Componentes, inicio">
+                <span class="logo-mark">M</span>
+                <span class="logo-text">
                     <strong>MARKETPLACE</strong>
                     <span>COMPONENTES</span>
-                </div>
-
+                </span>
             </a>
-
         </div>
 
-
-        <!-- ==========================================
-             NAVEGACIÓN PRINCIPAL
-        =========================================== -->
-        <nav class="nav-links">
-
+        <nav class="nav-links" id="main-nav" aria-label="Navegación principal">
             <a href="{% url 'catalog:inicio' %}"
-               class="nav-link">
-                Inicio
-            </a>
-
-
+               class="nav-link{% if request.path == '/' %} active{% endif %}">Inicio</a>
             <a href="{% url 'catalog:catalogo' %}"
-               class="nav-link">
-                Catálogo
-            </a>
-
+               class="nav-link{% if request.resolver_match.url_name == 'catalogo' or request.resolver_match.url_name == 'producto' %} active{% endif %}">Catálogo</a>
 
             {% if user.is_authenticated %}
-
-            <!-- ================================
-                 ADMINISTRADOR
-            ================================= -->
-            {% if user.is_superuser %}
-
+            {% if user.is_superuser or user.profile.role == 'ADMINISTRADOR' %}
             <a href="{% url 'management:dashboard' %}"
-               class="nav-link">
-                Administración
-            </a>
-
-            {% elif user.profile.role == "ADMINISTRADOR" %}
-
-            <a href="{% url 'management:dashboard' %}"
-               class="nav-link">
-                Administración
-            </a>
-
+               class="nav-link{% if request.resolver_match.namespace == 'management' %} active{% endif %}">Administración</a>
+            {% elif user.profile.role == 'VENDEDOR' %}
+            <a href="{% url 'catalog:vendedor_dashboard' %}"
+               class="nav-link{% if request.resolver_match.url_name == 'vendedor_dashboard' or request.resolver_match.url_name == 'vendedor_productos' or request.resolver_match.url_name == 'vendedor_producto_nuevo' or request.resolver_match.url_name == 'vendedor_producto_editar' %} active{% endif %}">Panel Vendedor</a>
             {% endif %}
-
-
-            <!-- ================================
-                 VENDEDOR
-            ================================= -->
-            {% if user.profile.role == "VENDEDOR" %}
-
-            <a href="{% url 'accounts:vendedor_dashboard' %}"
-               class="nav-link">
-                Panel Vendedor
-            </a>
-
             {% endif %}
-
-            {% endif %}
-
         </nav>
 
-
-        <!-- ==========================================
-             BUSCADOR PRINCIPAL
-        =========================================== -->
-        <form method="GET"
-              action="{% url 'catalog:catalogo' %}"
-              class="nav-search">
-
-            <button type="submit"
-                    class="nav-search-button"
-                    aria-label="Buscar"
-                    title="Buscar">
-                🔍
-            </button>
-
-            <input type="search"
-                   name="q"
-                   value="{{ request.GET.q|default:'' }}"
-                   placeholder="Buscar componentes, marcas, modelos..."
-                   autocomplete="off">
-
+        <!-- El buscador siempre consulta el Catálogo existente. -->
+        <form class="nav-search" method="get" action="{% url 'catalog:catalogo' %}" role="search">
+            <button class="nav-search-button" type="submit" aria-label="Buscar componentes">🔍</button>
+            <input type="search" name="q" value="{{ request.GET.q|default:'' }}"
+                   placeholder="Buscar componentes, marcas, modelos..." autocomplete="off"
+                   aria-label="Buscar componentes, marcas y modelos">
         </form>
 
-
-        <!-- ==========================================
-             ACCIONES DEL USUARIO
-        =========================================== -->
         <div class="nav-actions">
 
-            <a href="{% url 'orders:cart_detail' %}"
-               class="cart-btn"
-               title="Carrito">
+            <a class="cart-btn mc-cart-icon"
+               href="{% url 'orders:cart_detail' %}"
+               title="Ver carrito"
+               aria-label="Ver carrito">
+
                 🛒
+
+                <span id="mc-cart-count-badge"
+                      class="mc-cart-count-badge"
+                      aria-hidden="true"
+                      hidden></span>
+
             </a>
 
 
             {% if user.is_authenticated %}
+            <div class="nav-user">
+                <button class="nav-user-button" type="button" id="user-menu-button"
+                        aria-expanded="false" aria-controls="user-dropdown" aria-haspopup="true">
+                    <span class="nav-avatar" aria-hidden="true">
+                        {% if user.first_name or user.last_name %}{{ user.first_name|slice:':1'|upper }}{{ user.last_name|slice:':1'|upper }}{% else %}{{ user.username|slice:':2'|upper }}{% endif %}
+                    </span>
+                    <span class="nav-user-name">{{ user.first_name|default:user.username }}</span>
+                    <span class="nav-chevron" aria-hidden="true">▾</span>
+                </button>
 
-            <span class="nav-username">
-                {{ user.first_name|default:user.username }}
-            </span>
+                <div class="nav-dropdown" id="user-dropdown" hidden>
+                    <div class="nav-dropdown-head">
+                        <strong>{{ user.get_full_name|default:user.username }}</strong>
+                        <small>{{ user.email|default:user.username }}</small>
+                        <span class="nav-role">
+                            {% if user.is_superuser or user.profile.role == 'ADMINISTRADOR' %}ADMINISTRADOR
+                            {% elif user.profile.role == 'VENDEDOR' %}VENDEDOR
+                            {% else %}COMPRADOR{% endif %}
+                        </span>
+                    </div>
+
+                    {% if user.is_superuser or user.profile.role == 'ADMINISTRADOR' %}
+                    <a class="nav-dropdown-item" href="{% url 'management:dashboard' %}">🛡️ Panel administrativo</a>
+                    <a class="nav-dropdown-item" href="{% url 'management:perfil' %}">👤 Mi perfil</a>
+                    {% elif user.profile.role == 'VENDEDOR' %}
+                    <a class="nav-dropdown-item" href="{% url 'catalog:vendedor_dashboard' %}">🏪 Panel de vendedor</a>
+                    <a class="nav-dropdown-item" href="{% url 'accounts:perfil' %}">👤 Mi perfil</a>
+
+                    <!-- MODIFICADO EN FASE 3.1 -->
+                    {% else %}
+                    <a class="nav-dropdown-item" href="{% url 'accounts:perfil' %}">👤 Mi perfil</a>
+                    {% endif %}
 
 
-            <a href="{% url 'accounts:logout' %}"
-               class="btn btn-secondary">
-                Cerrar sesión
-            </a>
-
+                    <a class="nav-dropdown-item" href="{% url 'orders:mis_pedidos' %}">🧾 Mis compras</a>
+                    <div class="nav-dropdown-divider"></div>
+                    <form action="{% url 'accounts:logout' %}" method="post" class="nav-logout-form">
+                        {% csrf_token %}
+                        <button type="submit" class="nav-dropdown-item nav-danger">⏻ Cerrar sesión</button>
+                    </form>
+                </div>
+            </div>
             {% else %}
-
-            <a href="{% url 'accounts:login' %}"
-               class="btn btn-secondary">
-                Iniciar sesión
-            </a>
-
-
-            <a href="{% url 'accounts:registro' %}"
-               class="btn btn-primary">
-                Registrarse
-            </a>
-
+            <a class="btn btn-secondary nav-auth-link" href="{% url 'accounts:login' %}">Iniciar sesión</a>
+            <a class="btn btn-primary nav-auth-link" href="{% url 'accounts:registro' %}">Registrarse</a>
             {% endif %}
-
         </div>
-
     </header>
 
-
-    <!-- ==========================================
-         CONTENIDO PRINCIPAL
-    =========================================== -->
-    <div id="layout">
-
-        <aside id="sidebar"
-               class="hidden">
-        </aside>
-
-
-        <main id="view"
-              class="view">
-
-            {% block content %}
-            {% endblock %}
-
+    <div id="layout" class="{% if panel_mode %}mc-shell{% endif %}">
+        {% if panel_mode and user.is_authenticated %}
+        {% include 'includes/panel_sidebar.html' %}
+        {% endif %}
+        <main id="view" class="view{% if panel_mode %} mc-main{% endif %}">
+            {% if messages %}
+            <div class="mc-messages" role="status" aria-live="polite">
+                {% for message in messages %}<div class="mc-message">{{ message }}</div>{% endfor %}
+            </div>
+            {% endif %}
+            {% block content %}{% endblock %}
         </main>
-
     </div>
 
-
     <script src="{% static 'js/marketplace.js' %}"></script>
+    <script>
+        (function () {
+            const button = document.getElementById('user-menu-button');
+            const dropdown = document.getElementById('user-dropdown');
+            const navToggle = document.getElementById('nav-toggle');
+            const nav = document.getElementById('main-nav');
 
+            if (button && dropdown) {
+                function closeUserMenu() {
+                    dropdown.hidden = true;
+                    button.setAttribute('aria-expanded', 'false');
+                }
+                button.addEventListener('click', function () {
+                    const opening = dropdown.hidden;
+                    dropdown.hidden = !opening;
+                    button.setAttribute('aria-expanded', String(opening));
+                });
+                document.addEventListener('click', function (event) {
+                    if (!button.contains(event.target) && !dropdown.contains(event.target)) closeUserMenu();
+                });
+                document.addEventListener('keydown', function (event) {
+                    if (event.key === 'Escape') { closeUserMenu(); button.focus(); }
+                });
+            }
+            if (navToggle && nav) {
+                navToggle.addEventListener('click', function () {
+                    const opened = nav.classList.toggle('is-open');
+                    navToggle.setAttribute('aria-expanded', String(opened));
+                });
+            }
+        }());
+    </script>
+
+
+
+    <!-- NOTIFICACIONES DEL CARRITO PUBLICO -->
+
+    <style>
+        #mc-cart-notifications {
+            position: fixed;
+            top: 82px;
+            right: 20px;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-end;
+            pointer-events: none;
+        }
+
+        .mc-cart-notification {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: max-content;
+            max-width: min(390px, calc(100vw - 35px));
+            padding: 15px 19px;
+            background: #121a2b;
+            border: 1px solid #246b46;
+            border-left: 4px solid #22c55e;
+            border-radius: 12px;
+            color: #e9eefb;
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.5;
+            box-shadow: 0 15px 45px rgba(0,0,0,.35);
+            animation: mcCartEnter .22s ease-out;
+        }
+
+            .mc-cart-notification.error {
+                border-color: #7f3440;
+                border-left-color: #f87171;
+            }
+
+            .mc-cart-notification .symbol {
+                color: #4ade80;
+                font-size: 19px;
+                font-weight: 900;
+            }
+
+            .mc-cart-notification.error .symbol {
+                color: #f87171;
+            }
+
+        @keyframes mcCartEnter {
+            from {
+                opacity: 0;
+                transform: translateY(-12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 600px) {
+            #mc-cart-notifications {
+                top: 75px;
+                left: 12px;
+                right: 12px;
+                align-items: stretch;
+            }
+
+            .mc-cart-notification {
+                width: 100%;
+                max-width: none;
+            }
+        }
+    </style>
+
+
+    <script>
+        (function () {
+            "use strict";
+
+            // ==========================================
+            // MARKETPLACECOMPONENTES - FASE 2.3.3
+            // NOTIFICACIONES + CONTADOR DINAMICO
+            // ==========================================
+
+            const rutaAgregar =
+                /\/carrito\/(?:agregar|agregar-producto)\/\d+\/$/;
+
+            const urlContador = "{% url 'orders:cart_count' %}";
+
+            // ==========================================
+            // 1. NOTIFICACIONES FLOTANTES
+            // ==========================================
+
+            function mostrarNotificacion(mensaje, correcto) {
+
+                let contenedor = document.getElementById(
+                    "mc-cart-notifications"
+                );
+
+                if (!contenedor) {
+                    contenedor = document.createElement("div");
+                    contenedor.id = "mc-cart-notifications";
+                    contenedor.setAttribute("role", "status");
+                    contenedor.setAttribute("aria-live", "polite");
+                    document.body.appendChild(contenedor);
+                }
+
+                // Garantizar que el aviso sea flotante.
+                Object.assign(contenedor.style, {
+                    position: "fixed",
+                    top: "82px",
+                    right: "20px",
+                    zIndex: "99999",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "10px",
+                    pointerEvents: "none"
+                });
+
+                const aviso = document.createElement("div");
+
+                aviso.className =
+                    "mc-cart-notification" +
+                    (correcto ? "" : " error");
+
+                Object.assign(aviso.style, {
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "12px",
+                    maxWidth: "min(390px, calc(100vw - 40px))",
+                    padding: "14px 18px",
+                    background: "#121a2b",
+                    color: "#ffffff",
+                    borderRadius: "12px",
+                    border: correcto
+                        ? "1px solid #22c55e"
+                        : "1px solid #ef4444",
+                    borderLeft: correcto
+                        ? "4px solid #22c55e"
+                        : "4px solid #ef4444",
+                    boxShadow: "0 12px 35px rgba(0,0,0,.35)",
+                    fontSize: "13px",
+                    fontWeight: "700",
+                    lineHeight: "1.5",
+                    pointerEvents: "none"
+                });
+
+                const simbolo = document.createElement("span");
+                simbolo.className = "symbol";
+                simbolo.textContent = correcto ? "✔" : "✕";
+                simbolo.style.color = correcto
+                    ? "#4ade80"
+                    : "#f87171";
+
+                const texto = document.createElement("span");
+                texto.textContent = mensaje;
+
+                aviso.appendChild(simbolo);
+                aviso.appendChild(texto);
+                contenedor.appendChild(aviso);
+
+                // Igual que el INDEX: 3,4 segundos.
+                window.setTimeout(function () {
+                    aviso.remove();
+                }, 3400);
+            }
+
+            // ==========================================
+            // 2. ACTUALIZAR CONTADOR DEL CARRITO
+            // ==========================================
+
+            function actualizarContador(cantidad) {
+
+                if (cantidad === undefined || cantidad === null) {
+                    return;
+                }
+
+                const total = Number(cantidad);
+
+                if (!Number.isSafeInteger(total) || total < 0) {
+                    return;
+                }
+
+                // Usar la funcion del contador existente.
+                if (
+                    typeof window.mcSetCartCount === "function"
+                ) {
+                    window.mcSetCartCount(total);
+                    return;
+                }
+
+                // Actualizacion directa si esa funcion
+                // todavia no esta disponible.
+                const badge = document.getElementById(
+                    "mc-cart-count-badge"
+                );
+
+                if (!badge) {
+                    console.warn(
+                        "No se encontro mc-cart-count-badge"
+                    );
+                    return;
+                }
+
+                badge.textContent = String(total);
+                badge.hidden = total === 0;
+
+                const enlace = badge.closest("a");
+
+                if (enlace) {
+                    enlace.setAttribute(
+                        "aria-label",
+                        total === 0
+                            ? "Ver carrito vacio"
+                            : "Ver carrito: " + total + " unidades"
+                    );
+                }
+            }
+
+            // ==========================================
+            // 3. CONSULTAR CANTIDAD REAL EN DJANGO
+            // ==========================================
+
+            async function sincronizarContador() {
+
+                const respuesta = await fetch(urlContador, {
+                    method: "GET",
+                    credentials: "same-origin",
+                    cache: "no-store",
+                    headers: {
+                        "Accept": "application/json"
+                    }
+                });
+
+                if (!respuesta.ok) {
+                    throw new Error(
+                        "No se pudo consultar el contador."
+                    );
+                }
+
+                const datos = await respuesta.json();
+
+                actualizarContador(datos.count);
+            }
+
+            // ==========================================
+            // 4. INTERCEPTAR BOTONES AÑADIR
+            // ==========================================
+
+            document.addEventListener(
+                "submit",
+                async function (evento) {
+
+                    const formulario = evento.target;
+
+                    if (!(formulario instanceof HTMLFormElement)) {
+                        return;
+                    }
+
+                    if (formulario.method.toLowerCase() !== "post") {
+                        return;
+                    }
+
+                    const url = new URL(
+                        formulario.action,
+                        window.location.href
+                    );
+
+                    if (
+                        url.origin !== window.location.origin ||
+                        !rutaAgregar.test(url.pathname)
+                    ) {
+                        return;
+                    }
+
+                    // NO abrir el carrito.
+                    evento.preventDefault();
+
+                    // Evitar envios duplicados.
+                    if (formulario.dataset.mcEnviando === "1") {
+                        return;
+                    }
+
+                    formulario.dataset.mcEnviando = "1";
+
+                    const boton =
+                        evento.submitter ||
+                        formulario.querySelector(
+                            'button[type="submit"], input[type="submit"]'
+                        );
+
+                    const botonDeshabilitado =
+                        boton ? boton.disabled : false;
+
+                    // Capturar los datos ANTES de deshabilitar.
+                    const datosFormulario = new FormData(formulario);
+
+                    if (boton) {
+                        boton.disabled = true;
+                    }
+
+                    try {
+
+                        // ==================================
+                        // 5. GUARDAR EN LA BASE DE DATOS
+                        // ==================================
+
+                        const respuesta = await fetch(
+                            formulario.action,
+                            {
+                                method: "POST",
+                                body: datosFormulario,
+                                credentials: "same-origin",
+                                headers: {
+                                    "X-Requested-With": "XMLHttpRequest",
+                                    "Accept": "application/json"
+                                }
+                            }
+                        );
+
+                        const tipo =
+                            respuesta.headers.get("Content-Type") || "";
+
+                        if (!tipo.includes("application/json")) {
+                            throw new Error(
+                                "El servidor no devolvio JSON."
+                            );
+                        }
+
+                        const datos = await respuesta.json();
+
+                        const correcto =
+                            respuesta.ok &&
+                            datos.ok === true;
+
+                        // ==================================
+                        // 6. MENSAJE FLOTANTE
+                        // ==================================
+
+                        mostrarNotificacion(
+                            datos.message ||
+                            (correcto
+                                ? "Producto añadido al carrito."
+                                : "No se pudo añadir el producto."),
+                            correcto
+                        );
+
+                        // ==================================
+                        // 7. CONTADOR DINAMICO
+                        // ==================================
+
+                        if (correcto) {
+
+                            // Actualizar inmediatamente con
+                            // la cantidad enviada por Django.
+                            actualizarContador(datos.cart_count);
+                        }
+
+                        // Confirmar desde la base de datos,
+                        // tanto en exito como en error.
+                        try {
+                            await sincronizarContador();
+                        } catch (errorContador) {
+                            console.warn(
+                                "No se pudo sincronizar el contador:",
+                                errorContador
+                            );
+                        }
+
+                    } catch (error) {
+
+                        console.error(
+                            "Error al añadir al carrito:",
+                            error
+                        );
+
+                        mostrarNotificacion(
+                            "No se pudo confirmar la operacion. Revisa tu carrito.",
+                            false
+                        );
+
+                        // Si la conexion fallo despues de guardar,
+                        // recuperar el numero desde Django.
+                        try {
+                            await sincronizarContador();
+                        } catch (errorContador) {
+                            console.error(errorContador);
+                        }
+
+                    } finally {
+
+                        delete formulario.dataset.mcEnviando;
+
+                        if (boton) {
+                            boton.disabled = botonDeshabilitado;
+                        }
+                    }
+                }
+            );
+
+        })();
+    </script>
+
+
+
+    <!-- FASE 2.3.3: CONTADOR DINAMICO DEL CARRITO -->
+
+    <style>
+        .mc-cart-icon {
+            position: relative;
+        }
+
+        .mc-cart-count-badge {
+            position: absolute;
+            top: -7px;
+            right: -9px;
+            min-width: 20px;
+            height: 20px;
+            padding: 0 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 999px;
+            background: #2563eb;
+            border: 2px solid #0b1120;
+            color: white;
+            font-size: 11px;
+            font-weight: 900;
+            line-height: 1;
+            pointer-events: none;
+        }
+
+            .mc-cart-count-badge[hidden] {
+                display: none !important;
+            }
+    </style>
+
+    <script>
+        (function () {
+            "use strict";
+
+            const badge = document.getElementById(
+                "mc-cart-count-badge"
+            );
+
+            if (!badge) return;
+
+            const enlace = badge.closest("a");
+
+            let version = 0;
+
+            function actualizarContador(cantidad) {
+                const total = Number(cantidad);
+
+                if (
+                    !Number.isInteger(total) ||
+                    total < 0
+                ) {
+                    return;
+                }
+
+                version += 1;
+
+                badge.textContent = String(total);
+                badge.hidden = total === 0;
+
+                if (enlace) {
+                    enlace.setAttribute(
+                        "aria-label",
+                        total === 0
+                            ? "Ver carrito vacío"
+                            : "Ver carrito: " + total + " unidades"
+                    );
+                }
+            }
+
+            // Disponible para el boton Añadir,
+            // que ya utiliza peticiones AJAX.
+            window.mcSetCartCount = actualizarContador;
+
+            // Consultar Django al abrir cualquier pagina.
+            const versionInicial = version;
+
+            fetch("{% url 'orders:cart_count' %}", {
+                method: "GET",
+                credentials: "same-origin",
+                cache: "no-store",
+                headers: {
+                    "Accept": "application/json"
+                }
+            })
+                .then(function (respuesta) {
+                    if (!respuesta.ok) {
+                        throw new Error("Error consultando el carrito");
+                    }
+
+                    return respuesta.json();
+                })
+                .then(function (datos) {
+                    // No sobrescribir una actualizacion
+                    // mas reciente hecha desde Añadir.
+                    if (version === versionInicial) {
+                        actualizarContador(datos.count);
+                    }
+                })
+                .catch(function (error) {
+                    console.error(
+                        "Contador del carrito:",
+                        error
+                    );
+                });
+
+        })();
+
+    </script>
+
+    {% block extra_js %}{% endblock %}
 </body>
-
 </html>

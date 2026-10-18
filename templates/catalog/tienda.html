@@ -1,0 +1,8 @@
+{% extends 'base.html' %}{% block title %}Tienda | Marketplace{% endblock %}
+{% block content %}
+<div class="mc-heading"><p>Inicio / Tienda</p><h1>Catálogo de <span>componentes</span></h1><p>Productos aprobados y disponibles. Precios en dólares.</p></div>
+<div class="mc-shop-layout"><aside class="mc-card mc-filters"><h3>🗂️ Categorías</h3><a href="{% url 'catalog:tienda' %}">Todas</a>{% for c in categories %}<a href="?categoria={{ c.id }}">{{ c.icon }} {{ c.name }}</a>{% endfor %}</aside>
+<section><p class="mc-muted">{{ products|length }} resultado(s) visibles</p><div class="mc-products">
+{% for p in products %}<article class="mc-card mc-product"><a class="mc-photo" href="{% url 'catalog:producto' p.id %}">{% if p.image %}<img src="{{ p.image.url }}" alt="{{ p.name }}">{% else %}<span>🖥️</span>{% endif %}</a>
+<div class="mc-product-body"><small>{{ p.category.name }} · {{ p.get_condition_display }}</small><h3><a href="{% url 'catalog:producto' p.id %}">{{ p.name }}</a></h3><p class="mc-muted">{{ p.brand }} {{ p.model }} · Vendedor: {{ p.seller.username }}</p><div class="mc-row"><strong class="mc-price">${{ p.price }}</strong><small>Stock: {{ p.stock }}</small></div><form method="post" action="{% url 'orders:cart_add' p.id %}">{% csrf_token %}<button class="mc-btn" type="submit">🛒 Añadir al carrito</button></form></div></article>{% empty %}<div class="mc-empty">No hay productos para estos filtros.</div>{% endfor %}</div></section></div>
+{% endblock %}

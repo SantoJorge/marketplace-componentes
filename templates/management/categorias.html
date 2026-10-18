@@ -1,0 +1,1034 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="dark">
+
+    <title>Categorías | Marketplace Componentes</title>
+
+    <link rel="stylesheet"
+          href="{% static 'css/management.css' %}">
+
+    <style>
+        /* FASE 5 - CATEGORÍAS ADMINISTRADOR */
+
+        .categories-admin .admin-sidebar {
+            width: 252px;
+        }
+
+        .categories-admin .sidebar-link {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+            .categories-admin .sidebar-link.active {
+                color: #fff;
+                font-weight: 800;
+                background: linear-gradient( 90deg, rgba(37,99,255,.24), rgba(37,99,255,.05) );
+            }
+
+                .categories-admin .sidebar-link.active::before {
+                    content: "";
+                    position: absolute;
+                    left: 0;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    height: 20px;
+                    width: 3px;
+                    border-radius: 0 4px 4px 0;
+                    background: #22d3ee;
+                }
+
+        .categories-admin .sidebar-count {
+            margin-left: auto;
+            padding: 1px 7px;
+            border-radius: 20px;
+            background: #ef4444;
+            color: white;
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .categories-admin .sidebar-footer form {
+            margin: 0;
+        }
+
+        .categories-admin .sidebar-footer button {
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .categories-admin .cat-search-button {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 4px;
+            border: 0;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        /* CABECERA DEL INDEX */
+
+        .categories-admin .cat-heading {
+            margin-bottom: 24px;
+        }
+
+        .categories-admin .cat-heading-row {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .categories-admin .cat-description {
+            margin-top: 7px;
+            color: #8996b3;
+            font-size: 13.5px;
+        }
+
+        /* BOTONES */
+
+        .categories-admin .cat-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            min-height: 32px;
+            padding: 7px 12px;
+            border: 1px solid #22304c;
+            border-radius: 9px;
+            background: #162034;
+            color: #e9eefb;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 800;
+            font-family: inherit;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+            .categories-admin .cat-button:hover {
+                border-color: #2563ff;
+                background: #1b2740;
+            }
+
+            .categories-admin .cat-button.primary {
+                min-height: 42px;
+                padding: 10px 18px;
+                border-color: transparent;
+                border-radius: 11px;
+                background: linear-gradient(135deg,#2563ff,#1a4fd6);
+                color: #fff;
+                font-size: 13.5px;
+            }
+
+                .categories-admin .cat-button.primary:hover {
+                    filter: brightness(1.12);
+                }
+
+            .categories-admin .cat-button:focus-visible,
+            .categories-admin .cat-menu-toggle:focus-visible,
+            .categories-admin .sidebar-link:focus-visible {
+                outline: 2px solid #22d3ee;
+                outline-offset: 3px;
+            }
+
+        /* TABLA */
+
+        .categories-admin .cat-table-wrap {
+            overflow-x: auto;
+            border: 1px solid #1a2337;
+            border-radius: 14px;
+            background: #121a2b;
+        }
+
+        .categories-admin .cat-table {
+            width: 100%;
+            min-width: 760px;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 13px;
+        }
+
+            .categories-admin .cat-table th {
+                padding: 13px 15px;
+                border-bottom: 1px solid #22304c;
+                background: #162034;
+                color: #667089;
+                font-size: 10.5px;
+                font-weight: 800;
+                letter-spacing: 1.4px;
+                text-transform: uppercase;
+                white-space: nowrap;
+            }
+
+            .categories-admin .cat-table td {
+                padding: 13px 15px;
+                border-bottom: 1px solid #1a2337;
+                vertical-align: middle;
+            }
+
+            .categories-admin .cat-table tbody tr:last-child td {
+                border-bottom: none;
+            }
+
+            .categories-admin .cat-table tbody tr:hover {
+                background: rgba(37,99,255,.045);
+            }
+
+        .categories-admin .cat-icon {
+            font-size: 22px;
+        }
+
+        .categories-admin .cat-name {
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .categories-admin .cat-id {
+            color: #8996b3;
+            font-size: 11.5px;
+        }
+
+        .categories-admin .cat-actions {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+            .categories-admin .cat-actions form {
+                margin: 0;
+            }
+
+        /* ETIQUETAS DE ESTADO */
+
+        .categories-admin .cat-status {
+            display: inline-flex;
+            padding: 4px 10px;
+            border: 1px solid transparent;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .4px;
+            white-space: nowrap;
+        }
+
+            .categories-admin .cat-status.active {
+                color: #4ade80;
+                border-color: rgba(34,197,94,.35);
+                background: rgba(34,197,94,.14);
+            }
+
+            .categories-admin .cat-status.inactive {
+                color: #9aa6c0;
+                border-color: rgba(120,130,155,.3);
+                background: rgba(120,130,155,.14);
+            }
+
+        .categories-admin .cat-empty {
+            padding: 35px !important;
+            color: #8996b3;
+            text-align: center;
+        }
+
+        /* MENSAJES DJANGO */
+
+        .categories-admin .cat-notices {
+            margin-bottom: 18px;
+        }
+
+        .categories-admin .cat-notice {
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border: 1px solid rgba(34,197,94,.4);
+            border-radius: 10px;
+            background: rgba(34,197,94,.09);
+            color: #a7f3bd;
+            font-size: 13px;
+        }
+
+            .categories-admin .cat-notice.error {
+                color: #ffc0c0;
+                border-color: rgba(239,68,68,.4);
+                background: rgba(239,68,68,.1);
+            }
+
+        /* MODAL ORIGINAL DEL INDEX */
+
+        .categories-admin .cat-dialog {
+            position: fixed;
+            inset: 0;
+            margin: auto;
+            width: min(500px, calc(100vw - 28px));
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 0;
+            border: 1px solid #22304c;
+            border-radius: 16px;
+            background: #121a2b;
+            color: #e9eefb;
+            box-shadow: 0 24px 80px rgba(0,0,0,.7);
+        }
+
+            .categories-admin .cat-dialog::backdrop {
+                background: rgba(0,0,0,.72);
+                backdrop-filter: blur(4px);
+            }
+
+        .categories-admin .cat-dialog-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 18px 22px;
+            border-bottom: 1px solid #22304c;
+        }
+
+            .categories-admin .cat-dialog-header h2 {
+                margin: 0;
+                font-size: 18px;
+                font-weight: 800;
+            }
+
+        .categories-admin .cat-dialog-close {
+            width: 34px;
+            height: 34px;
+            border: 1px solid #22304c;
+            border-radius: 9px;
+            background: #162034;
+            color: white;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        .categories-admin .cat-dialog-body {
+            padding: 22px;
+        }
+
+        .categories-admin .cat-field {
+            margin-bottom: 18px;
+        }
+
+            .categories-admin .cat-field label {
+                display: block;
+                margin-bottom: 8px;
+                color: #9aafd4;
+                font-size: 12px;
+                font-weight: 800;
+            }
+
+        .categories-admin .cat-input {
+            display: block;
+            width: 100%;
+            min-height: 44px;
+            padding: 10px 13px;
+            border: 1px solid #2a3956;
+            border-radius: 10px;
+            outline: none;
+            background: #111b2c;
+            color: #fff;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+            .categories-admin .cat-input:focus {
+                border-color: #2563ff;
+                box-shadow: 0 0 0 3px rgba(37,99,255,.15);
+            }
+
+        .categories-admin .cat-note {
+            margin-top: 7px;
+            color: #8996b3;
+            font-size: 12px;
+        }
+
+        .categories-admin .cat-dialog-footer {
+            display: flex;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding-top: 18px;
+            border-top: 1px solid #22304c;
+        }
+
+        /* MÓVIL, COMO EN EL INDEX */
+
+        .categories-admin .cat-menu-toggle {
+            display: none;
+            width: 42px;
+            height: 42px;
+            place-items: center;
+            border: 1px solid #22304c;
+            border-radius: 11px;
+            background: #121a2b;
+            color: #e9eefb;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .categories-admin .cat-backdrop[hidden] {
+            display: none !important;
+        }
+
+        @media (min-width: 901px) {
+            .categories-admin .admin-sidebar {
+                position: sticky;
+                top: 66px;
+                align-self: flex-start;
+                height: calc(100vh - 66px);
+                min-height: 0;
+                overflow-y: auto;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .categories-admin .admin-navbar {
+                gap: 12px;
+                padding: 0 12px;
+            }
+
+            .categories-admin .cat-menu-toggle {
+                display: grid;
+            }
+
+            .categories-admin .admin-nav-links,
+            .categories-admin .admin-search {
+                display: none;
+            }
+
+            .categories-admin .admin-user {
+                margin-left: auto;
+            }
+
+            .categories-admin .admin-sidebar {
+                display: block;
+                position: fixed;
+                top: 66px;
+                left: 0;
+                bottom: 0;
+                z-index: 150;
+                width: min(252px,85vw);
+                height: calc(100vh - 66px);
+                overflow-y: auto;
+                transform: translateX(-110%);
+                visibility: hidden;
+                pointer-events: none;
+                transition: transform .28s ease, visibility .28s ease;
+                box-shadow: 12px 0 32px rgba(0,0,0,.45);
+            }
+
+            .categories-admin.menu-open .admin-sidebar {
+                transform: translateX(0);
+                visibility: visible;
+                pointer-events: auto;
+            }
+
+            .categories-admin .cat-backdrop:not([hidden]) {
+                display: block;
+                position: fixed;
+                inset: 66px 0 0;
+                z-index: 140;
+                background: rgba(0,0,0,.6);
+            }
+
+            .categories-admin.menu-open {
+                overflow: hidden;
+            }
+
+            .categories-admin .admin-main {
+                padding: 20px 16px 55px;
+            }
+        }
+
+        @media (max-width: 620px) {
+            .categories-admin .admin-logo-text,
+            .categories-admin .admin-user-name {
+                display: none;
+            }
+
+            .categories-admin .cat-dialog-body {
+                padding: 16px;
+            }
+
+            .categories-admin .cat-heading-row {
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body class="categories-admin">
+
+    <!-- NAVBAR -->
+    <header class="admin-navbar">
+
+        <button type="button"
+                class="cat-menu-toggle"
+                id="cat-menu-toggle"
+                aria-label="Abrir menú administrativo"
+                aria-controls="cat-sidebar"
+                aria-expanded="false">
+            ☰
+        </button>
+
+        <a class="admin-logo"
+           href="{% url 'catalog:inicio' %}">
+
+            <div class="admin-logo-icon">M</div>
+
+            <div class="admin-logo-text">
+                <strong>MARKETPLACE</strong>
+                <span>COMPONENTES</span>
+            </div>
+        </a>
+
+        <nav class="admin-nav-links"
+             aria-label="Navegación principal">
+
+            <a class="admin-nav-link"
+               href="{% url 'catalog:inicio' %}">
+                Inicio
+            </a>
+
+            <a class="admin-nav-link"
+               href="{% url 'catalog:catalogo' %}">
+                Catálogo
+            </a>
+
+            <a class="admin-nav-link active"
+               href="{% url 'management:dashboard' %}">
+                Administración
+            </a>
+        </nav>
+
+        <form class="admin-search"
+              method="get"
+              action="{% url 'catalog:catalogo' %}"
+              role="search">
+
+            <button class="cat-search-button"
+                    type="submit"
+                    aria-label="Buscar componentes">
+                🔍
+            </button>
+
+            <input type="search"
+                   name="q"
+                   aria-label="Buscar componentes"
+                   placeholder="Buscar componentes, marcas, modelos...">
+        </form>
+
+        <a class="admin-user"
+           href="{% url 'management:perfil' %}"
+           aria-label="Mi perfil">
+
+            <span class="admin-avatar">
+                {% if request.user.first_name or request.user.last_name %}
+                {{ request.user.first_name|slice:":1"|upper }}{{ request.user.last_name|slice:":1"|upper }}
+                {% else %}
+                {{ request.user.username|slice:":2"|upper }}
+                {% endif %}
+            </span>
+
+            <span class="admin-user-name">
+                {{ request.user.first_name|default:request.user.username }}
+            </span>
+
+            <span aria-hidden="true">⌄</span>
+        </a>
+    </header>
+
+    <div class="cat-backdrop"
+         id="cat-backdrop"
+         hidden></div>
+
+    <div class="admin-layout">
+
+        <!-- SIDEBAR ADMINISTRADOR -->
+        <aside class="admin-sidebar"
+               id="cat-sidebar"
+               aria-label="Menú administrativo">
+
+            <div class="sidebar-user">
+                <span class="admin-avatar">
+                    {% if request.user.first_name or request.user.last_name %}
+                    {{ request.user.first_name|slice:":1"|upper }}{{ request.user.last_name|slice:":1"|upper }}
+                    {% else %}
+                    {{ request.user.username|slice:":2"|upper }}
+                    {% endif %}
+                </span>
+
+                <div>
+                    <div class="sidebar-user-name">
+                        {{ request.user.get_full_name|default:request.user.username }}
+                    </div>
+
+                    <div class="sidebar-user-role">
+                        ADMINISTRADOR
+                    </div>
+                </div>
+            </div>
+
+            <nav aria-label="Secciones administrativas">
+
+                <div class="sidebar-title">
+                    ADMINISTRACIÓN
+                </div>
+
+                <a class="sidebar-link"
+                   href="{% url 'management:dashboard' %}">
+                    📊 Dashboard
+                </a>
+
+                <a class="sidebar-link"
+                   href="{% url 'management:usuarios' %}">
+                    👥 Usuarios
+                </a>
+
+                <a class="sidebar-link"
+                   href="{% url 'management:solicitudes' %}">
+                    📨 Solicitudes
+
+                    {% if pending_requests %}
+                    <span class="sidebar-count">
+                        {{ pending_requests }}
+                    </span>
+                    {% endif %}
+                </a>
+
+                <a class="sidebar-link"
+                   href="{% url 'management:productos' %}?status=PENDIENTE">
+                    ⏳ Productos pendientes
+
+                    {% if pending_products %}
+                    <span class="sidebar-count">
+                        {{ pending_products }}
+                    </span>
+                    {% endif %}
+                </a>
+
+                <a class="sidebar-link"
+                   href="{% url 'management:productos' %}">
+                    📦 Productos
+                </a>
+
+                <a class="sidebar-link active"
+                   href="{% url 'management:categorias' %}"
+                   aria-current="page">
+                    🗂️ Categorías
+                </a>
+
+                <a class="sidebar-link"
+                   href="{% url 'management:pedidos' %}">
+                    🧾 Órdenes
+                </a>
+
+                <div class="sidebar-title">
+                    CUENTA
+                </div>
+
+                <a class="sidebar-link"
+                   href="{% url 'management:perfil' %}">
+                    👤 Perfil
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+
+                <a class="sidebar-button"
+                   href="{% url 'catalog:inicio' %}">
+                    🏠 Ir al marketplace
+                </a>
+
+                <form method="post"
+                      action="{% url 'accounts:logout' %}">
+
+                    {% csrf_token %}
+
+                    <button class="sidebar-button"
+                            type="submit">
+                        ⏻ Cerrar sesión
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="admin-main">
+
+            <div class="cat-heading">
+
+                <div class="breadcrumb">
+                    <a href="{% url 'management:dashboard' %}">
+                        Administración
+                    </a>
+                    &nbsp; / &nbsp; Categorías
+                </div>
+
+                <div class="cat-heading-row">
+
+                    <div>
+                        <h1 class="page-title">
+                            Gestión de <span>categorías</span>
+                        </h1>
+
+                        <p class="cat-description">
+                            Organiza las categorías de componentes
+                            disponibles en el marketplace.
+                        </p>
+                    </div>
+
+                    <a class="cat-button primary"
+                       id="cat-new"
+                       href="{% url 'management:categoria_nueva' %}">
+                        ＋ Nueva categoría
+                    </a>
+                </div>
+            </div>
+
+            <!-- NOTIFICACIONES -->
+            {% if messages %}
+            <div class="cat-notices"
+                 role="status"
+                 aria-live="polite">
+
+                {% for message in messages %}
+                <div class="cat-notice {% if 'error' in message.tags %}error{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- TABLA DE CATEGORÍAS -->
+            <section class="cat-table-wrap"
+                     aria-label="Gestión de categorías">
+
+                <table class="cat-table">
+                    <thead>
+                        <tr>
+                            <th>Ícono</th>
+                            <th>Nombre</th>
+                            <th>ID</th>
+                            <th>Productos</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for c in categories %}
+                        <tr>
+
+                            <td>
+                                <span class="cat-icon">
+                                    {{ c.icon|default:"📦" }}
+                                </span>
+                            </td>
+
+                            <td>
+                                <strong class="cat-name">
+                                    {{ c.name }}
+                                </strong>
+                            </td>
+
+                            <td>
+                                <code class="cat-id">
+                                    {{ c.pk }}
+                                </code>
+                            </td>
+
+                            <td>
+                                {{ c.product_count }}
+                                productos
+                            </td>
+
+                            <td>
+                                {% if c.active %}
+                                <span class="cat-status active">
+                                    ACTIVA
+                                </span>
+                                {% else %}
+                                <span class="cat-status inactive">
+                                    INACTIVA
+                                </span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                <div class="cat-actions">
+
+                                    <!-- EDITAR -->
+                                    <a class="cat-button cat-edit"
+                                       href="{% url 'management:categoria_editar' c.pk %}"
+                                       data-category-name="{{ c.name }}"
+                                       data-category-icon="{{ c.icon }}"
+                                       data-category-active="{% if c.active %}1{% else %}0{% endif %}">
+                                        ✏️ Editar
+                                    </a>
+
+                                    <!-- ACTIVAR / DESACTIVAR -->
+                                    <form method="post"
+                                          action="{% url 'management:categoria_estado' c.pk %}">
+
+                                        {% csrf_token %}
+
+                                        <button class="cat-button"
+                                                type="submit">
+
+                                            {% if c.active %}
+                                            ⏸ Desactivar
+                                            {% else %}
+                                            ▶ Activar
+                                            {% endif %}
+                                        </button>
+                                    </form>
+
+                                </div>
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="cat-empty">
+                                No hay categorías.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+
+    <!-- MODAL CREAR / EDITAR -->
+    <dialog class="cat-dialog"
+            id="cat-dialog"
+            aria-labelledby="cat-dialog-title">
+
+        <div class="cat-dialog-header">
+
+            <h2 id="cat-dialog-title">
+                Nueva categoría
+            </h2>
+
+            <button type="button"
+                    class="cat-dialog-close"
+                    id="cat-dialog-close"
+                    aria-label="Cerrar ventana">
+                ×
+            </button>
+        </div>
+
+        <div class="cat-dialog-body">
+
+            <form id="cat-form"
+                  method="post"
+                  action="{% url 'management:categoria_nueva' %}">
+
+                {% csrf_token %}
+
+                <!-- El estado se conserva en las ediciones.
+                     Se cambia desde la tabla, no desde el modal. -->
+                <input type="hidden"
+                       name="active"
+                       id="cat-active"
+                       value="on">
+
+                <div class="cat-field">
+
+                    <label for="cat-name">
+                        Nombre de la categoría *
+                    </label>
+
+                    <input type="text"
+                           id="cat-name"
+                           name="name"
+                           class="cat-input"
+                           maxlength="100"
+                           placeholder="Ej: Refrigeración líquida"
+                           required>
+                </div>
+
+                <div class="cat-field">
+
+                    <label for="cat-icon">
+                        Ícono (emoji) *
+                    </label>
+
+                    <input type="text"
+                           id="cat-icon"
+                           name="icon"
+                           class="cat-input"
+                           maxlength="20"
+                           placeholder="📦"
+                           required>
+
+                    <p class="cat-note">
+                        Usa un emoji para representar la categoría.
+                    </p>
+                </div>
+
+                <div class="cat-dialog-footer">
+
+                    <button type="button"
+                            class="cat-button"
+                            id="cat-cancel">
+                        Cancelar
+                    </button>
+
+                    <button type="submit"
+                            class="cat-button primary"
+                            id="cat-submit">
+                        ＋ Crear categoría
+                    </button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <script>(function () {
+            "use strict";
+
+            // MENÚ MÓVIL DEL ADMINISTRADOR
+            const body = document.body;
+            const menuButton = document.getElementById(
+                "cat-menu-toggle"
+            );
+            const backdrop = document.getElementById(
+                "cat-backdrop"
+            );
+
+            function setMenuOpen(open) {
+                body.classList.toggle("menu-open", open);
+                backdrop.hidden = !open;
+
+                menuButton.setAttribute(
+                    "aria-expanded",
+                    String(open)
+                );
+            }
+
+            menuButton.addEventListener("click", function () {
+                setMenuOpen(
+                    !body.classList.contains("menu-open")
+                );
+            });
+
+            backdrop.addEventListener("click", function () {
+                setMenuOpen(false);
+            });
+
+            document.addEventListener("keydown", function (event) {
+                if (event.key === "Escape") {
+                    setMenuOpen(false);
+                }
+            });
+
+            window.addEventListener("resize", function () {
+                if (window.innerWidth > 900) {
+                    setMenuOpen(false);
+                }
+            });
+
+            // MODAL NUEVA / EDITAR CATEGORÍA
+            const dialog = document.getElementById("cat-dialog");
+            const form = document.getElementById("cat-form");
+            const title = document.getElementById("cat-dialog-title");
+            const nameInput = document.getElementById("cat-name");
+            const iconInput = document.getElementById("cat-icon");
+            const activeInput = document.getElementById("cat-active");
+            const submitButton = document.getElementById("cat-submit");
+
+            const newButton = document.getElementById("cat-new");
+            const closeButton = document.getElementById(
+                "cat-dialog-close"
+            );
+            const cancelButton = document.getElementById("cat-cancel");
+
+            let previousFocus = null;
+
+            // CREAR
+            newButton.addEventListener("click", function (event) {
+                event.preventDefault();
+
+                previousFocus = newButton;
+
+                form.action = newButton.href;
+                form.reset();
+
+                title.textContent = "Nueva categoría";
+                nameInput.value = "";
+                iconInput.value = "📦";
+
+                activeInput.disabled = false;
+
+                submitButton.textContent = "＋ Crear categoría";
+
+                dialog.showModal();
+                nameInput.focus();
+            });
+
+            // EDITAR
+            document.querySelectorAll(
+                ".cat-edit"
+            ).forEach(function (button) {
+
+                button.addEventListener("click", function (event) {
+                    event.preventDefault();
+
+                    previousFocus = button;
+
+                    form.action = button.href;
+
+                    title.textContent = "Editar categoría";
+
+                    nameInput.value =
+                        button.dataset.categoryName || "";
+
+                    iconInput.value =
+                        button.dataset.categoryIcon || "📦";
+
+                    // Si la categoría está inactiva,
+                    // mantenerla inactiva al editar.
+                    // Django interpreta la ausencia del
+                    // checkbox como False.
+                    activeInput.disabled =
+                        button.dataset.categoryActive === "0";
+
+                    submitButton.textContent = "💾 Guardar";
+
+                    dialog.showModal();
+                    nameInput.focus();
+                });
+            });
+
+            function closeDialog() {
+                dialog.close();
+            }
+
+            closeButton.addEventListener("click", closeDialog);
+            cancelButton.addEventListener("click", closeDialog);
+
+            dialog.addEventListener("close", function () {
+                if (previousFocus) {
+                    previousFocus.focus();
+                    previousFocus = null;
+                }
+            });
+
+            // No se intercepta el envío del formulario:
+            // Django valida y guarda realmente los datos.
+        })();</script>
+
+</body>
+</html>

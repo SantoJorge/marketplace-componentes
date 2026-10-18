@@ -1,0 +1,338 @@
+{% extends 'base.html' %}
+
+{% block title %}Mi perfil | Marketplace Componentes{% endblock %}
+
+{% block content %}
+
+{% if current_role == 'COMPRADOR' %}
+
+<style>
+    .mc-buyer-profile {
+        max-width: 1000px;
+    }
+
+        .mc-buyer-profile .mc-profile-head {
+            margin-bottom: 20px;
+        }
+
+        .mc-buyer-profile .mc-profile-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .mc-buyer-profile .mc-profile-section {
+            margin-bottom: 20px;
+        }
+
+        .mc-buyer-profile .mc-profile-fields {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0 16px;
+        }
+
+        .mc-buyer-profile .mc-profile-full {
+            grid-column: 1 / -1;
+        }
+
+        .mc-buyer-profile .mc-profile-seller p {
+            color: #aebcd7;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .mc-buyer-profile .mc-password-details {
+            margin-top: 20px;
+        }
+
+            .mc-buyer-profile .mc-password-details summary {
+                cursor: pointer;
+                font-weight: 800;
+            }
+
+        .mc-buyer-profile .mc-password-inner {
+            padding-top: 20px;
+            max-width: 600px;
+        }
+
+    @media (max-width: 600px) {
+        .mc-buyer-profile .mc-profile-fields {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="mc-buyer-profile">
+
+    <div class="mc-heading">
+        <p>
+            <a href="{% url 'catalog:inicio' %}">Inicio</a>
+            / Mi perfil
+        </p>
+        <h1>Mi <span>perfil</span></h1>
+    </div>
+
+    <section class="mc-card mc-profile-head">
+
+        <span class="mc-avatar xbig">
+            {% if user.first_name or user.last_name %}
+            {{ user.first_name|slice:':1'|upper }}{{ user.last_name|slice:':1'|upper }}
+            {% else %}
+            {{ user.username|slice:':2'|upper }}
+            {% endif %}
+        </span>
+
+        <div>
+            <h2>{{ user.get_full_name|default:user.username }}</h2>
+
+            <p class="mc-muted">
+                {{ user.email }} · @{{ user.username }}
+            </p>
+
+            <div class="mc-profile-meta">
+                <span class="mc-tag">COMPRADOR</span>
+                <span class="mc-tag green">ACTIVO</span>
+                <span class="mc-tag">
+                    Miembro desde {{ user.date_joined|date:'d/m/Y' }}
+                </span>
+            </div>
+        </div>
+
+    </section>
+
+    <section class="mc-card mc-profile-section">
+
+        <h2>✏️ Editar información personal</h2>
+
+        <form method="post"
+              action="{% url 'accounts:perfil' %}">
+
+            {% csrf_token %}
+            <input type="hidden" name="action" value="personal">
+
+            {{ form.non_field_errors }}
+
+            <div class="mc-profile-fields">
+
+                <div class="mc-field">
+                    <label for="{{ form.first_name.id_for_label }}">Nombre</label>
+                    {{ form.first_name }}
+                    {% for error in form.first_name.errors %}
+                    <p class="mc-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <div class="mc-field">
+                    <label for="{{ form.last_name.id_for_label }}">Apellido</label>
+                    {{ form.last_name }}
+                    {% for error in form.last_name.errors %}
+                    <p class="mc-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <div class="mc-field mc-profile-full">
+                    <label for="{{ form.email.id_for_label }}">Correo electrónico</label>
+                    {{ form.email }}
+                    {% for error in form.email.errors %}
+                    <p class="mc-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <div class="mc-field">
+                    <label for="{{ form.phone.id_for_label }}">Teléfono</label>
+                    {{ form.phone }}
+                    {% for error in form.phone.errors %}
+                    <p class="mc-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <div class="mc-field">
+                    <label for="{{ form.province.id_for_label }}">Provincia</label>
+                    {{ form.province }}
+                    {% for error in form.province.errors %}
+                    <p class="mc-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+            </div>
+
+            <button type="submit" class="mc-btn">
+                💾 Guardar cambios
+            </button>
+
+        </form>
+    </section>
+
+    <section class="mc-card mc-profile-seller">
+
+        {% if seller_request and seller_request.status == 'PENDIENTE' %}
+
+        <h2>⏳ Solicitud en revisión</h2>
+
+        <p>
+            Tu solicitud para convertirte en vendedor está
+            pendiente de revisión administrativa.
+        </p>
+
+        {% elif seller_request and seller_request.status == 'RECHAZADA' %}
+
+        <h2>❌ Solicitud rechazada</h2>
+
+        <p>
+            Puedes actualizar la información
+            y solicitar nuevamente el rol de vendedor.
+        </p>
+
+        {% if seller_request.review_note %}
+        <p>{{ seller_request.review_note }}</p>
+        {% endif %}
+
+        <a class="mc-btn" href="{% url 'accounts:ser_vendedor' %}">
+            Volver a solicitar
+        </a>
+
+        {% elif seller_request and seller_request.status == 'APROBADA' %}
+
+        <h2>✅ Solicitud aprobada</h2>
+        <p>Tu solicitud ha sido aprobada.</p>
+
+        {% else %}
+
+        <h2>🏪 Conviértete en vendedor</h2>
+
+        <p>
+            ¿Tienes componentes de computadora para vender?
+            Solicita tu conversión a vendedor.
+            Un administrador revisará tu solicitud
+            y te habilitará para publicar productos.
+        </p>
+
+        <a class="mc-btn"
+           href="{% url 'accounts:ser_vendedor' %}">
+            Quiero vender
+        </a>
+
+        {% endif %}
+
+    </section>
+
+
+    <details class="mc-card mc-password-details"
+             {% if pwd.errors %}open{% endif %}>
+
+
+        <summary>🔐 Cambiar contraseña</summary>
+
+        <div class="mc-password-inner">
+
+            <form method="post"
+                  action="{% url 'accounts:perfil' %}">
+
+                {% csrf_token %}
+                <input type="hidden" name="action" value="password">
+
+                {{ pwd.non_field_errors }}
+
+                {% for field in pwd %}
+                <div class="mc-field">
+                    <label for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                    </label>
+
+                    {{ field }}
+
+                    {% for error in field.errors %}
+                    <p class="mc-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+
+                <button type="submit" class="mc-btn">
+                    Actualizar contraseña
+                </button>
+
+            </form>
+
+        </div>
+    </details>
+
+</div>
+
+{% else %}
+
+<div class="mc-heading">
+    <p>Cuenta / Perfil</p>
+    <h1>Mi <span>perfil</span></h1>
+</div>
+
+<div class="mc-card mc-profile-head">
+    <span class="mc-avatar xbig">
+        {{ user.username|slice:':2'|upper }}
+    </span>
+
+    <div>
+        <h2>{{ user.get_full_name|default:user.username }}</h2>
+        <p class="mc-muted">
+            {{ user.email }} · @{{ user.username }}
+        </p>
+        <span class="mc-tag">{{ current_role }}</span>
+        <span class="mc-tag">
+            Miembro desde {{ user.date_joined|date:'d/m/Y' }}
+        </span>
+    </div>
+</div>
+
+<div class="mc-two mc-spaced">
+
+    <section class="mc-card">
+        <h2>✏️ Información personal</h2>
+
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="personal">
+
+            {% for field in form %}
+            <div class="mc-field">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% for error in field.errors %}
+                <p class="mc-error">{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endfor %}
+
+            <button class="mc-btn" type="submit">
+                Guardar cambios
+            </button>
+        </form>
+    </section>
+
+    <section class="mc-card">
+        <h2>🔐 Contraseña</h2>
+
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="password">
+
+            {% for field in pwd %}
+            <div class="mc-field">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% for error in field.errors %}
+                <p class="mc-error">{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endfor %}
+
+            <button class="mc-btn" type="submit">
+                Cambiar contraseña
+            </button>
+        </form>
+    </section>
+
+</div>
+
+{% endif %}
+
+{% endblock %}

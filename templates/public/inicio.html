@@ -4,37 +4,29 @@
 Inicio | Marketplace Componentes
 {% endblock %}
 
-
 {% block content %}
 
+<!-- ==========================================
+     HOME / PORTADA PUBLICA
+========================================== -->
 
 <section class="hero">
-
     <div class="hero-content">
 
         <div class="hero-tag">
             ⚡ PLATAFORMA DE COMPRA Y REVENTA
         </div>
 
-
         <h1>
-
             Compra y vende
-
-            <span>
-                componentes de computadora
-            </span>
-
+            <span>componentes de computadora</span>
         </h1>
 
-
         <p>
-            El marketplace donde encontrarás procesadores,
-            tarjetas gráficas, memorias RAM y todo el hardware
-            que necesitas. Vendedores verificados, control de
-            inventario y compra segura.
+            Encuentra procesadores, tarjetas gráficas,
+            memorias RAM y todo el hardware que necesitas,
+            directamente de los vendedores del marketplace.
         </p>
-
 
         <div class="hero-actions">
 
@@ -43,61 +35,57 @@ Inicio | Marketplace Componentes
                 🔍 Explorar componentes
             </a>
 
+            <!-- MOSTRAR AVISO INICIO SECCION -->
 
-            <a href="#"
+            <a href="{{ vender_url }}{% if not request.user.is_authenticated %}?aviso=vender{% endif %}"
                class="btn btn-secondary btn-large">
-                🏪 Vender componentes
+                🏪 {{ vender_texto }}
             </a>
+
 
         </div>
 
+        <!-- CONTADORES REALES -->
 
         <div class="hero-stats">
 
             <div>
-                <strong>16</strong>
+                <strong>{{ total_productos }}</strong>
                 <span>PRODUCTOS ACTIVOS</span>
             </div>
 
             <div>
-                <strong>2</strong>
+                <strong>{{ total_vendedores }}</strong>
                 <span>VENDEDORES</span>
             </div>
 
             <div>
-                <strong>14</strong>
+                <strong>{{ total_categorias }}</strong>
                 <span>CATEGORÍAS</span>
             </div>
 
             <div>
-                <strong>4</strong>
-                <span>ÓRDENES</span>
+                <strong>{{ total_ordenes }}</strong>
+                <span>ÓRDENES REGISTRADAS</span>
             </div>
 
         </div>
-
     </div>
-
 </section>
 
 
+<!-- ==========================================
+     CATEGORIAS POPULARES
+========================================== -->
 
 <section class="section">
 
     <div class="section-header">
 
         <div>
-
-            <h2>
-                🗂️ Categorías populares
-            </h2>
-
-            <p>
-                Explora componentes por tipo
-            </p>
-
+            <h2>🗂️ Categorías populares</h2>
+            <p>Explora componentes por tipo</p>
         </div>
-
 
         <a href="{% url 'catalog:catalogo' %}"
            class="btn btn-secondary">
@@ -106,103 +94,53 @@ Inicio | Marketplace Componentes
 
     </div>
 
-
     <div class="category-grid">
 
+        {% for categoria in categorias %}
 
-        <article class="category-card">
-            <div class="category-icon">⚙️</div>
-            <strong>Procesadores</strong>
-            <span>3 productos</span>
-        </article>
+        <a class="category-card"
+           href="{% url 'catalog:catalogo' %}?categoria={{ categoria.id }}">
 
+            <div class="category-icon">
+                {{ categoria.icon|default:'📦' }}
+            </div>
 
-        <article class="category-card">
-            <div class="category-icon">🎮</div>
-            <strong>Tarjetas gráficas</strong>
-            <span>3 productos</span>
-        </article>
+            <strong>{{ categoria.name }}</strong>
 
+            <span>
+                {{ categoria.cantidad_productos }}
+                producto{{ categoria.cantidad_productos|pluralize }}
+            </span>
 
-        <article class="category-card">
-            <div class="category-icon">🧠</div>
-            <strong>Memoria RAM</strong>
-            <span>2 productos</span>
-        </article>
+        </a>
 
+        {% empty %}
 
-        <article class="category-card">
-            <div class="category-icon">🔌</div>
-            <strong>Tarjetas madre</strong>
-            <span>2 productos</span>
-        </article>
+        <p>
+            No existen categorías activas por el momento.
+        </p>
 
-
-        <article class="category-card">
-            <div class="category-icon">💾</div>
-            <strong>Almacenamiento</strong>
-            <span>1 producto</span>
-        </article>
-
-
-        <article class="category-card">
-            <div class="category-icon">⚡</div>
-            <strong>Fuentes de poder</strong>
-            <span>1 producto</span>
-        </article>
-
-
-        <article class="category-card">
-            <div class="category-icon">🗄️</div>
-            <strong>Gabinetes</strong>
-            <span>0 productos</span>
-        </article>
-
-
-        <article class="category-card">
-            <div class="category-icon">❄️</div>
-            <strong>Refrigeración</strong>
-            <span>1 producto</span>
-        </article>
-
-
-        <article class="category-card">
-            <div class="category-icon">🖥️</div>
-            <strong>Monitores</strong>
-            <span>1 producto</span>
-        </article>
-
-
-        <article class="category-card">
-            <div class="category-icon">⌨️</div>
-            <strong>Teclados</strong>
-            <span>1 producto</span>
-        </article>
-
+        {% endfor %}
 
     </div>
-
 </section>
 
 
+<!-- ==========================================
+     PRODUCTOS DESTACADOS
+========================================== -->
 
 <section class="section">
 
     <div class="section-header">
 
         <div>
-
-            <h2>
-                ⭐ Productos destacados
-            </h2>
-
+            <h2>⭐ Productos destacados</h2>
             <p>
-                Los componentes mejor valorados del marketplace
+                Una selección de publicaciones recientes disponibles
             </p>
-
         </div>
 
-        //CAMBIOS MODIFICADOS PARA ACCION
         <a href="{% url 'catalog:catalogo' %}"
            class="btn btn-secondary">
             Ver catálogo
@@ -210,72 +148,93 @@ Inicio | Marketplace Componentes
 
     </div>
 
-
     <div class="products-grid">
 
+        {% for producto in productos_destacados %}
 
         <article class="product-card">
 
-            <div class="product-image">
+            <a class="product-image"
+               href="{% url 'catalog:producto' producto.id %}"
+               aria-label="Ver {{ producto.name }}">
 
-                <span class="product-badge">
-                    NUEVO
+                {% if producto.image %}
+
+                <img src="{{ producto.image.url }}"
+                     alt="{{ producto.name }}"
+                     loading="lazy"
+                     style="width:100%;height:100%;object-fit:cover;">
+
+                {% else %}
+
+                <span class="category-icon"
+                      style="font-size:52px">
+                    {{ producto.category.icon|default:'📦' }}
                 </span>
 
-                <div>
-                    ⚙️
-                </div>
+                {% endif %}
 
-            </div>
+                <span class="product-badge">
+                    {{ producto.get_condition_display|upper }}
+                </span>
 
+            </a>
 
             <div class="product-body">
 
                 <span class="product-category">
-                    PROCESADORES
+                    {{ producto.category.name }}
                 </span>
 
                 <h3>
-                    AMD Ryzen 5 5600X
+                    <a href="{% url 'catalog:producto' producto.id %}">
+                        {{ producto.name }}
+                    </a>
                 </h3>
 
                 <p class="product-meta">
-                    AMD · 100-100000065BOX
+                    {{ producto.brand }}
+                    {% if producto.model %}
+                    · {{ producto.model }}
+                    {% endif %}
                 </p>
 
                 <p class="seller">
                     Vendido por
-                    <strong>TechStore</strong>
+                    <strong>{{ producto.seller.username }}</strong>
                 </p>
 
-
                 <div class="product-divider"></div>
-
 
                 <div class="product-footer">
 
                     <div>
-
                         <strong class="price">
-                            $179.99
+                            ${{ producto.price }}
                         </strong>
 
                         <span class="stock">
-                            Stock: 12
+                            Stock: {{ producto.stock }}
                         </span>
-
                     </div>
-
 
                     <div class="product-actions">
 
-                        <button class="btn btn-secondary">
+                        <a href="{% url 'catalog:producto' producto.id %}"
+                           class="btn btn-secondary">
                             Ver
-                        </button>
+                        </a>
 
-                        <button class="btn btn-primary">
-                            Añadir
-                        </button>
+                        <form method="post"
+                              action="{% url 'orders:cart_add' producto.id %}">
+                            {% csrf_token %}
+
+                            <button type="submit"
+                                    class="btn btn-primary">
+                                Añadir
+                            </button>
+
+                        </form>
 
                     </div>
 
@@ -285,326 +244,204 @@ Inicio | Marketplace Componentes
 
         </article>
 
+        {% empty %}
 
+        <p>
+            No hay productos aprobados y disponibles
+            por el momento.
+        </p>
 
-        <article class="product-card">
-
-            <div class="product-image">
-
-                <span class="product-badge">
-                    NUEVO
-                </span>
-
-                <div>
-                    ⚙️
-                </div>
-
-            </div>
-
-
-            <div class="product-body">
-
-                <span class="product-category">
-                    PROCESADORES
-                </span>
-
-                <h3>
-                    Intel Core i5-12400F
-                </h3>
-
-                <p class="product-meta">
-                    Intel · BX8071512400F
-                </p>
-
-                <p class="seller">
-                    Vendido por
-                    <strong>PC Parts</strong>
-                </p>
-
-
-                <div class="product-divider"></div>
-
-
-                <div class="product-footer">
-
-                    <div>
-
-                        <strong class="price">
-                            $164.50
-                        </strong>
-
-                        <span class="stock">
-                            Stock: 8
-                        </span>
-
-                    </div>
-
-
-                    <div class="product-actions">
-
-                        <button class="btn btn-secondary">
-                            Ver
-                        </button>
-
-                        <button class="btn btn-primary">
-                            Añadir
-                        </button>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </article>
-
-
-
-        <article class="product-card">
-
-            <div class="product-image">
-
-                <span class="product-badge">
-                    NUEVO
-                </span>
-
-                <div>
-                    🎮
-                </div>
-
-            </div>
-
-
-            <div class="product-body">
-
-                <span class="product-category">
-                    TARJETAS GRÁFICAS
-                </span>
-
-                <h3>
-                    MSI GeForce RTX 3060 Ventus 2X
-                </h3>
-
-                <p class="product-meta">
-                    MSI · RTX 3060 VENTUS
-                </p>
-
-                <p class="seller">
-                    Vendido por
-                    <strong>TechStore</strong>
-                </p>
-
-
-                <div class="product-divider"></div>
-
-
-                <div class="product-footer">
-
-                    <div>
-
-                        <strong class="price">
-                            $329.00
-                        </strong>
-
-                        <span class="stock">
-                            Stock: 5
-                        </span>
-
-                    </div>
-
-
-                    <div class="product-actions">
-
-                        <button class="btn btn-secondary">
-                            Ver
-                        </button>
-
-                        <button class="btn btn-primary">
-                            Añadir
-                        </button>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </article>
-
-
-
-        <article class="product-card">
-
-            <div class="product-image">
-
-                <span class="product-badge">
-                    NUEVO
-                </span>
-
-                <div>
-                    🎮
-                </div>
-
-            </div>
-
-
-            <div class="product-body">
-
-                <span class="product-category">
-                    TARJETAS GRÁFICAS
-                </span>
-
-                <h3>
-                    ASUS Dual GeForce RTX 4060 OC
-                </h3>
-
-                <p class="product-meta">
-                    ASUS · DUAL-RTX4060
-                </p>
-
-                <p class="seller">
-                    Vendido por
-                    <strong>PC Parts</strong>
-                </p>
-
-
-                <div class="product-divider"></div>
-
-
-                <div class="product-footer">
-
-                    <div>
-
-                        <strong class="price">
-                            $389.99
-                        </strong>
-
-                        <span class="stock">
-                            Stock: 4
-                        </span>
-
-                    </div>
-
-
-                    <div class="product-actions">
-
-                        <button class="btn btn-secondary">
-                            Ver
-                        </button>
-
-                        <button class="btn btn-primary">
-                            Añadir
-                        </button>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </article>
-
+        {% endfor %}
 
     </div>
 
 </section>
 
 
+<!-- ==========================================
+     ULTIMOS PRODUCTOS
+========================================== -->
 
 <section class="section">
 
     <div class="section-header">
 
         <div>
-
-            <h2>
-                🛡️ Beneficios de la plataforma
-            </h2>
-
+            <h2>🆕 Últimos productos</h2>
             <p>
-                Diseñada para compradores y vendedores exigentes
+                Los componentes publicados más recientemente
             </p>
-
         </div>
+
+        <a href="{% url 'catalog:catalogo' %}"
+           class="btn btn-secondary">
+            Ver todos
+        </a>
 
     </div>
 
+    <div class="products-grid">
 
-    <div class="benefits-grid">
+        {% for producto in productos_recientes %}
 
-        <article class="benefit-card">
+        <article class="product-card">
 
-            <div class="benefit-icon">
-                🔒
+            <a class="product-image"
+               href="{% url 'catalog:producto' producto.id %}"
+               aria-label="Ver {{ producto.name }}">
+
+                {% if producto.image %}
+
+                <img src="{{ producto.image.url }}"
+                     alt="{{ producto.name }}"
+                     loading="lazy"
+                     style="width:100%;height:100%;object-fit:cover;">
+
+                {% else %}
+
+                <span class="category-icon"
+                      style="font-size:52px">
+                    {{ producto.category.icon|default:'📦' }}
+                </span>
+
+                {% endif %}
+
+                <span class="product-badge">
+                    {{ producto.get_condition_display|upper }}
+                </span>
+
+            </a>
+
+            <div class="product-body">
+
+                <span class="product-category">
+                    {{ producto.category.name }}
+                </span>
+
+                <h3>
+                    <a href="{% url 'catalog:producto' producto.id %}">
+                        {{ producto.name }}
+                    </a>
+                </h3>
+
+                <p class="product-meta">
+                    {{ producto.brand }}
+                    {% if producto.model %}
+                    · {{ producto.model }}
+                    {% endif %}
+                </p>
+
+                <p class="seller">
+                    Vendido por
+                    <strong>{{ producto.seller.username }}</strong>
+                </p>
+
+                <div class="product-divider"></div>
+
+                <div class="product-footer">
+
+                    <div>
+                        <strong class="price">
+                            ${{ producto.price }}
+                        </strong>
+
+                        <span class="stock">
+                            Stock: {{ producto.stock }}
+                        </span>
+                    </div>
+
+                    <div class="product-actions">
+
+                        <a href="{% url 'catalog:producto' producto.id %}"
+                           class="btn btn-secondary">
+                            Ver
+                        </a>
+
+                        <form method="post"
+                              action="{% url 'orders:cart_add' producto.id %}">
+                            {% csrf_token %}
+
+                            <button type="submit"
+                                    class="btn btn-primary">
+                                Añadir
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
             </div>
-
-            <h3>
-                Compra segura
-            </h3>
-
-            <p>
-                Cada orden queda registrada con precios históricos
-                y control de stock.
-            </p>
 
         </article>
 
+        {% empty %}
 
-        <article class="benefit-card">
+        <p>
+            Aún no existen publicaciones recientes disponibles.
+        </p>
 
-            <div class="benefit-icon">
-                ✅
-            </div>
-
-            <h3>
-                Vendedores verificados
-            </h3>
-
-            <p>
-                Solo los vendedores aprobados podrán publicar
-                componentes.
-            </p>
-
-        </article>
-
-
-        <article class="benefit-card">
-
-            <div class="benefit-icon">
-                🔄
-            </div>
-
-            <h3>
-                Nuevos y usados
-            </h3>
-
-            <p>
-                Encuentra productos nuevos, usados y reacondicionados.
-            </p>
-
-        </article>
-
-
-        <article class="benefit-card">
-
-            <div class="benefit-icon">
-                📊
-            </div>
-
-            <h3>
-                Control de inventario
-            </h3>
-
-            <p>
-                Los vendedores podrán gestionar su stock desde
-                su panel.
-            </p>
-
-        </article>
+        {% endfor %}
 
     </div>
 
 </section>
 
+
+<!-- ==========================================
+     BENEFICIOS DE LA PLATAFORMA
+========================================== -->
+
+<section class="section">
+
+    <div class="section-header">
+        <div>
+            <h2>🛡️ Beneficios de la plataforma</h2>
+            <p>Información para compradores y vendedores</p>
+        </div>
+    </div>
+
+    <div class="benefits-grid">
+
+        <article class="benefit-card">
+            <div class="benefit-icon">🔒</div>
+            <h3>Pedidos registrados</h3>
+            <p>
+                Las compras confirmadas quedan
+                registradas en el sistema.
+            </p>
+        </article>
+
+        <article class="benefit-card">
+            <div class="benefit-icon">✅</div>
+            <h3>Publicaciones revisadas</h3>
+            <p>
+                Solo se muestran productos
+                aprobados y disponibles.
+            </p>
+        </article>
+
+        <article class="benefit-card">
+            <div class="benefit-icon">🔄</div>
+            <h3>Nuevos y usados</h3>
+            <p>
+                Encuentra productos nuevos,
+                usados y reacondicionados.
+            </p>
+        </article>
+
+        <article class="benefit-card">
+            <div class="benefit-icon">📊</div>
+            <h3>Control de inventario</h3>
+            <p>
+                Las unidades disponibles se
+                obtienen del inventario real.
+            </p>
+        </article>
+
+    </div>
+
+</section>
 
 {% endblock %}

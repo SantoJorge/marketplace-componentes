@@ -1,0 +1,1463 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="dark">
+
+    <title>
+        {% if is_pending %}
+        Productos pendientes
+        {% else %}
+        Productos
+        {% endif %}
+        | Marketplace Componentes
+    </title>
+
+    <link rel="stylesheet"
+          href="{% static 'css/management.css' %}">
+
+    <style>
+        /* ========================================
+           PRODUCTOS ADMINISTRADOR - FASE 5
+           ======================================== */
+
+        .products-admin .admin-sidebar {
+            width: 252px;
+        }
+
+        .products-admin .sidebar-link {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+            .products-admin .sidebar-link.active {
+                color: #fff;
+                font-weight: 800;
+                background: linear-gradient( 90deg, rgba(37,99,255,.24), rgba(37,99,255,.05) );
+            }
+
+                .products-admin .sidebar-link.active::before {
+                    content: "";
+                    position: absolute;
+                    left: 0;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    width: 3px;
+                    height: 20px;
+                    background: #22d3ee;
+                    border-radius: 0 4px 4px 0;
+                }
+
+        .products-admin .sidebar-count {
+            margin-left: auto;
+            padding: 1px 7px;
+            border-radius: 20px;
+            background: #ef4444;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .products-admin .sidebar-footer form {
+            margin: 0;
+        }
+
+        .products-admin .sidebar-footer button {
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .products-admin .product-search-button {
+            position: absolute;
+            left: 9px;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 5px;
+            border: 0;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        /* ENCABEZADO */
+
+        .products-admin .product-heading {
+            margin-bottom: 24px;
+        }
+
+            .products-admin .product-heading .breadcrumb {
+                margin-bottom: 9px;
+            }
+
+        .products-admin .product-description {
+            margin-top: 7px;
+            color: #8996b3;
+            font-size: 13.5px;
+            line-height: 1.6;
+        }
+
+        /* TABLAS DEL INDEX */
+
+        .products-admin .product-table-wrap {
+            width: 100%;
+            overflow-x: auto;
+            border: 1px solid #1a2337;
+            border-radius: 14px;
+            background: #121a2b;
+        }
+
+        .products-admin .product-table {
+            width: 100%;
+            min-width: 960px;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 13px;
+        }
+
+            .products-admin .product-table th {
+                padding: 13px 15px;
+                border-bottom: 1px solid #22304c;
+                background: #162034;
+                color: #667089;
+                font-size: 10.5px;
+                font-weight: 800;
+                letter-spacing: 1.4px;
+                white-space: nowrap;
+                text-transform: uppercase;
+            }
+
+            .products-admin .product-table td {
+                padding: 13px 15px;
+                border-bottom: 1px solid #1a2337;
+                vertical-align: middle;
+            }
+
+            .products-admin .product-table tbody tr:hover {
+                background: rgba(37,99,255,.045);
+            }
+
+            .products-admin .product-table tbody tr:last-child td {
+                border-bottom: 0;
+            }
+
+        .products-admin .product-name {
+            display: block;
+            color: #e9eefb;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .products-admin .product-subtitle {
+            display: block;
+            margin-top: 4px;
+            color: #8996b3;
+            font-size: 11.5px;
+        }
+
+        .products-admin .product-price {
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .products-admin .product-date {
+            color: #8996b3;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        /* IMÁGENES */
+
+        .products-admin .product-thumb {
+            width: 44px;
+            height: 44px;
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+            border-radius: 9px;
+            background: #1b2740;
+            font-size: 22px;
+        }
+
+            .products-admin .product-thumb img,
+            .products-admin .product-large-image img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+        .products-admin .product-large-image {
+            width: 150px;
+            height: 150px;
+            flex: none;
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+            border-radius: 13px;
+            background: radial-gradient( circle at 50% 40%, #1c2942, #0b1120 );
+            font-size: 58px;
+        }
+
+        /* ESTADOS */
+
+        .products-admin .product-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border: 1px solid transparent;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+            .products-admin .product-badge.pending {
+                background: rgba(245,158,11,.14);
+                border-color: rgba(245,158,11,.35);
+                color: #fbbf24;
+            }
+
+            .products-admin .product-badge.approved {
+                background: rgba(34,197,94,.14);
+                border-color: rgba(34,197,94,.35);
+                color: #4ade80;
+            }
+
+            .products-admin .product-badge.rejected {
+                background: rgba(239,68,68,.14);
+                border-color: rgba(239,68,68,.35);
+                color: #f87171;
+            }
+
+            .products-admin .product-badge.inactive {
+                background: rgba(120,130,155,.14);
+                border-color: rgba(120,130,155,.3);
+                color: #9aa6c0;
+            }
+
+            .products-admin .product-badge.condition {
+                background: rgba(37,99,255,.14);
+                border-color: rgba(37,99,255,.35);
+                color: #9fc4ff;
+            }
+
+        /* BOTONES */
+
+        .products-admin .product-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+            .products-admin .product-actions form,
+            .products-admin .product-dialog-footer form {
+                margin: 0;
+            }
+
+        .products-admin .product-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 6px 10px;
+            min-height: 32px;
+            border: 1px solid #22304c;
+            border-radius: 8px;
+            background: #162034;
+            color: #e9eefb;
+            font: 700 12px "Segoe UI", Arial, sans-serif;
+            text-decoration: none;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+            .products-admin .product-button:hover {
+                background: #1b2740;
+                border-color: #2563ff;
+            }
+
+            .products-admin .product-button.approve {
+                background: linear-gradient( 135deg, #16a34a, #22c55e );
+                border-color: transparent;
+                color: white;
+            }
+
+            .products-admin .product-button.reject,
+            .products-admin .product-button.delete {
+                background: linear-gradient( 135deg, #dc2626, #ef4444 );
+                border-color: transparent;
+                color: white;
+            }
+
+            .products-admin .product-button:focus-visible,
+            .products-admin .product-menu-toggle:focus-visible,
+            .products-admin .sidebar-link:focus-visible {
+                outline: 2px solid #22d3ee;
+                outline-offset: 3px;
+            }
+
+        /* VACÍOS Y NOTIFICACIONES */
+
+        .products-admin .product-empty {
+            padding: 50px 20px;
+            border: 1px solid #1a2337;
+            border-radius: 14px;
+            background: #121a2b;
+            text-align: center;
+        }
+
+        .products-admin .product-empty-icon {
+            margin-bottom: 15px;
+            font-size: 48px;
+        }
+
+        .products-admin .product-empty h2 {
+            margin-bottom: 7px;
+            font-size: 18px;
+        }
+
+        .products-admin .product-empty p,
+        .products-admin .product-list-note {
+            color: #8996b3;
+            font-size: 12px;
+        }
+
+        .products-admin .product-list-note {
+            margin-top: 12px;
+        }
+
+        .products-admin .product-notices {
+            margin-bottom: 18px;
+        }
+
+        .products-admin .product-notice {
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border: 1px solid rgba(34,197,94,.4);
+            border-radius: 10px;
+            background: rgba(34,197,94,.09);
+            color: #a7f3bd;
+            font-size: 13px;
+        }
+
+            .products-admin .product-notice.error {
+                color: #ffc0c0;
+                border-color: rgba(239,68,68,.4);
+                background: rgba(239,68,68,.1);
+            }
+
+        /* VENTANA DE REVISIÓN */
+
+        .products-admin .product-dialog {
+            position: fixed;
+            inset: 0;
+            margin: auto;
+            width: min(760px, calc(100vw - 28px));
+            max-height: 90vh;
+            padding: 0;
+            overflow-y: auto;
+            border: 1px solid #2a3a56;
+            border-radius: 17px;
+            background: #121a2b;
+            color: #e9eefb;
+            box-shadow: 0 24px 80px rgba(0,0,0,.75);
+        }
+
+            .products-admin .product-dialog::backdrop {
+                background: rgba(0,0,0,.72);
+                backdrop-filter: blur(4px);
+            }
+
+        .products-admin .product-dialog-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 20px 23px;
+            border-bottom: 1px solid #22304c;
+        }
+
+            .products-admin .product-dialog-header h2 {
+                margin: 0;
+                font-size: 18px;
+                font-weight: 800;
+            }
+
+        .products-admin .product-dialog-close {
+            width: 35px;
+            height: 35px;
+            border: 1px solid #22304c;
+            border-radius: 9px;
+            background: #162034;
+            color: #fff;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        .products-admin .product-dialog-body {
+            padding: 22px 23px;
+        }
+
+        .products-admin .product-detail-top {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .products-admin .product-detail-info {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .products-admin .product-detail-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            margin-bottom: 10px;
+        }
+
+        .products-admin .product-detail-info h3 {
+            margin-bottom: 7px;
+            font-size: 18px;
+            font-weight: 900;
+        }
+
+        .products-admin .product-detail-meta {
+            margin-bottom: 11px;
+            color: #8996b3;
+            font-size: 12.5px;
+        }
+
+        .products-admin .product-detail-price {
+            font-size: 24px;
+            font-weight: 900;
+        }
+
+        .products-admin .product-detail-label {
+            margin: 20px 0 7px;
+            color: #667089;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+        }
+
+        .products-admin .product-detail-text {
+            color: #b8c4dc;
+            font-size: 13.5px;
+            line-height: 1.75;
+            overflow-wrap: anywhere;
+        }
+
+        .products-admin .product-specs {
+            margin-top: 10px;
+            border: 1px solid #22304c;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .products-admin .product-spec-row {
+            display: grid;
+            grid-template-columns: 130px 1fr;
+            gap: 12px;
+            padding: 10px 14px;
+            border-bottom: 1px solid #22304c;
+            font-size: 13px;
+        }
+
+            .products-admin .product-spec-row:last-child {
+                border-bottom: 0;
+            }
+
+            .products-admin .product-spec-row span:first-child {
+                color: #8996b3;
+            }
+
+        .products-admin .product-dialog-footer {
+            display: flex;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            gap: 9px;
+            margin-top: 20px;
+            padding-top: 18px;
+            border-top: 1px solid #22304c;
+        }
+
+        /* NAVEGACIÓN MÓVIL */
+
+        .products-admin .product-menu-toggle {
+            display: none;
+            width: 42px;
+            height: 42px;
+            place-items: center;
+            border: 1px solid #22304c;
+            border-radius: 11px;
+            background: #121a2b;
+            color: #e9eefb;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .products-admin .product-backdrop[hidden] {
+            display: none !important;
+        }
+
+        @media (min-width: 901px) {
+            .products-admin .admin-sidebar {
+                position: sticky;
+                top: 66px;
+                align-self: flex-start;
+                height: calc(100vh - 66px);
+                min-height: 0;
+                overflow-y: auto;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .products-admin .admin-navbar {
+                gap: 12px;
+                padding: 0 12px;
+            }
+
+            .products-admin .product-menu-toggle {
+                display: grid;
+            }
+
+            .products-admin .admin-nav-links,
+            .products-admin .admin-search {
+                display: none;
+            }
+
+            .products-admin .admin-user {
+                margin-left: auto;
+            }
+
+            .products-admin .admin-sidebar {
+                display: block;
+                position: fixed;
+                left: 0;
+                top: 66px;
+                bottom: 0;
+                z-index: 150;
+                width: min(252px,85vw);
+                height: calc(100vh - 66px);
+                overflow-y: auto;
+                visibility: hidden;
+                pointer-events: none;
+                transform: translateX(-110%);
+                transition: transform .28s ease, visibility .28s ease;
+                box-shadow: 12px 0 32px rgba(0,0,0,.45);
+            }
+
+            .products-admin.menu-open .admin-sidebar {
+                visibility: visible;
+                pointer-events: auto;
+                transform: translateX(0);
+            }
+
+            .products-admin .product-backdrop:not([hidden]) {
+                display: block;
+                position: fixed;
+                inset: 66px 0 0;
+                z-index: 140;
+                background: rgba(0,0,0,.6);
+            }
+
+            .products-admin.menu-open {
+                overflow: hidden;
+            }
+
+            .products-admin .admin-main {
+                min-width: 0;
+                padding: 20px 16px 55px;
+            }
+        }
+
+        @media (max-width: 620px) {
+            .products-admin .admin-logo-text,
+            .products-admin .admin-user-name {
+                display: none;
+            }
+
+            .products-admin .product-dialog-header,
+            .products-admin .product-dialog-body {
+                padding: 16px;
+            }
+
+            .products-admin .product-spec-row {
+                grid-template-columns: 1fr;
+                gap: 3px;
+            }
+        }
+    </style>
+</head>
+
+<body class="products-admin">
+
+    <!-- NAVBAR -->
+    <header class="admin-navbar">
+
+        <button type="button"
+                id="product-menu-toggle"
+                class="product-menu-toggle"
+                aria-controls="product-sidebar"
+                aria-expanded="false"
+                aria-label="Abrir menú administrativo">
+            ☰
+        </button>
+
+        <a href="{% url 'catalog:inicio' %}"
+           class="admin-logo">
+
+            <div class="admin-logo-icon">M</div>
+
+            <div class="admin-logo-text">
+                <strong>MARKETPLACE</strong>
+                <span>COMPONENTES</span>
+            </div>
+        </a>
+
+        <nav class="admin-nav-links"
+             aria-label="Navegación principal">
+
+            <a class="admin-nav-link"
+               href="{% url 'catalog:inicio' %}">
+                Inicio
+            </a>
+
+            <a class="admin-nav-link"
+               href="{% url 'catalog:catalogo' %}">
+                Catálogo
+            </a>
+
+            <a class="admin-nav-link active"
+               href="{% url 'management:dashboard' %}">
+                Administración
+            </a>
+        </nav>
+
+        <form class="admin-search"
+              method="get"
+              action="{% url 'catalog:catalogo' %}"
+              role="search">
+
+            <button type="submit"
+                    class="product-search-button"
+                    aria-label="Buscar productos">
+                🔍
+            </button>
+
+            <input type="search"
+                   name="q"
+                   placeholder="Buscar componentes, marcas, modelos..."
+                   aria-label="Buscar componentes">
+        </form>
+
+        <a class="admin-user"
+           href="{% url 'management:perfil' %}"
+           aria-label="Mi perfil">
+
+            <span class="admin-avatar">
+                {% if request.user.first_name or request.user.last_name %}
+                {{ request.user.first_name|slice:":1"|upper }}{{ request.user.last_name|slice:":1"|upper }}
+                {% else %}
+                {{ request.user.username|slice:":2"|upper }}
+                {% endif %}
+            </span>
+
+            <span class="admin-user-name">
+                {{ request.user.first_name|default:request.user.username }}
+            </span>
+
+            <span aria-hidden="true">⌄</span>
+        </a>
+    </header>
+
+    <div class="product-backdrop"
+         id="product-backdrop"
+         hidden></div>
+
+    <div class="admin-layout">
+
+        <!-- MENÚ LATERAL -->
+        <aside id="product-sidebar"
+               class="admin-sidebar"
+               aria-label="Menú administrativo">
+
+            <div class="sidebar-user">
+                <span class="admin-avatar">
+                    {% if request.user.first_name or request.user.last_name %}
+                    {{ request.user.first_name|slice:":1"|upper }}{{ request.user.last_name|slice:":1"|upper }}
+                    {% else %}
+                    {{ request.user.username|slice:":2"|upper }}
+                    {% endif %}
+                </span>
+
+                <div>
+                    <div class="sidebar-user-name">
+                        {{ request.user.get_full_name|default:request.user.username }}
+                    </div>
+
+                    <div class="sidebar-user-role">
+                        ADMINISTRADOR
+                    </div>
+                </div>
+            </div>
+
+            <nav aria-label="Secciones administrativas">
+
+                <div class="sidebar-title">
+                    ADMINISTRACIÓN
+                </div>
+
+                <a class="sidebar-link"
+                   href="{% url 'management:dashboard' %}">
+                    📊 Dashboard
+                </a>
+
+                <a class="sidebar-link"
+                   href="{% url 'management:usuarios' %}">
+                    👥 Usuarios
+                </a>
+
+                <a class="sidebar-link"
+                   href="{% url 'management:solicitudes' %}">
+                    📨 Solicitudes
+
+                    {% if pending_requests %}
+                    <span class="sidebar-count">
+                        {{ pending_requests }}
+                    </span>
+                    {% endif %}
+                </a>
+
+                <a class="sidebar-link{% if is_pending %} active{% endif %}"
+                   href="{% url 'management:productos' %}?status=PENDIENTE"
+                   {% if is_pending %}aria-current="page" {% endif %}>
+                    ⏳ Productos pendientes
+
+                    {% if pending_products %}
+                    <span class="sidebar-count">
+                        {{ pending_products }}
+                    </span>
+                    {% endif %}
+                </a>
+
+                <a class="sidebar-link{% if not is_pending %} active{% endif %}"
+                   href="{% url 'management:productos' %}"
+                   {% if not is_pending %}aria-current="page" {% endif %}>
+                    📦 Productos
+                </a>
+
+                <a class="sidebar-link"
+                   href="{% url 'management:categorias' %}">
+                    🗂️ Categorías
+                </a>
+
+                <a class="sidebar-link"
+                   href="{% url 'management:pedidos' %}">
+                    🧾 Órdenes
+                </a>
+
+                <div class="sidebar-title">
+                    CUENTA
+                </div>
+
+                <a class="sidebar-link"
+                   href="{% url 'management:perfil' %}">
+                    👤 Perfil
+                </a>
+
+            </nav>
+
+            <div class="sidebar-footer">
+
+                <a class="sidebar-button"
+                   href="{% url 'catalog:inicio' %}">
+                    🏠 Ir al marketplace
+                </a>
+
+                <form method="post"
+                      action="{% url 'accounts:logout' %}">
+
+                    {% csrf_token %}
+
+                    <button class="sidebar-button"
+                            type="submit">
+                        ⏻ Cerrar sesión
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="admin-main">
+
+            <div class="product-heading">
+
+                <div class="breadcrumb">
+
+                    <a href="{% url 'management:dashboard' %}">
+                        Administración
+                    </a>
+
+                    &nbsp; / &nbsp;
+
+                    {% if is_pending %}
+                    Productos pendientes
+                    {% else %}
+                    Productos
+                    {% endif %}
+                </div>
+
+                {% if is_pending %}
+
+                <!-- ENCABEZADO DE PENDIENTES -->
+                <h1 class="page-title">
+                    Productos <span>pendientes</span>
+                </h1>
+
+                <p class="product-description">
+                    {{ products_total }} publicaciones esperando revisión.
+                    Los productos pendientes no son visibles
+                    en el catálogo público.
+                </p>
+
+                {% else %}
+
+                <!-- ENCABEZADO DE TODOS LOS PRODUCTOS -->
+                <h1 class="page-title">
+                    Todos los <span>productos</span>
+                </h1>
+
+                <p class="product-description">
+                    {% if status == "APROBADO" %}
+                    {{ products_total }} productos aprobados.
+                    {% elif status == "RECHAZADO" %}
+                    {{ products_total }} productos rechazados.
+                    {% else %}
+                    {{ products_total }} productos registrados
+                    por todos los vendedores.
+                    {% endif %}
+                </p>
+
+                {% endif %}
+            </div>
+
+            <!-- MENSAJES DE DJANGO -->
+            {% if messages %}
+            <div class="product-notices"
+                 role="status"
+                 aria-live="polite">
+
+                {% for message in messages %}
+                <div class="product-notice {% if 'error' in message.tags %}error{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% if products %}
+
+            <!-- TABLA SEGÚN VISTA DEL INDEX -->
+            <section class="product-table-wrap"
+                     aria-label="Listado administrativo de productos">
+
+                <table class="product-table">
+
+                    <thead>
+                        <tr>
+                            <th>Imagen</th>
+                            <th>Producto</th>
+                            <th>Vendedor</th>
+                            <th>Categoría</th>
+                            <th>Precio</th>
+                            <th>Stock</th>
+
+                            {% if is_pending %}
+                            <th>Fecha</th>
+                            {% endif %}
+
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for p in products %}
+                        <tr>
+
+                            <!-- IMAGEN -->
+                            <td>
+                                <div class="product-thumb">
+
+                                    {% if p.image %}
+                                    <img src="{{ p.image.url }}"
+                                         alt="{{ p.name }}"
+                                         loading="lazy"
+                                         onerror="this.hidden=true;this.nextElementSibling.hidden=false;">
+
+                                    <span hidden>
+                                        {{ p.category.icon|default:"📦" }}
+                                    </span>
+                                    {% else %}
+                                    <span>
+                                        {{ p.category.icon|default:"📦" }}
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </td>
+
+                            <!-- PRODUCTO -->
+                            <td>
+                                <strong class="product-name">
+                                    {{ p.name }}
+                                </strong>
+
+                                <small class="product-subtitle">
+                                    {{ p.brand }}
+                                    {% if is_pending and p.model %}
+                                    · {{ p.model }}
+                                    {% endif %}
+                                </small>
+                            </td>
+
+                            <!-- VENDEDOR -->
+                            <td>
+                                {{ p.seller.seller_profile.business_name|default:p.seller.get_full_name|default:p.seller.username }}
+                            </td>
+
+                            <!-- CATEGORÍA -->
+                            <td>
+                                {{ p.category.name }}
+                            </td>
+
+                            <!-- PRECIO -->
+                            <td>
+                                <span class="product-price">
+                                    ${{ p.price|floatformat:2 }}
+                                </span>
+                            </td>
+
+                            <!-- STOCK -->
+                            <td>
+                                {{ p.stock }}
+                            </td>
+
+                            <!-- FECHA SOLO EN PENDIENTES -->
+                            {% if is_pending %}
+                            <td>
+                                <span class="product-date">
+                                    {{ p.created_at|date:"d/m/Y" }}
+                                </span>
+                            </td>
+                            {% endif %}
+
+                            <!-- ESTADO -->
+                            <td>
+                                <span class="product-badge
+                                    {% if p.approval_status == 'PENDIENTE' %}pending
+                                    {% elif p.approval_status == 'APROBADO' %}approved
+                                    {% elif p.approval_status == 'RECHAZADO' %}rejected
+                                    {% endif %}">
+
+                                    {{ p.get_approval_status_display }}
+                                </span>
+                            </td>
+
+                            <!-- ACCIONES -->
+                            <td>
+                                <div class="product-actions">
+
+                                    <button type="button"
+                                            class="product-button"
+                                            data-open-product="product-detail-{{ p.pk }}">
+
+                                        {% if is_pending %}
+                                        👁 Revisar
+                                        {% else %}
+                                        👁 Ver
+                                        {% endif %}
+                                    </button>
+
+                                    {% if p.approval_status == 'PENDIENTE' %}
+
+                                    <!-- APROBAR -->
+                                    <form method="post"
+                                          action="{% url 'management:producto_resolver' p.pk %}">
+
+                                        {% csrf_token %}
+
+                                        {% if is_pending %}
+                                        <input type="hidden"
+                                               name="return_to_pending"
+                                               value="1">
+                                        {% endif %}
+
+                                        <button type="submit"
+                                                name="action"
+                                                value="APROBADO"
+                                                class="product-button approve">
+
+                                            {% if is_pending %}
+                                            ✔ Aprobar
+                                            {% else %}
+                                            ✔
+                                            {% endif %}
+                                        </button>
+                                    </form>
+
+                                    <!-- RECHAZAR -->
+                                    <form method="post"
+                                          action="{% url 'management:producto_resolver' p.pk %}">
+
+                                        {% csrf_token %}
+
+                                        {% if is_pending %}
+                                        <input type="hidden"
+                                               name="return_to_pending"
+                                               value="1">
+                                        {% endif %}
+
+                                        <button type="submit"
+                                                name="action"
+                                                value="RECHAZADO"
+                                                class="product-button reject">
+
+                                            {% if is_pending %}
+                                            ✖ Rechazar
+                                            {% else %}
+                                            ✖
+                                            {% endif %}
+                                        </button>
+                                    </form>
+
+                                    {% endif %}
+
+                                    {% if not is_pending %}
+
+                                    <!-- ELIMINACIÓN SEGURA -->
+                                    <form method="post"
+                                          action="{% url 'management:producto_eliminar' p.pk %}"
+                                          data-delete-product>
+
+                                        {% csrf_token %}
+
+                                        <button type="submit"
+                                                class="product-button delete"
+                                                aria-label="Eliminar {{ p.name }}"
+                                                title="Eliminar producto">
+                                            🗑
+                                        </button>
+                                    </form>
+
+                                    {% endif %}
+                                </div>
+                            </td>
+
+                        </tr>
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+            </section>
+
+            {% if products_total > 150 %}
+            <p class="product-list-note">
+                Se muestran los 150 productos más recientes
+                de {{ products_total }} registros.
+            </p>
+            {% endif %}
+
+            {% else %}
+
+            <!-- PANTALLA VACÍA DEL INDEX -->
+            <div class="product-empty">
+
+                {% if is_pending %}
+
+                <div class="product-empty-icon">✅</div>
+
+                <h2>No hay productos pendientes</h2>
+
+                <p>
+                    Todas las publicaciones han sido revisadas.
+                </p>
+
+                {% else %}
+
+                <div class="product-empty-icon">📦</div>
+
+                <h2>Sin productos</h2>
+
+                <p>
+                    No hay publicaciones para mostrar.
+                </p>
+
+                {% endif %}
+            </div>
+
+            {% endif %}
+
+        </main>
+    </div>
+
+    <!-- CONTENIDO DE CADA VENTANA DE REVISIÓN -->
+    {% for p in products %}
+    <template id="product-detail-{{ p.pk }}">
+
+        <div class="product-detail-top">
+
+            <!-- IMAGEN GRANDE -->
+            <div class="product-large-image">
+
+                {% if p.image %}
+                <img src="{{ p.image.url }}"
+                     alt="{{ p.name }}"
+                     onerror="this.hidden=true;this.nextElementSibling.hidden=false;">
+
+                <span hidden>
+                    {{ p.category.icon|default:"📦" }}
+                </span>
+                {% else %}
+                <span>
+                    {{ p.category.icon|default:"📦" }}
+                </span>
+                {% endif %}
+            </div>
+
+            <div class="product-detail-info">
+
+                <div class="product-detail-tags">
+
+                    <span class="product-badge condition">
+                        {{ p.get_condition_display }}
+                    </span>
+
+                    <span class="product-badge
+                        {% if p.approval_status == 'PENDIENTE' %}pending
+                        {% elif p.approval_status == 'APROBADO' %}approved
+                        {% elif p.approval_status == 'RECHAZADO' %}rejected
+                        {% endif %}">
+                        {{ p.get_approval_status_display }}
+                    </span>
+
+                    {% if not p.active %}
+                    <span class="product-badge inactive">
+                        INACTIVO
+                    </span>
+                    {% endif %}
+
+                </div>
+
+                <h3>{{ p.name }}</h3>
+
+                <div class="product-detail-meta">
+                    {{ p.brand }}
+
+                    {% if p.model %}
+                    · {{ p.model }}
+                    {% endif %}
+                </div>
+
+                <div class="product-detail-price">
+                    ${{ p.price|floatformat:2 }}
+                </div>
+
+                <div class="product-detail-meta"
+                     style="margin-top:7px;">
+                    Stock: {{ p.stock }} · {{ p.category.name }}
+                </div>
+
+            </div>
+        </div>
+
+        <!-- DESCRIPCIÓN -->
+        <div class="product-detail-label">
+            Descripción
+        </div>
+
+        <p class="product-detail-text">
+            {{ p.description|linebreaksbr }}
+        </p>
+
+        <!-- VENDEDOR -->
+        <div class="product-detail-label">
+            Vendedor
+        </div>
+
+        <p class="product-detail-text">
+            {{ p.seller.seller_profile.business_name|default:p.seller.get_full_name|default:p.seller.username }}
+
+            {% if p.seller.email %}
+            <span style="color:#8996b3;">
+                · {{ p.seller.email }}
+            </span>
+            {% endif %}
+        </p>
+
+        <!-- ESPECIFICACIONES DISPONIBLES -->
+        <div class="product-detail-label">
+            Especificaciones
+        </div>
+
+        <div class="product-specs">
+
+            <div class="product-spec-row">
+                <span>Marca</span>
+                <strong>{{ p.brand }}</strong>
+            </div>
+
+            <div class="product-spec-row">
+                <span>Modelo</span>
+                <strong>{{ p.model|default:"No registrado" }}</strong>
+            </div>
+
+            <div class="product-spec-row">
+                <span>Condición</span>
+                <strong>{{ p.get_condition_display }}</strong>
+            </div>
+
+            <div class="product-spec-row">
+                <span>Ubicación</span>
+                <strong>{{ p.location|default:"No registrada" }}</strong>
+            </div>
+
+        </div>
+
+        <!-- BOTONES DEL MODAL -->
+        <div class="product-dialog-footer">
+
+            {% if p.approval_status == 'PENDIENTE' %}
+
+            <form method="post"
+                  action="{% url 'management:producto_resolver' p.pk %}">
+
+                {% csrf_token %}
+
+                {% if is_pending %}
+                <input type="hidden"
+                       name="return_to_pending"
+                       value="1">
+                {% endif %}
+
+                <button class="product-button reject"
+                        type="submit"
+                        name="action"
+                        value="RECHAZADO">
+                    ✖ Rechazar
+                </button>
+            </form>
+
+            <form method="post"
+                  action="{% url 'management:producto_resolver' p.pk %}">
+
+                {% csrf_token %}
+
+                {% if is_pending %}
+                <input type="hidden"
+                       name="return_to_pending"
+                       value="1">
+                {% endif %}
+
+                <button class="product-button approve"
+                        type="submit"
+                        name="action"
+                        value="APROBADO">
+                    ✔ Aprobar
+                </button>
+            </form>
+
+            {% endif %}
+
+            <button type="button"
+                    class="product-button"
+                    data-close-product>
+                Cerrar
+            </button>
+        </div>
+
+    </template>
+    {% endfor %}
+
+    <!-- MODAL REUTILIZABLE -->
+    <dialog id="product-dialog"
+            class="product-dialog"
+            aria-labelledby="product-dialog-title">
+
+        <div class="product-dialog-header">
+
+            <h2 id="product-dialog-title">
+                Revisión del producto
+            </h2>
+
+            <button type="button"
+                    id="product-dialog-close"
+                    class="product-dialog-close"
+                    aria-label="Cerrar ventana">
+                ×
+            </button>
+        </div>
+
+        <div class="product-dialog-body"
+             id="product-dialog-body"></div>
+
+    </dialog>
+
+    <script>(function () {
+            "use strict";
+
+            // NAVEGACIÓN MÓVIL
+            const body = document.body;
+            const menuButton = document.getElementById(
+                "product-menu-toggle"
+            );
+            const backdrop = document.getElementById(
+                "product-backdrop"
+            );
+
+            function setMenuOpen(open) {
+                body.classList.toggle("menu-open", open);
+                backdrop.hidden = !open;
+
+                menuButton.setAttribute(
+                    "aria-expanded",
+                    String(open)
+                );
+            }
+
+            menuButton.addEventListener("click", function () {
+                setMenuOpen(
+                    !body.classList.contains("menu-open")
+                );
+            });
+
+            backdrop.addEventListener("click", function () {
+                setMenuOpen(false);
+            });
+
+            document.addEventListener("keydown", function (event) {
+                if (event.key === "Escape") {
+                    setMenuOpen(false);
+                }
+            });
+
+            window.addEventListener("resize", function () {
+                if (window.innerWidth > 900) {
+                    setMenuOpen(false);
+                }
+            });
+
+            // MODAL DE PRODUCTO
+            const dialog = document.getElementById(
+                "product-dialog"
+            );
+            const dialogBody = document.getElementById(
+                "product-dialog-body"
+            );
+            const dialogTitle = document.getElementById(
+                "product-dialog-title"
+            );
+            const dialogClose = document.getElementById(
+                "product-dialog-close"
+            );
+
+            let previousFocus = null;
+
+            document.querySelectorAll(
+                "[data-open-product]"
+            ).forEach(function (button) {
+
+                button.addEventListener("click", function () {
+
+                    const templateId = button.getAttribute(
+                        "data-open-product"
+                    );
+
+                    const template = document.getElementById(
+                        templateId
+                    );
+
+                    if (!template) return;
+
+                    previousFocus = button;
+
+                    dialogBody.replaceChildren(
+                        template.content.cloneNode(true)
+                    );
+
+                    dialogTitle.textContent =
+                        "Revisión del producto";
+
+                    dialog.showModal();
+                });
+            });
+
+            function closeDialog() {
+                dialog.close();
+            }
+
+            dialogClose.addEventListener(
+                "click",
+                closeDialog
+            );
+
+            dialogBody.addEventListener(
+                "click",
+                function (event) {
+                    if (event.target.closest(
+                        "[data-close-product]"
+                    )) {
+                        closeDialog();
+                    }
+                }
+            );
+
+            dialog.addEventListener("click", function (event) {
+                if (event.target === dialog) {
+                    closeDialog();
+                }
+            });
+
+            dialog.addEventListener("close", function () {
+                dialogBody.replaceChildren();
+
+                if (previousFocus) {
+                    previousFocus.focus();
+                    previousFocus = null;
+                }
+            });
+
+            // CONFIRMACIÓN DE ELIMINACIÓN
+            document.querySelectorAll(
+                "[data-delete-product]"
+            ).forEach(function (form) {
+
+                form.addEventListener(
+                    "submit",
+                    function (event) {
+
+                        const confirmed = window.confirm(
+                            "¿Estás seguro de que deseas " +
+                            "eliminar esta publicación? " +
+                            "Esta acción no se puede deshacer."
+                        );
+
+                        if (!confirmed) {
+                            event.preventDefault();
+                        }
+                    }
+                );
+            });
+
+        })();</script>
+</body>
+</html>

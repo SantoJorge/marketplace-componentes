@@ -39,3 +39,9 @@ htmlcov/
 
 # Bases de datos / respaldos locales
 *.sql
+# Respaldos y variables locales
+*.bak
+*.bak-*
+.env.*
+!.env.example
+*.bak_*

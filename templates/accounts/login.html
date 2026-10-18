@@ -121,4 +121,110 @@ Iniciar sesión | Marketplace Componentes
 
 </div>
 
+<!-- ANEXO FASE 1 NOTIFICACION FLOTANTE -->
+{% if request.GET.aviso == "vender" and not request.user.is_authenticated %}
+
+<style>
+    .mc-vender-toast {
+        position: fixed;
+        top: 80px;
+        right: 22px;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        min-width: 270px;
+        max-width: 390px;
+        padding: 13px 17px;
+        background: linear-gradient(150deg, #16203a, #101728);
+        border: 1px solid rgba(34, 211, 238, .45);
+        border-radius: 13px;
+        box-shadow: 0 18px 40px -18px rgba(0,0,0,.8);
+        color: #e9eefb;
+        font-size: 13.5px;
+        font-weight: 600;
+        pointer-events: none;
+        animation: mc-vender-in .32s ease-out both;
+    }
+
+    .mc-vender-toast-icon {
+        display: grid;
+        place-items: center;
+        width: 26px;
+        height: 26px;
+        flex-shrink: 0;
+        border-radius: 50%;
+        background: rgba(34, 211, 238, .2);
+        color: #67e8f9;
+        font-weight: 900;
+    }
+
+    .mc-vender-toast.salida {
+        animation: mc-vender-out .3s ease-in both;
+    }
+
+    @keyframes mc-vender-in {
+        from {
+            opacity: 0;
+            transform: translateX(60px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes mc-vender-out {
+        from {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        to {
+            opacity: 0;
+            transform: translateX(60px);
+        }
+    }
+
+    @media (max-width: 620px) {
+        .mc-vender-toast {
+            left: 12px;
+            right: 12px;
+            min-width: 0;
+            max-width: none;
+        }
+    }
+</style>
+
+<div id="mc-aviso-vender"
+     class="mc-vender-toast"
+     role="status"
+     aria-live="polite">
+
+    <span class="mc-vender-toast-icon"
+          aria-hidden="true">ℹ</span>
+
+    <span>Inicia sesión para vender.</span>
+
+</div>
+
+<script>(function () {
+    const aviso = document.getElementById('mc-aviso-vender');
+
+    if (!aviso) return;
+
+    window.setTimeout(function () {
+        aviso.classList.add('salida');
+
+        window.setTimeout(function () {
+            aviso.remove();
+        }, 320);
+
+    }, 3400);
+})();</script>
+
+{% endif %}
+
+
 {% endblock %}

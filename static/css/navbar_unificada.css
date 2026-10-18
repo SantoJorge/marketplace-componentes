@@ -1,0 +1,435 @@
+/* Barra oficial Marketplace Componentes: común a administrador, vendedor y público.
+   Conserva marketplace.css y paneles.css sin sustituir sus estilos. */
+.marketplace-navbar {
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    height: 66px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 0 22px;
+    background: rgba(9,13,23,.95);
+    border-bottom: 1px solid #1a2337;
+    backdrop-filter: blur(16px);
+}
+
+    .marketplace-navbar .logo {
+        flex: 0 0 auto;
+    }
+
+    .marketplace-navbar .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        white-space: nowrap;
+    }
+
+    .marketplace-navbar .nav-link {
+        padding: 9px 14px;
+        border-radius: 10px;
+        font-size: 13.5px;
+        font-weight: 600;
+    }
+
+        .marketplace-navbar .nav-link.active {
+            background: linear-gradient(135deg,rgba(37,99,255,.28),rgba(34,211,238,.12));
+            border: 1px solid rgba(37,99,255,.45);
+            color: #fff;
+        }
+
+    .marketplace-navbar .nav-search {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: 1 1 240px;
+        max-width: 430px;
+        min-width: 145px;
+        margin-left: auto;
+        height: 42px;
+        padding: 0 12px;
+        border: 1px solid #22304c;
+        border-radius: 11px;
+        background: #121a2b;
+    }
+
+        .marketplace-navbar .nav-search:focus-within {
+            border-color: #2563ff;
+            box-shadow: 0 0 0 3px rgba(37,99,255,.14);
+        }
+
+    .marketplace-navbar .nav-search-button {
+        border: 0;
+        padding: 3px;
+        background: transparent;
+        cursor: pointer;
+        font-size: 15px;
+        flex: none;
+    }
+
+    .marketplace-navbar .nav-search input {
+        min-width: 0;
+        border: 0;
+        outline: none;
+        background: transparent;
+        box-shadow: none;
+        width: 100%;
+        color: #e9eefb;
+        font-size: 13px;
+    }
+
+    .marketplace-navbar .nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-left: auto;
+        flex-shrink: 0;
+    }
+
+    .marketplace-navbar .cart-btn {
+        flex: 0 0 44px;
+        width: 44px;
+        height: 44px;
+        background: #121a2b;
+        border: 1px solid #22304c;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+    }
+
+    .marketplace-navbar .nav-user {
+        position: relative;
+    }
+
+    .marketplace-navbar .nav-user-button {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 5px 12px 5px 5px;
+        border-radius: 30px;
+        border: 1px solid #22304c;
+        background: #121a2b;
+        color: #e9eefb;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+        .marketplace-navbar .nav-user-button:hover, .marketplace-navbar .nav-user-button[aria-expanded="true"] {
+            border-color: #2563ff;
+            background: #162034;
+        }
+
+    .marketplace-navbar .nav-avatar {
+        flex-shrink: 0;
+        width: 33px;
+        height: 33px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg,#2875ff,#1fc8de);
+        font-size: 12px;
+        font-weight: 900;
+        color: #fff;
+    }
+
+    .marketplace-navbar .nav-user-name {
+        max-width: 105px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .marketplace-navbar .nav-chevron {
+        color: #8996b3;
+        font-size: 10px;
+    }
+
+    .marketplace-navbar .nav-dropdown {
+        position: absolute;
+        z-index: 250;
+        top: calc(100% + 10px);
+        right: 0;
+        min-width: 248px;
+        max-width: min(92vw,320px);
+        border-radius: 14px;
+        padding: 8px;
+        background: #121a2b;
+        border: 1px solid #22304c;
+        box-shadow: 0 18px 40px rgba(0,0,0,.65);
+    }
+
+        .marketplace-navbar .nav-dropdown[hidden] {
+            display: none !important;
+        }
+
+    .marketplace-navbar .nav-dropdown-head {
+        padding: 10px 12px 13px;
+        border-bottom: 1px solid #22304c;
+        margin-bottom: 5px;
+    }
+
+        .marketplace-navbar .nav-dropdown-head strong {
+            display: block;
+            font-size: 13px;
+            color: #e9eefb;
+        }
+
+        .marketplace-navbar .nav-dropdown-head small {
+            display: block;
+            font-size: 11px;
+            color: #8996b3;
+            overflow-wrap: anywhere;
+        }
+
+    .marketplace-navbar .nav-role {
+        display: inline-block;
+        font-size: 10px;
+        color: #b6c9ff;
+        border: 1px solid #344b83;
+        border-radius: 18px;
+        padding: 2px 8px;
+        margin-top: 8px;
+        font-weight: 800;
+        letter-spacing: .4px;
+    }
+
+    .marketplace-navbar .nav-dropdown-item {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border: 0;
+        border-radius: 9px;
+        background: transparent;
+        color: #a8badc;
+        text-align: left;
+        text-decoration: none;
+        cursor: pointer;
+        font: 600 13px 'Segoe UI',Arial,sans-serif;
+    }
+
+        .marketplace-navbar .nav-dropdown-item:hover {
+            background: #1b2740;
+            color: #fff;
+        }
+
+    .marketplace-navbar .nav-danger:hover {
+        background: rgba(239,68,68,.15);
+        color: #ff9e9e;
+    }
+
+    .marketplace-navbar .nav-dropdown-divider {
+        height: 1px;
+        margin: 6px 4px;
+        background: #22304c;
+    }
+
+    .marketplace-navbar .nav-logout-form {
+        margin: 0;
+    }
+
+    .marketplace-navbar .nav-toggle {
+        display: none;
+        width: 39px;
+        height: 39px;
+        border: 1px solid #22304c;
+        border-radius: 10px;
+        background: #121a2b;
+        cursor: pointer;
+        color: #e9eefb;
+    }
+/* El lateral debe aparecer en los paneles; no usar #sidebar.hidden. */
+#layout.mc-shell {
+    display: flex;
+    align-items: stretch;
+    min-height: calc(100vh - 66px);
+}
+
+    #layout.mc-shell > .mc-sidebar {
+        display: block;
+        align-self: stretch;
+        flex: none;
+    }
+
+    #layout.mc-shell > .mc-main {
+        flex: 1;
+        min-width: 0;
+    }
+
+@media (max-width:1080px) {
+    .marketplace-navbar {
+        gap: 11px;
+        padding: 0 12px;
+    }
+
+        .marketplace-navbar .nav-search {
+            max-width: 290px;
+        }
+
+        .marketplace-navbar .nav-link {
+            padding: 8px 9px;
+        }
+}
+
+@media (max-width:850px) {
+    .marketplace-navbar .nav-toggle {
+        display: grid;
+        place-items: center;
+    }
+
+    .marketplace-navbar .nav-links {
+        display: none;
+        position: absolute;
+        left: 10px;
+        top: 65px;
+        width: min(260px,calc(100vw - 20px));
+        flex-direction: column;
+        align-items: stretch;
+        padding: 10px;
+        border: 1px solid #22304c;
+        border-radius: 12px;
+        background: #101827;
+        box-shadow: 0 16px 36px #0008;
+    }
+
+        .marketplace-navbar .nav-links.is-open {
+            display: flex;
+        }
+
+    .marketplace-navbar .nav-search {
+        max-width: none;
+    }
+
+    #layout.mc-shell {
+        display: block;
+    }
+
+        #layout.mc-shell > .mc-sidebar {
+            width: 100%;
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding: 10px;
+            min-height: 0;
+        }
+}
+
+@media (max-width:620px) {
+    .marketplace-navbar .nav-search {
+        display: none;
+    }
+
+    .marketplace-navbar .nav-actions {
+        margin-left: auto;
+    }
+
+    .marketplace-navbar .nav-user-name {
+        max-width: 72px;
+    }
+
+    .marketplace-navbar .logo-text {
+        display: none;
+    }
+
+    .marketplace-navbar .nav-auth-link {
+        padding: 8px 9px;
+        font-size: 11px;
+    }
+}
+
+
+/* ==========================================
+   FASE 3.1 - NAVEGACION DEL COMPRADOR
+   ========================================== */
+
+.mc-buyer-sidebar .mc-buyer-menu-toggle {
+    display: none;
+}
+
+.mc-buyer-sidebar .mc-buyer-menu {
+    display: block;
+}
+
+.mc-buyer-sidebar a.active {
+    background: linear-gradient( 135deg, rgba(37, 99, 255, .23), rgba(34, 211, 238, .08) );
+    border: 1px solid rgba(37, 99, 255, .42);
+    color: #ffffff;
+    font-weight: 800;
+}
+
+.mc-buyer-sidebar a:focus-visible,
+.mc-buyer-sidebar button:focus-visible {
+    outline: 2px solid #22d3ee;
+    outline-offset: 3px;
+}
+
+.mc-buyer-sidebar .mc-buyer-count {
+    flex: none;
+    min-width: 23px;
+    text-align: center;
+    background: #2563eb;
+    color: #ffffff;
+    padding: 2px 7px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 900;
+}
+
+/* Navegacion movil del comprador */
+
+@media (max-width: 850px) {
+
+    #layout.mc-shell > .mc-buyer-sidebar {
+        display: block;
+        width: 100%;
+        min-height: 0;
+        padding: 10px 14px;
+        overflow: visible;
+        border-right: 0;
+        border-bottom: 1px solid #22304c;
+    }
+
+    .mc-buyer-sidebar .mc-buyer-menu-toggle {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 12px 16px;
+        border: 1px solid #344b83;
+        border-radius: 10px;
+        background: #162747;
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 800;
+        cursor: pointer;
+    }
+
+    .mc-buyer-sidebar .mc-buyer-menu {
+        display: none;
+    }
+
+    .mc-buyer-sidebar.is-open .mc-buyer-menu {
+        display: block;
+        margin-top: 10px;
+    }
+
+    .mc-buyer-sidebar .mc-side-person {
+        display: flex;
+    }
+
+    .mc-buyer-sidebar .mc-navcap {
+        display: block;
+    }
+
+    .mc-buyer-sidebar .mc-side-bottom {
+        display: block;
+    }
+
+    .mc-buyer-sidebar a,
+    .mc-buyer-sidebar .mc-logout-form button {
+        white-space: normal;
+    }
+}

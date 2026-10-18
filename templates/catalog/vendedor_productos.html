@@ -1,0 +1,1118 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Mis productos | Marketplace Componentes
+{% endblock %}
+
+{% block content %}
+
+<style>
+     /* ==============================================
+    FASE 4.3 - MIS PRODUCTOS DEL VENDEDOR
+    Basado en el INDEX HTML original
+    ============================================== */
+
+     .mc-seller-products {
+         width: 100%;
+         max-width: 1600px;
+         color: #e9eefb;
+     }
+
+         .mc-seller-products * {
+             box-sizing: border-box;
+         }
+
+         /* ENCABEZADO */
+
+         .mc-seller-products .mc-sp-heading {
+             margin-bottom: 25px;
+         }
+
+         .mc-seller-products .mc-sp-breadcrumb {
+             margin: 0 0 12px;
+             color: #8296ba;
+             font-size: 12px;
+         }
+
+             .mc-seller-products .mc-sp-breadcrumb a {
+                 color: #91a8ce;
+                 text-decoration: none;
+             }
+
+                 .mc-seller-products .mc-sp-breadcrumb a:hover {
+                     color: #22d3ee;
+                 }
+
+         .mc-seller-products .mc-sp-header-row {
+             display: flex;
+             align-items: flex-end;
+             justify-content: space-between;
+             flex-wrap: wrap;
+             gap: 16px;
+         }
+
+         .mc-seller-products .mc-sp-heading h1 {
+             margin: 0 0 8px;
+             color: #f4f7ff;
+             font-size: 29px;
+             font-weight: 900;
+             letter-spacing: -.8px;
+             line-height: 1.2;
+         }
+
+             .mc-seller-products .mc-sp-heading h1 span {
+                 color: #22d3ee;
+                 background: linear-gradient(90deg, #3475ff, #22d3ee);
+                 background-clip: text;
+                 -webkit-background-clip: text;
+                 -webkit-text-fill-color: transparent;
+             }
+
+         .mc-seller-products .mc-sp-description {
+             margin: 0;
+             color: #899bb8;
+             font-size: 13px;
+         }
+
+         /* BOTONES */
+
+         .mc-seller-products .mc-sp-btn,
+         .mc-sp-dialog .mc-sp-btn {
+             display: inline-flex;
+             align-items: center;
+             justify-content: center;
+             gap: 7px;
+             min-height: 34px;
+             padding: 8px 11px;
+             border: 1px solid #30415e;
+             border-radius: 8px;
+             background: #1b2940;
+             color: #e7eefb;
+             font-family: inherit;
+             font-size: 11.5px;
+             font-weight: 750;
+             line-height: 1.3;
+             white-space: nowrap;
+             text-decoration: none;
+             cursor: pointer;
+             transition: background .18s, border-color .18s, transform .18s;
+         }
+
+             .mc-seller-products .mc-sp-btn:hover,
+             .mc-sp-dialog .mc-sp-btn:hover {
+                 background: #263b60;
+                 border-color: #4b6998;
+                 color: #ffffff;
+             }
+
+         .mc-seller-products .mc-sp-btn-primary,
+         .mc-sp-dialog .mc-sp-btn-primary {
+             padding: 11px 16px;
+             border-color: #3466ed;
+             background: linear-gradient(130deg, #316aff, #1d50d8);
+             color: #ffffff;
+             font-size: 12px;
+             font-weight: 850;
+         }
+
+         .mc-seller-products .mc-sp-btn-danger,
+         .mc-sp-dialog .mc-sp-btn-danger {
+             border-color: #873344;
+             background: #411e2d;
+             color: #fca5a5;
+         }
+
+             .mc-seller-products .mc-sp-btn-danger:hover,
+             .mc-sp-dialog .mc-sp-btn-danger:hover {
+                 border-color: #ef4444;
+                 background: #672536;
+                 color: #ffffff;
+             }
+
+         /* TABLA */
+
+         .mc-seller-products .mc-sp-table-wrap {
+             width: 100%;
+             overflow-x: auto;
+             border: 1px solid #253550;
+             border-radius: 15px;
+             background: #111a2b;
+             scrollbar-color: #314b73 #111a2b;
+         }
+
+         .mc-seller-products .mc-sp-table {
+             width: 100%;
+             min-width: 1200px;
+             border-collapse: collapse;
+             text-align: left;
+         }
+
+             .mc-seller-products .mc-sp-table thead {
+                 background: #18243a;
+             }
+
+             .mc-seller-products .mc-sp-table th {
+                 padding: 14px 12px;
+                 border-bottom: 1px solid #30405c;
+                 color: #94a9cc;
+                 font-size: 10.5px;
+                 font-weight: 850;
+                 text-transform: uppercase;
+                 letter-spacing: .8px;
+                 white-space: nowrap;
+             }
+
+             .mc-seller-products .mc-sp-table td {
+                 padding: 13px 12px;
+                 border-bottom: 1px solid #24334d;
+                 color: #dbe5f5;
+                 font-size: 12px;
+                 vertical-align: middle;
+             }
+
+             .mc-seller-products .mc-sp-table tbody tr:last-child td {
+                 border-bottom: none;
+             }
+
+             .mc-seller-products .mc-sp-table tbody tr:hover {
+                 background: #17243a;
+             }
+
+         /* IMAGEN */
+
+         .mc-seller-products .mc-sp-thumb {
+             display: grid;
+             place-items: center;
+             width: 47px;
+             height: 47px;
+             overflow: hidden;
+             border: 1px solid #304362;
+             border-radius: 9px;
+             background: radial-gradient( circle at 50% 35%, #203252, #0d1627 );
+             font-size: 23px;
+         }
+
+             .mc-seller-products .mc-sp-thumb img {
+                 width: 100%;
+                 height: 100%;
+                 object-fit: cover;
+             }
+
+         /* PRODUCTO */
+
+         .mc-seller-products .mc-sp-product-name {
+             display: block;
+             max-width: 240px;
+             color: #ffffff;
+             font-size: 12.5px;
+             font-weight: 850;
+             line-height: 1.45;
+         }
+
+         .mc-seller-products .mc-sp-product-meta {
+             display: block;
+             margin-top: 4px;
+             color: #8fa1bf;
+             font-size: 11px;
+         }
+
+         .mc-seller-products .mc-sp-price {
+             color: #22d3ee;
+             font-weight: 900;
+             white-space: nowrap;
+         }
+
+         .mc-seller-products .mc-sp-stock-zero {
+             color: #f87171;
+             font-weight: 850;
+         }
+
+         .mc-seller-products .mc-sp-date {
+             color: #93a5c3;
+             font-size: 11px;
+             white-space: nowrap;
+         }
+
+         /* ESTADOS */
+
+         .mc-seller-products .mc-sp-badge,
+         .mc-sp-dialog .mc-sp-badge {
+             display: inline-flex;
+             align-items: center;
+             gap: 5px;
+             padding: 5px 9px;
+             border: 1px solid #354763;
+             border-radius: 20px;
+             background: #1b2941;
+             color: #c6d6ec;
+             font-size: 10px;
+             font-weight: 850;
+             white-space: nowrap;
+         }
+
+             .mc-seller-products .mc-sp-badge.status-aprobado,
+             .mc-sp-dialog .mc-sp-badge.status-aprobado {
+                 border-color: #276749;
+                 background: #153c30;
+                 color: #86efac;
+             }
+
+             .mc-seller-products .mc-sp-badge.status-pendiente,
+             .mc-sp-dialog .mc-sp-badge.status-pendiente {
+                 border-color: #74551f;
+                 background: #3a2c13;
+                 color: #fcd34d;
+             }
+
+             .mc-seller-products .mc-sp-badge.status-rechazado,
+             .mc-sp-dialog .mc-sp-badge.status-rechazado {
+                 border-color: #8c3d4d;
+                 background: #421e2a;
+                 color: #fca5a5;
+             }
+
+             .mc-seller-products .mc-sp-badge.condition-nuevo,
+             .mc-sp-dialog .mc-sp-badge.condition-nuevo {
+                 background: #16344d;
+                 border-color: #315b80;
+                 color: #93c5fd;
+             }
+
+             .mc-seller-products .mc-sp-badge.condition-usado,
+             .mc-sp-dialog .mc-sp-badge.condition-usado {
+                 background: #392b17;
+                 border-color: #76552b;
+                 color: #fcd34d;
+             }
+
+             .mc-seller-products .mc-sp-badge.condition-reacondicionado,
+             .mc-sp-dialog .mc-sp-badge.condition-reacondicionado {
+                 background: #302144;
+                 border-color: #65458d;
+                 color: #d8b4fe;
+             }
+
+             .mc-seller-products .mc-sp-badge.status-inactivo,
+             .mc-sp-dialog .mc-sp-badge.status-inactivo {
+                 margin-top: 5px;
+                 color: #cbd5e1;
+                 border-color: #526078;
+                 background: #263245;
+             }
+
+         /* ACCIONES */
+
+         .mc-seller-products .mc-sp-actions {
+             display: flex;
+             flex-wrap: wrap;
+             align-items: center;
+             gap: 5px;
+             min-width: 280px;
+         }
+
+             .mc-seller-products .mc-sp-actions form {
+                 display: inline-flex;
+                 margin: 0;
+             }
+
+         /* ESTADO VACÍO */
+
+         .mc-seller-products .mc-sp-empty {
+             padding: 60px 20px;
+             border: 1px solid #253550;
+             border-radius: 16px;
+             background: #121a2b;
+             text-align: center;
+         }
+
+         .mc-seller-products .mc-sp-empty-icon {
+             margin-bottom: 14px;
+             font-size: 55px;
+         }
+
+         .mc-seller-products .mc-sp-empty h2 {
+             margin: 0 0 10px;
+             font-size: 21px;
+             color: #ffffff;
+         }
+
+         .mc-seller-products .mc-sp-empty p {
+             margin: 0 auto 23px;
+             max-width: 470px;
+             color: #94a6c4;
+             line-height: 1.7;
+         }
+
+     /* MODALES */
+
+     .mc-sp-dialog {
+         position: fixed;
+         inset: 0;
+         margin: auto;
+         width: min(700px, calc(100vw - 24px));
+         max-width: 700px;
+         max-height: calc(100dvh - 30px);
+         overflow-y: auto;
+         padding: 0;
+         border: 1px solid #304362;
+         border-radius: 16px;
+         background: #111a2b;
+         color: #e9eefb;
+         box-shadow: 0 30px 90px #000a;
+     }
+
+         .mc-sp-dialog::backdrop {
+             background: rgba(3, 7, 18, .78);
+             backdrop-filter: blur(4px);
+         }
+
+         .mc-sp-dialog .mc-sp-dialog-head {
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
+             gap: 14px;
+             padding: 18px 22px;
+             border-bottom: 1px solid #2c3a55;
+         }
+
+             .mc-sp-dialog .mc-sp-dialog-head h2 {
+                 margin: 0;
+                 font-size: 18px;
+                 font-weight: 850;
+             }
+
+         .mc-sp-dialog .mc-sp-close {
+             display: grid;
+             place-items: center;
+             width: 33px;
+             height: 33px;
+             padding: 0;
+             border: 0;
+             border-radius: 8px;
+             background: #243550;
+             color: #ffffff;
+             font-size: 22px;
+             cursor: pointer;
+         }
+
+         .mc-sp-dialog .mc-sp-dialog-body {
+             padding: 23px;
+         }
+
+         .mc-sp-dialog .mc-sp-detail-top {
+             display: flex;
+             gap: 20px;
+             align-items: flex-start;
+             flex-wrap: wrap;
+         }
+
+         .mc-sp-dialog .mc-sp-detail-image {
+             display: grid;
+             place-items: center;
+             flex: 0 0 145px;
+             width: 145px;
+             height: 145px;
+             overflow: hidden;
+             border: 1px solid #33445f;
+             border-radius: 13px;
+             background: #15243b;
+             font-size: 57px;
+         }
+
+             .mc-sp-dialog .mc-sp-detail-image img {
+                 width: 100%;
+                 height: 100%;
+                 object-fit: cover;
+             }
+
+         .mc-sp-dialog .mc-sp-detail-main {
+             flex: 1;
+             min-width: 200px;
+         }
+
+         .mc-sp-dialog .mc-sp-detail-badges {
+             display: flex;
+             flex-wrap: wrap;
+             gap: 6px;
+             margin-bottom: 12px;
+         }
+
+         .mc-sp-dialog .mc-sp-detail-name {
+             margin: 0 0 7px;
+             color: #ffffff;
+             font-size: 20px;
+             font-weight: 900;
+             line-height: 1.3;
+         }
+
+         .mc-sp-dialog .mc-sp-detail-meta {
+             color: #95a8c9;
+             font-size: 12px;
+         }
+
+         .mc-sp-dialog .mc-sp-detail-price {
+             margin: 12px 0 6px;
+             font-size: 26px;
+             font-weight: 900;
+             color: #22d3ee;
+         }
+
+         .mc-sp-dialog .mc-sp-detail-label {
+             margin: 22px 0 9px;
+             color: #8195ba;
+             font-size: 11px;
+             font-weight: 900;
+             letter-spacing: 1.2px;
+             text-transform: uppercase;
+         }
+
+         .mc-sp-dialog .mc-sp-detail-description {
+             margin: 0;
+             color: #bac8df;
+             font-size: 13px;
+             line-height: 1.8;
+             overflow-wrap: anywhere;
+         }
+
+         .mc-sp-dialog .mc-sp-detail-facts {
+             display: grid;
+             grid-template-columns: repeat(2, minmax(0,1fr));
+             gap: 12px;
+             margin-top: 20px;
+         }
+
+         .mc-sp-dialog .mc-sp-fact {
+             padding: 13px;
+             border: 1px solid #2b3c59;
+             border-radius: 10px;
+             background: #0c1627;
+         }
+
+             .mc-sp-dialog .mc-sp-fact small {
+                 display: block;
+                 margin-bottom: 5px;
+                 color: #8299bd;
+                 font-size: 10px;
+             }
+
+             .mc-sp-dialog .mc-sp-fact strong {
+                 color: #fff;
+                 font-size: 13px;
+             }
+
+         .mc-sp-dialog .mc-sp-dialog-footer {
+             display: flex;
+             justify-content: flex-end;
+             align-items: center;
+             gap: 9px;
+             flex-wrap: wrap;
+             padding: 15px 22px;
+             border-top: 1px solid #2c3a55;
+         }
+
+             .mc-sp-dialog .mc-sp-dialog-footer form {
+                 margin: 0;
+             }
+
+     /* MÓVIL */
+
+     @media (max-width: 700px) {
+
+         .mc-seller-products .mc-sp-heading h1 {
+             font-size: 25px;
+         }
+
+         .mc-seller-products .mc-sp-header-row {
+             align-items: stretch;
+         }
+
+             .mc-seller-products .mc-sp-header-row > .mc-sp-btn {
+                 width: 100%;
+             }
+
+         .mc-sp-dialog .mc-sp-detail-facts {
+             grid-template-columns: 1fr;
+         }
+
+         .mc-sp-dialog .mc-sp-detail-image {
+             width: 112px;
+             height: 112px;
+             flex-basis: 112px;
+         }
+
+         .mc-sp-dialog .mc-sp-dialog-body {
+             padding: 17px;
+         }
+
+         .mc-sp-dialog .mc-sp-dialog-head,
+         .mc-sp-dialog .mc-sp-dialog-footer {
+             padding: 14px 17px;
+         }
+     }
+</style>
+
+
+<section class="mc-seller-products">
+
+    <!-- ========================================
+         ENCABEZADO
+         ======================================== -->
+
+    <header class="mc-sp-heading">
+
+        <p class="mc-sp-breadcrumb">
+            <a href="{% url 'catalog:inicio' %}">
+                Inicio
+            </a>
+            / Mis productos
+        </p>
+
+        <div class="mc-sp-header-row">
+
+            <div>
+                <h1>
+                    Mis <span>productos</span>
+                </h1>
+
+                {% if products %}
+                <p class="mc-sp-description">
+                    {{ products|length }}
+                    publicaciones registradas en tu cuenta.
+                </p>
+                {% endif %}
+            </div>
+
+            {% if products %}
+            <a href="{% url 'catalog:vendedor_producto_nuevo' %}"
+               class="mc-sp-btn mc-sp-btn-primary">
+                ＋ Publicar componente
+            </a>
+            {% endif %}
+
+        </div>
+
+    </header>
+
+    {% if products %}
+
+    <!-- ========================================
+         TABLA DE NUEVE COLUMNAS
+         ======================================== -->
+
+    <div class="mc-sp-table-wrap">
+
+        <table class="mc-sp-table">
+
+            <thead>
+                <tr>
+                    <th>Imagen</th>
+                    <th>Producto</th>
+                    <th>Categoría</th>
+                    <th>Precio</th>
+                    <th>Stock</th>
+                    <th>Condición</th>
+                    <th>Estado</th>
+                    <th>Fecha</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for p in products %}
+
+                <tr>
+
+                    <!-- IMAGEN -->
+
+                    <td>
+                        <div class="mc-sp-thumb">
+
+                            {% if p.image %}
+                            <img src="{{ p.image.url }}"
+                                 alt="{{ p.name }}"
+                                 loading="lazy">
+                            {% else %}
+                            {{ p.category.icon|default:"📦" }}
+                            {% endif %}
+
+                        </div>
+                    </td>
+
+                    <!-- PRODUCTO -->
+
+                    <td>
+
+                        <strong class="mc-sp-product-name">
+                            {{ p.name }}
+                        </strong>
+
+                        <small class="mc-sp-product-meta">
+                            {{ p.brand }}
+                            {% if p.model %}
+                            · {{ p.model }}
+                            {% endif %}
+                        </small>
+
+                    </td>
+
+                    <!-- CATEGORÍA -->
+
+                    <td>
+                        {{ p.category.name }}
+                    </td>
+
+                    <!-- PRECIO -->
+
+                    <td>
+                        <span class="mc-sp-price">
+                            ${{ p.price|floatformat:2 }}
+                        </span>
+                    </td>
+
+                    <!-- EXISTENCIAS -->
+
+                    <td>
+
+                        {% if p.stock > 0 %}
+                        {{ p.stock }}
+                        {% else %}
+                        <span class="mc-sp-stock-zero">0</span>
+                        {% endif %}
+
+                    </td>
+
+                    <!-- CONDICIÓN -->
+
+                    <td>
+                        <span class="mc-sp-badge condition-{{ p.condition|lower }}">
+                            {{ p.get_condition_display }}
+                        </span>
+                    </td>
+
+                    <!-- APROBACIÓN -->
+
+                    <td>
+
+                        <span class="mc-sp-badge status-{{ p.approval_status|lower }}">
+                            {{ p.approval_status }}
+                        </span>
+
+                        {% if not p.active %}
+                        <span class="mc-sp-badge status-inactivo">
+                            INACTIVO
+                        </span>
+                        {% endif %}
+
+                    </td>
+
+                    <!-- FECHA -->
+
+                    <td>
+                        <span class="mc-sp-date">
+                            {{ p.created_at|date:"d/m/Y" }}
+                        </span>
+                    </td>
+
+                    <!-- ACCIONES -->
+
+                    <td>
+
+                        <div class="mc-sp-actions">
+
+                            <!-- VER -->
+
+                            <button type="button"
+                                    class="mc-sp-btn"
+                                    data-mc-sp-open="mc-sp-view-{{ p.pk }}">
+                                👁 Ver
+                            </button>
+
+                            <!-- EDITAR -->
+
+                            <a href="{% url 'catalog:vendedor_producto_editar' p.pk %}"
+                               class="mc-sp-btn">
+                                ✏️ Editar
+                            </a>
+
+                            <!-- ACTIVAR / DESACTIVAR -->
+
+                            <form method="post"
+                                  action="{% url 'catalog:vendedor_productos' %}">
+
+                                {% csrf_token %}
+
+                                <input type="hidden"
+                                       name="action"
+                                       value="toggle">
+
+                                <input type="hidden"
+                                       name="product_id"
+                                       value="{{ p.pk }}">
+
+                                <button type="submit"
+                                        class="mc-sp-btn">
+
+                                    {% if p.active %}
+                                    ⏸ Desactivar
+                                    {% else %}
+                                    ▶ Activar
+                                    {% endif %}
+
+                                </button>
+
+                            </form>
+
+                            <!-- ELIMINAR -->
+
+                            <button type="button"
+                                    class="mc-sp-btn mc-sp-btn-danger"
+                                    data-mc-sp-open="mc-sp-delete-{{ p.pk }}"
+                                    aria-label="Eliminar {{ p.name }}"
+                                    title="Eliminar producto">
+                                🗑
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <!-- ========================================
+         VENTANAS PARA VER PRODUCTOS
+         ======================================== -->
+    {% for p in products %}
+
+    <dialog id="mc-sp-view-{{ p.pk }}"
+            class="mc-sp-dialog"
+            aria-labelledby="mc-sp-title-{{ p.pk }}">
+
+        <div class="mc-sp-dialog-head">
+
+            <h2 id="mc-sp-title-{{ p.pk }}">
+                Detalle del producto
+            </h2>
+
+            <button type="button"
+                    class="mc-sp-close"
+                    data-mc-sp-close
+                    aria-label="Cerrar">
+                ×
+            </button>
+
+        </div>
+
+        <div class="mc-sp-dialog-body">
+
+            <div class="mc-sp-detail-top">
+
+                <!-- FOTOGRAFÍA -->
+
+                <div class="mc-sp-detail-image">
+
+                    {% if p.image %}
+                    <img src="{{ p.image.url }}"
+                         alt="{{ p.name }}">
+                    {% else %}
+                    {{ p.category.icon|default:"📦" }}
+                    {% endif %}
+
+                </div>
+
+                <!-- INFORMACIÓN GENERAL -->
+
+                <div class="mc-sp-detail-main">
+
+                    <div class="mc-sp-detail-badges">
+
+                        <span class="mc-sp-badge condition-{{ p.condition|lower }}">
+                            {{ p.get_condition_display }}
+                        </span>
+
+                        <span class="mc-sp-badge status-{{ p.approval_status|lower }}">
+                            {{ p.approval_status }}
+                        </span>
+
+                        {% if not p.active %}
+                        <span class="mc-sp-badge status-inactivo">
+                            INACTIVO
+                        </span>
+                        {% endif %}
+
+                    </div>
+
+                    <h3 class="mc-sp-detail-name">
+                        {{ p.name }}
+                    </h3>
+
+                    <div class="mc-sp-detail-meta">
+                        {{ p.brand }}
+
+                        {% if p.model %}
+                        · {{ p.model }}
+                        {% endif %}
+                    </div>
+
+                    <div class="mc-sp-detail-price">
+                        ${{ p.price|floatformat:2 }}
+                    </div>
+
+                    <div class="mc-sp-detail-meta">
+                        Stock: {{ p.stock }}
+                        · {{ p.category.name }}
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- DESCRIPCIÓN -->
+
+            <h4 class="mc-sp-detail-label">
+                Descripción
+            </h4>
+
+            <p class="mc-sp-detail-description">
+                {{ p.description|linebreaksbr }}
+            </p>
+
+            <!-- DATOS DEL PRODUCTO -->
+
+            <div class="mc-sp-detail-facts">
+
+                <div class="mc-sp-fact">
+                    <small>Ubicación</small>
+                    <strong>
+                        {{ p.location|default:"No indicada" }}
+                    </strong>
+                </div>
+
+                <div class="mc-sp-fact">
+                    <small>Disponibilidad</small>
+                    <strong>
+                        {% if p.active and p.approval_status == 'APROBADO' and p.stock > 0 %}
+                        Disponible
+                        {% else %}
+                        No disponible públicamente
+                        {% endif %}
+                    </strong>
+                </div>
+
+                <div class="mc-sp-fact">
+                    <small>Fecha de publicación</small>
+                    <strong>
+                        {{ p.created_at|date:"d/m/Y H:i" }}
+                    </strong>
+                </div>
+
+                <div class="mc-sp-fact">
+                    <small>Vendedor</small>
+                    <strong>
+                        {{ user.get_full_name|default:user.username }}
+                    </strong>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="mc-sp-dialog-footer">
+
+            <a href="{% url 'catalog:vendedor_producto_editar' p.pk %}"
+               class="mc-sp-btn">
+                ✏️ Editar producto
+            </a>
+
+            <button type="button"
+                    class="mc-sp-btn"
+                    data-mc-sp-close>
+                Cerrar
+            </button>
+
+        </div>
+
+    </dialog>
+
+    <!-- ========================================
+         CONFIRMACIÓN DE ELIMINACIÓN
+         ======================================== -->
+
+    <dialog id="mc-sp-delete-{{ p.pk }}"
+            class="mc-sp-dialog"
+            aria-labelledby="mc-sp-delete-title-{{ p.pk }}">
+
+        <div class="mc-sp-dialog-head">
+
+            <h2 id="mc-sp-delete-title-{{ p.pk }}">
+                Eliminar producto
+            </h2>
+
+            <button type="button"
+                    class="mc-sp-close"
+                    data-mc-sp-close
+                    aria-label="Cerrar">
+                ×
+            </button>
+
+        </div>
+
+        <div class="mc-sp-dialog-body">
+
+            <p class="mc-sp-detail-description">
+                ¿Estás seguro de que deseas eliminar esta publicación?
+            </p>
+
+            <h3 class="mc-sp-detail-name"
+                style="margin-top:14px">
+                {{ p.name }}
+            </h3>
+
+            <p class="mc-sp-detail-description">
+                Esta acción no se puede deshacer.
+                Si el producto tiene ventas registradas,
+                el sistema conservará su historial
+                y no permitirá eliminarlo.
+            </p>
+
+        </div>
+
+        <div class="mc-sp-dialog-footer">
+
+            <button type="button"
+                    class="mc-sp-btn"
+                    data-mc-sp-close>
+                Cancelar
+            </button>
+
+            <form method="post"
+                  action="{% url 'catalog:vendedor_productos' %}">
+
+                {% csrf_token %}
+
+                <input type="hidden"
+                       name="action"
+                       value="delete">
+
+                <input type="hidden"
+                       name="product_id"
+                       value="{{ p.pk }}">
+
+                <button type="submit"
+                        class="mc-sp-btn mc-sp-btn-danger">
+                    🗑 Eliminar producto
+                </button>
+
+            </form>
+
+        </div>
+
+    </dialog>
+
+    {% endfor %}
+
+
+    {% else %}
+
+    <!-- ========================================
+         VENDEDOR SIN PRODUCTOS
+         ======================================== -->
+
+    <div class="mc-sp-empty">
+
+        <div class="mc-sp-empty-icon">
+            📦
+        </div>
+
+        <h2>
+            No tienes productos publicados
+        </h2>
+
+        <p>
+            Publica tu primer componente y comienza
+            a vender en el marketplace.
+        </p>
+
+        <a href="{% url 'catalog:vendedor_producto_nuevo' %}"
+           class="mc-sp-btn mc-sp-btn-primary">
+            ＋ Publicar componente
+        </a>
+
+    </div>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script>(function () {
+    "use strict";
+
+    // ABRIR VENTANAS DE PRODUCTOS
+
+    document.querySelectorAll(
+        "[data-mc-sp-open]"
+    ).forEach(function (button) {
+
+        button.addEventListener("click", function () {
+
+            const modalId = button.getAttribute(
+                "data-mc-sp-open"
+            );
+
+            const modal = document.getElementById(
+                modalId
+            );
+
+            if (!modal) {
+                return;
+            }
+
+            if (typeof modal.showModal === "function") {
+                if (!modal.open) {
+                    modal.showModal();
+                }
+            } else {
+                window.alert(
+                    "El navegador no admite esta ventana."
+                );
+            }
+
+        });
+
+    });
+
+    // CERRAR VENTANAS
+
+    document.querySelectorAll(
+        "[data-mc-sp-close]"
+    ).forEach(function (button) {
+
+        button.addEventListener("click", function () {
+
+            const modal = button.closest("dialog");
+
+            if (modal && modal.open) {
+                modal.close();
+            }
+
+        });
+
+    });
+
+})();</script>
+
+{% endblock %}

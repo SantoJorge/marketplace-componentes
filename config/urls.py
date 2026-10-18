@@ -1,4 +1,4 @@
-from django.contrib import admin
+ï»¿from django.contrib import admin
 from django.urls import path, include
 
 from django.conf import settings
@@ -7,18 +7,19 @@ from django.conf.urls.static import static
 
 urlpatterns = [
 
+
     path(
         "admin/",
         admin.site.urls
     ),
 
-    # Inicio + catálogo público
+    # Inicio + catÃ¡logo pÃºblico
     path(
         "",
         include("apps.catalog.urls")
     ),
 
-    ##AÑADIDO EN FASE 2.5 DE CONEXION CARRITO
+    ##AÃ‘ADIDO EN FASE 2.5 DE CONEXION CARRITO
     path(
     "",
     include("apps.orders.urls")

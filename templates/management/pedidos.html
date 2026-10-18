@@ -1,0 +1,1132 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="dark">
+
+    <title>Órdenes | Marketplace Componentes</title>
+
+    <link rel="stylesheet"
+          href="{% static 'css/management.css' %}">
+
+    <style>
+        /* FASE 5 - ÓRDENES ADMINISTRADOR */
+
+        .orders-admin .admin-sidebar {
+            width: 252px;
+        }
+
+        .orders-admin .sidebar-link {
+            position: relative;
+        }
+
+            .orders-admin .sidebar-link.active {
+                color: #fff;
+                font-weight: 800;
+                background: linear-gradient( 90deg, rgba(37,99,255,.24), rgba(37,99,255,.05) );
+            }
+
+                .orders-admin .sidebar-link.active::before {
+                    content: "";
+                    position: absolute;
+                    left: 0;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    height: 20px;
+                    width: 3px;
+                    background: #22d3ee;
+                    border-radius: 0 4px 4px 0;
+                }
+
+        .orders-admin .sidebar-count {
+            margin-left: auto;
+            padding: 1px 7px;
+            background: #ef4444;
+            border-radius: 20px;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .orders-admin .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .orders-admin .sidebar-footer form {
+            margin: 0;
+        }
+
+        .orders-admin .sidebar-footer button {
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .orders-admin .admin-search button {
+            position: absolute;
+            top: 50%;
+            left: 9px;
+            transform: translateY(-50%);
+            border: 0;
+            background: none;
+            padding: 5px;
+            cursor: pointer;
+        }
+
+        .orders-admin .order-menu-toggle {
+            display: none;
+            width: 42px;
+            height: 42px;
+            flex: none;
+            place-items: center;
+            border: 1px solid #22304c;
+            border-radius: 11px;
+            background: #121a2b;
+            color: #e9eefb;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .orders-admin .order-backdrop[hidden] {
+            display: none !important;
+        }
+
+        /* ENCABEZADO IGUAL AL INDEX */
+
+        .orders-admin .order-heading {
+            margin-bottom: 24px;
+        }
+
+            .orders-admin .order-heading .breadcrumb {
+                margin-bottom: 9px;
+            }
+
+            .orders-admin .order-heading .page-title {
+                margin-bottom: 7px;
+            }
+
+        .orders-admin .order-description {
+            color: #8996b3;
+            font-size: 13.5px;
+        }
+
+        /* TABLA ORIGINAL */
+
+        .orders-admin .order-table-wrap {
+            width: 100%;
+            overflow-x: auto;
+            border: 1px solid #1a2337;
+            border-radius: 14px;
+            background: #121a2b;
+        }
+
+        .orders-admin .order-table {
+            width: 100%;
+            min-width: 930px;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 13px;
+        }
+
+            .orders-admin .order-table th {
+                padding: 13px 15px;
+                background: #162034;
+                color: #667089;
+                border-bottom: 1px solid #22304c;
+                font-size: 10.5px;
+                letter-spacing: 1.4px;
+                font-weight: 800;
+                text-transform: uppercase;
+                white-space: nowrap;
+            }
+
+            .orders-admin .order-table td {
+                padding: 13px 15px;
+                border-bottom: 1px solid #1a2337;
+                vertical-align: middle;
+                color: #e9eefb;
+            }
+
+            .orders-admin .order-table tbody tr:hover {
+                background: rgba(37,99,255,.045);
+            }
+
+            .orders-admin .order-table tbody tr:last-child td {
+                border-bottom: 0;
+            }
+
+        .orders-admin .order-number {
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .orders-admin .order-date,
+        .orders-admin .order-payment {
+            color: #8996b3;
+            font-size: 12px;
+        }
+
+        .orders-admin .order-total {
+            color: #22d3ee;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        .orders-admin .order-center {
+            text-align: center;
+        }
+
+        /* ESTADOS REALES DE DJANGO */
+
+        .orders-admin .order-status {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border: 1px solid transparent;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+            .orders-admin .order-status.pending {
+                background: rgba(245,158,11,.14);
+                border-color: rgba(245,158,11,.35);
+                color: #fbbf24;
+            }
+
+            .orders-admin .order-status.processing {
+                background: rgba(168,85,247,.14);
+                border-color: rgba(168,85,247,.35);
+                color: #c084fc;
+            }
+
+            .orders-admin .order-status.completed {
+                background: rgba(34,197,94,.14);
+                border-color: rgba(34,197,94,.35);
+                color: #4ade80;
+            }
+
+            .orders-admin .order-status.cancelled {
+                background: rgba(239,68,68,.14);
+                border-color: rgba(239,68,68,.35);
+                color: #f87171;
+            }
+
+        .orders-admin .order-button {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border: 1px solid #22304c;
+            border-radius: 9px;
+            background: #162034;
+            color: #e9eefb;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 800;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+            .orders-admin .order-button:hover {
+                background: #1b2740;
+                border-color: #2563ff;
+            }
+
+            .orders-admin .order-button.primary {
+                background: linear-gradient(135deg,#2563ff,#1a4fd6);
+                border-color: transparent;
+                color: #fff;
+            }
+
+            .orders-admin .order-button:focus-visible,
+            .orders-admin .order-menu-toggle:focus-visible,
+            .orders-admin .sidebar-link:focus-visible {
+                outline: 2px solid #22d3ee;
+                outline-offset: 3px;
+            }
+
+        .orders-admin .order-empty {
+            padding: 35px !important;
+            color: #8996b3 !important;
+            text-align: center;
+        }
+
+        /* NOTIFICACIONES DJANGO */
+
+        .orders-admin .order-messages {
+            margin-bottom: 18px;
+        }
+
+        .orders-admin .order-message {
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border: 1px solid rgba(34,197,94,.35);
+            border-radius: 10px;
+            background: rgba(34,197,94,.09);
+            color: #a7f3bd;
+            font-size: 13px;
+        }
+
+            .orders-admin .order-message.error {
+                border-color: rgba(239,68,68,.4);
+                background: rgba(239,68,68,.1);
+                color: #ffb4b4;
+            }
+
+        /* VENTANA DE DETALLE */
+
+        .orders-admin .order-dialog {
+            position: fixed;
+            inset: 0;
+            margin: auto;
+            width: min(790px, calc(100vw - 28px));
+            max-height: min(90vh, 900px);
+            overflow-y: auto;
+            padding: 0;
+            border: 1px solid #2a3a56;
+            border-radius: 17px;
+            background: #121a2b;
+            color: #e9eefb;
+            box-shadow: 0 24px 80px rgba(0,0,0,.75);
+        }
+
+            .orders-admin .order-dialog::backdrop {
+                background: rgba(0,0,0,.75);
+                backdrop-filter: blur(4px);
+            }
+
+        .orders-admin .order-dialog-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 20px 23px;
+            border-bottom: 1px solid #22304c;
+        }
+
+            .orders-admin .order-dialog-head h2 {
+                margin: 0;
+                font-size: 18px;
+            }
+
+        .orders-admin .order-close {
+            width: 34px;
+            height: 34px;
+            border: 1px solid #22304c;
+            border-radius: 9px;
+            background: #162034;
+            color: #e9eefb;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        .orders-admin .order-dialog-body {
+            padding: 22px 23px;
+        }
+
+        .orders-admin .order-detail-head {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .orders-admin .order-detail-label {
+            margin-bottom: 5px;
+            color: #667089;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1.3px;
+            text-transform: uppercase;
+        }
+
+        .orders-admin .order-detail-id {
+            font-size: 20px;
+            font-weight: 900;
+        }
+
+        .orders-admin .order-detail-date {
+            margin-top: 4px;
+            color: #8996b3;
+            font-size: 12px;
+        }
+
+        .orders-admin .order-detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin: 20px 0;
+        }
+
+            .orders-admin .order-detail-grid p {
+                font-size: 13px;
+                line-height: 1.8;
+                overflow-wrap: anywhere;
+            }
+
+        .orders-admin .order-detail-total {
+            display: flex;
+            justify-content: space-between;
+            gap: 14px;
+            padding-top: 15px;
+            border-top: 1px solid #22304c;
+            font-size: 19px;
+            font-weight: 900;
+        }
+
+            .orders-admin .order-detail-total strong {
+                color: #22d3ee;
+            }
+
+        .orders-admin .order-status-form {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+            padding-top: 18px;
+            border-top: 1px solid #22304c;
+        }
+
+        .orders-admin .order-status-select {
+            min-height: 40px;
+            padding: 9px 12px;
+            border: 1px solid #34415f;
+            border-radius: 10px;
+            background: #101827;
+            color: #fff;
+            font-size: 13px;
+        }
+
+        .orders-admin .order-status-help {
+            margin-top: 16px;
+            color: #8996b3;
+            font-size: 12px;
+        }
+
+        @media (min-width: 901px) {
+            .orders-admin .admin-sidebar {
+                position: sticky;
+                top: 66px;
+                align-self: flex-start;
+                height: calc(100vh - 66px);
+                min-height: 0;
+                overflow-y: auto;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .orders-admin .admin-navbar {
+                gap: 12px;
+                padding: 0 12px;
+            }
+
+            .orders-admin .order-menu-toggle {
+                display: grid;
+            }
+
+            .orders-admin .admin-nav-links,
+            .orders-admin .admin-search {
+                display: none;
+            }
+
+            .orders-admin .admin-user {
+                margin-left: auto;
+            }
+
+            .orders-admin .admin-sidebar {
+                display: block;
+                position: fixed;
+                left: 0;
+                top: 66px;
+                bottom: 0;
+                z-index: 150;
+                width: min(252px, 85vw);
+                height: calc(100vh - 66px);
+                overflow-y: auto;
+                transform: translateX(-110%);
+                visibility: hidden;
+                pointer-events: none;
+                transition: transform .28s ease, visibility .28s ease;
+                box-shadow: 12px 0 32px rgba(0,0,0,.4);
+            }
+
+            .orders-admin.menu-open .admin-sidebar {
+                transform: translateX(0);
+                visibility: visible;
+                pointer-events: auto;
+            }
+
+            .orders-admin .order-backdrop:not([hidden]) {
+                display: block;
+                position: fixed;
+                inset: 66px 0 0;
+                z-index: 140;
+                background: rgba(0,0,0,.6);
+            }
+
+            .orders-admin.menu-open {
+                overflow: hidden;
+            }
+
+            .orders-admin .admin-main {
+                padding: 20px 16px 55px;
+            }
+        }
+
+        @media (max-width: 620px) {
+            .orders-admin .admin-logo-text,
+            .orders-admin .admin-user-name {
+                display: none;
+            }
+
+            .orders-admin .order-detail-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .orders-admin .order-dialog-head,
+            .orders-admin .order-dialog-body {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body class="orders-admin">
+
+    <!-- NAVBAR -->
+    <header class="admin-navbar">
+
+        <button type="button"
+                class="order-menu-toggle"
+                id="order-menu-toggle"
+                aria-controls="order-sidebar"
+                aria-expanded="false"
+                aria-label="Abrir menú administrativo">
+            ☰
+        </button>
+
+        <a class="admin-logo"
+           href="{% url 'catalog:inicio' %}">
+
+            <div class="admin-logo-icon">M</div>
+
+            <div class="admin-logo-text">
+                <strong>MARKETPLACE</strong>
+                <span>COMPONENTES</span>
+            </div>
+        </a>
+
+        <nav class="admin-nav-links"
+             aria-label="Navegación principal">
+
+            <a class="admin-nav-link"
+               href="{% url 'catalog:inicio' %}">
+                Inicio
+            </a>
+
+            <a class="admin-nav-link"
+               href="{% url 'catalog:catalogo' %}">
+                Catálogo
+            </a>
+
+            <a class="admin-nav-link active"
+               href="{% url 'management:dashboard' %}">
+                Administración
+            </a>
+        </nav>
+
+        <form class="admin-search"
+              method="get"
+              action="{% url 'catalog:catalogo' %}"
+              role="search">
+
+            <button type="submit"
+                    aria-label="Buscar componentes">
+                🔍
+            </button>
+
+            <input type="search"
+                   name="q"
+                   placeholder="Buscar componentes, marcas, modelos..."
+                   aria-label="Buscar componentes">
+        </form>
+
+        <a class="admin-user"
+           href="{% url 'management:perfil' %}"
+           aria-label="Mi perfil">
+
+            <span class="admin-avatar">
+                {% if request.user.first_name or request.user.last_name %}
+                {{ request.user.first_name|slice:":1"|upper }}{{ request.user.last_name|slice:":1"|upper }}
+                {% else %}
+                {{ request.user.username|slice:":2"|upper }}
+                {% endif %}
+            </span>
+
+            <span class="admin-user-name">
+                {{ request.user.first_name|default:request.user.username }}
+            </span>
+
+            <span aria-hidden="true">⌄</span>
+        </a>
+    </header>
+
+    <div class="order-backdrop"
+         id="order-backdrop"
+         hidden></div>
+
+    <div class="admin-layout">
+
+        <!-- MENÚ ADMINISTRATIVO -->
+        <aside class="admin-sidebar"
+               id="order-sidebar"
+               aria-label="Menú administrativo">
+
+            <div class="sidebar-user">
+
+                <span class="admin-avatar">
+                    {% if request.user.first_name or request.user.last_name %}
+                    {{ request.user.first_name|slice:":1"|upper }}{{ request.user.last_name|slice:":1"|upper }}
+                    {% else %}
+                    {{ request.user.username|slice:":2"|upper }}
+                    {% endif %}
+                </span>
+
+                <div>
+                    <div class="sidebar-user-name">
+                        {{ request.user.get_full_name|default:request.user.username }}
+                    </div>
+
+                    <div class="sidebar-user-role">
+                        ADMINISTRADOR
+                    </div>
+                </div>
+            </div>
+
+            <nav aria-label="Secciones administrativas">
+
+                <div class="sidebar-title">
+                    ADMINISTRACIÓN
+                </div>
+
+                <a class="sidebar-link"
+                   href="{% url 'management:dashboard' %}">
+                    📊 Dashboard
+                </a>
+
+                <a class="sidebar-link"
+                   href="{% url 'management:usuarios' %}">
+                    👥 Usuarios
+                </a>
+
+                <a class="sidebar-link"
+                   href="{% url 'management:solicitudes' %}">
+                    📨 Solicitudes
+                    {% if pending_requests %}
+                    <span class="sidebar-count">
+                        {{ pending_requests }}
+                    </span>
+                    {% endif %}
+                </a>
+
+                <a class="sidebar-link"
+                   href="{% url 'management:productos' %}?status=PENDIENTE">
+                    ⏳ Productos pendientes
+                    {% if pending_products %}
+                    <span class="sidebar-count">
+                        {{ pending_products }}
+                    </span>
+                    {% endif %}
+                </a>
+
+                <a class="sidebar-link"
+                   href="{% url 'management:productos' %}">
+                    📦 Productos
+                </a>
+
+                <a class="sidebar-link"
+                   href="{% url 'management:categorias' %}">
+                    🗂️ Categorías
+                </a>
+
+                <a class="sidebar-link active"
+                   href="{% url 'management:pedidos' %}"
+                   aria-current="page">
+                    🧾 Órdenes
+                </a>
+
+                <div class="sidebar-title">
+                    CUENTA
+                </div>
+
+                <a class="sidebar-link"
+                   href="{% url 'management:perfil' %}">
+                    👤 Perfil
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+
+                <a class="sidebar-button"
+                   href="{% url 'catalog:inicio' %}">
+                    🏠 Ir al marketplace
+                </a>
+
+                <form method="post"
+                      action="{% url 'accounts:logout' %}">
+
+                    {% csrf_token %}
+
+                    <button type="submit"
+                            class="sidebar-button">
+                        ⏻ Cerrar sesión
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- CONTENIDO -->
+        <main class="admin-main">
+
+            <div class="order-heading">
+
+                <div class="breadcrumb">
+                    <a href="{% url 'management:dashboard' %}">
+                        Administración
+                    </a>
+                    &nbsp; / &nbsp; Órdenes
+                </div>
+
+                <h1 class="page-title">
+                    Órdenes del <span>sistema</span>
+                </h1>
+
+                <p class="order-description">
+                    {{ orders_total }} órdenes registradas.
+                    Puedes actualizar el estado de cada una.
+                </p>
+            </div>
+
+            {% if messages %}
+            <div class="order-messages"
+                 role="status"
+                 aria-live="polite">
+
+                {% for message in messages %}
+                <div class="order-message {% if 'error' in message.tags %}error{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- TABLA EXACTA EN ESTRUCTURA -->
+            <section class="order-table-wrap"
+                     aria-label="Órdenes del sistema">
+
+                <table class="order-table">
+
+                    <thead>
+                        <tr>
+                            <th>Orden</th>
+                            <th>Comprador</th>
+                            <th>Fecha</th>
+                            <th class="order-center">Artículos</th>
+                            <th>Total</th>
+                            <th>Pago</th>
+                            <th>Estado</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for o in orders %}
+                        <tr>
+
+                            <td>
+                                <strong class="order-number">
+                                    #{{ o.pk }}
+                                </strong>
+                            </td>
+
+                            <td>
+                                {{ o.buyer.get_full_name|default:o.buyer.username }}
+                            </td>
+
+                            <td>
+                                <span class="order-date">
+                                    {{ o.created_at|date:"d/m/Y" }}
+                                </span>
+                            </td>
+
+                            <td class="order-center">
+                                {{ o.total_articulos|default_if_none:"0" }}
+                            </td>
+
+                            <td>
+                                <span class="order-total">
+                                    ${{ o.total|floatformat:2 }}
+                                </span>
+                            </td>
+
+                            <td>
+                                <span class="order-payment"
+                                      title="El modelo actual no registra el método de pago">
+                                    —
+                                </span>
+                            </td>
+
+                            <td>
+                                <span class="order-status
+                                    {% if o.status == 'PENDIENTE' %}pending
+                                    {% elif o.status == 'EN_PROCESO' %}processing
+                                    {% elif o.status == 'COMPLETADO' %}completed
+                                    {% elif o.status == 'CANCELADO' %}cancelled
+                                    {% endif %}">
+                                    {{ o.get_status_display }}
+                                </span>
+                            </td>
+
+                            <td>
+                                <button type="button"
+                                        class="order-button"
+                                        data-order-detail="order-detail-{{ o.pk }}">
+                                    Ver detalle
+                                </button>
+                            </td>
+                        </tr>
+
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="order-empty">
+                                Sin órdenes
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- DETALLES RENDERIZADOS DESDE DJANGO -->
+            {% for o in orders %}
+            <template id="order-detail-{{ o.pk }}">
+
+                <div class="order-detail-head">
+                    <div>
+                        <div class="order-detail-label">
+                            Orden
+                        </div>
+
+                        <div class="order-detail-id">
+                            #{{ o.pk }}
+                        </div>
+
+                        <div class="order-detail-date">
+                            {{ o.created_at|date:"d/m/Y H:i" }}
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="order-detail-label">
+                            Estado
+                        </div>
+
+                        <span class="order-status
+                            {% if o.status == 'PENDIENTE' %}pending
+                            {% elif o.status == 'EN_PROCESO' %}processing
+                            {% elif o.status == 'COMPLETADO' %}completed
+                            {% elif o.status == 'CANCELADO' %}cancelled
+                            {% endif %}">
+                            {{ o.get_status_display }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- PRODUCTOS DE LA ORDEN -->
+                <div class="order-table-wrap">
+
+                    <table class="order-table">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th class="order-center">Cant.</th>
+                                <th>Precio unit.</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for line in o.lines.all %}
+                            <tr>
+                                <td>{{ line.product_name }}</td>
+
+                                <td class="order-center">
+                                    {{ line.quantity }}
+                                </td>
+
+                                <td>
+                                    ${{ line.unit_price|floatformat:2 }}
+                                </td>
+
+                                <td>
+                                    ${{ line.subtotal|floatformat:2 }}
+                                </td>
+                            </tr>
+
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="order-empty">
+                                    Sin artículos registrados.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- ENVÍO Y COMPRADOR -->
+                <div class="order-detail-grid">
+
+                    <div>
+                        <div class="order-detail-label">
+                            Envío
+                        </div>
+
+                        <p>
+                            <strong>{{ o.contact_name }}</strong><br>
+                            {{ o.contact_phone }}<br>
+                            {{ o.address }}<br>
+                            {{ o.province }}
+                        </p>
+                    </div>
+
+                    <div>
+                        <div class="order-detail-label">
+                            Pago / Entrega
+                        </div>
+
+                        <p>
+                            Método de pago: No registrado<br>
+                            Comprador:
+                            {{ o.buyer.get_full_name|default:o.buyer.username }}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="order-detail-total">
+                    <span>Total</span>
+                    <strong>
+                        ${{ o.total|floatformat:2 }}
+                    </strong>
+                </div>
+
+                <!-- ACTUALIZACIÓN REAL DEL ESTADO -->
+                {% if o.status == 'PENDIENTE' %}
+
+                <form method="post"
+                      action="{% url 'management:pedido_estado' o.pk %}"
+                      class="order-status-form">
+
+                    {% csrf_token %}
+
+                    <select class="order-status-select"
+                            name="status"
+                            aria-label="Nuevo estado">
+
+                        <option value="PENDIENTE" selected>
+                            Pendiente
+                        </option>
+
+                        <option value="EN_PROCESO">
+                            En proceso
+                        </option>
+
+                        {% if o.puede_cancelar %}
+                        <option value="CANCELADO">
+                            Cancelado
+                        </option>
+                        {% endif %}
+                    </select>
+
+                    <button class="order-button primary"
+                            type="submit">
+                        Actualizar estado
+                    </button>
+                </form>
+
+                {% elif o.status == 'EN_PROCESO' and o.puede_completar %}
+
+                <form method="post"
+                      action="{% url 'management:pedido_estado' o.pk %}"
+                      class="order-status-form">
+
+                    {% csrf_token %}
+
+                    <select class="order-status-select"
+                            name="status"
+                            aria-label="Nuevo estado">
+
+                        <option value="EN_PROCESO" selected>
+                            En proceso
+                        </option>
+
+                        <option value="COMPLETADO">
+                            Completado
+                        </option>
+                    </select>
+
+                    <button class="order-button primary"
+                            type="submit">
+                        Actualizar estado
+                    </button>
+                </form>
+
+                {% else %}
+                <p class="order-status-help">
+                    No hay cambios de estado disponibles
+                    para esta orden.
+                </p>
+                {% endif %}
+
+            </template>
+            {% endfor %}
+
+        </main>
+    </div>
+
+    <!-- MODAL REUTILIZABLE -->
+    <dialog class="order-dialog"
+            id="order-dialog"
+            aria-labelledby="order-dialog-title">
+
+        <div class="order-dialog-head">
+
+            <h2 id="order-dialog-title">
+                Detalle de la orden
+            </h2>
+
+            <button type="button"
+                    class="order-close"
+                    id="order-dialog-close"
+                    aria-label="Cerrar ventana">
+                ×
+            </button>
+        </div>
+
+        <div class="order-dialog-body"
+             id="order-dialog-body"></div>
+
+    </dialog>
+
+    <script>(function () {
+            "use strict";
+
+            // MENÚ MÓVIL
+            const body = document.body;
+            const sidebarButton = document.getElementById(
+                "order-menu-toggle"
+            );
+            const backdrop = document.getElementById(
+                "order-backdrop"
+            );
+
+            function openSidebar(open) {
+                body.classList.toggle("menu-open", open);
+                backdrop.hidden = !open;
+
+                sidebarButton.setAttribute(
+                    "aria-expanded",
+                    String(open)
+                );
+            }
+
+            sidebarButton.addEventListener("click", function () {
+                openSidebar(
+                    !body.classList.contains("menu-open")
+                );
+            });
+
+            backdrop.addEventListener("click", function () {
+                openSidebar(false);
+            });
+
+            window.addEventListener("resize", function () {
+                if (window.innerWidth > 900) {
+                    openSidebar(false);
+                }
+            });
+
+            document.addEventListener("keydown", function (event) {
+                if (event.key === "Escape") {
+                    openSidebar(false);
+                }
+            });
+
+            // MODAL DE DETALLE
+            const dialog = document.getElementById(
+                "order-dialog"
+            );
+            const dialogBody = document.getElementById(
+                "order-dialog-body"
+            );
+            const closeButton = document.getElementById(
+                "order-dialog-close"
+            );
+
+            let previousFocus = null;
+
+            document.querySelectorAll(
+                "[data-order-detail]"
+            ).forEach(function (button) {
+
+                button.addEventListener("click", function () {
+                    const templateId = button.getAttribute(
+                        "data-order-detail"
+                    );
+                    const template = document.getElementById(
+                        templateId
+                    );
+
+                    if (!template) return;
+
+                    previousFocus = button;
+
+                    dialogBody.replaceChildren(
+                        template.content.cloneNode(true)
+                    );
+
+                    dialog.showModal();
+                });
+            });
+
+            closeButton.addEventListener("click", function () {
+                dialog.close();
+            });
+
+            dialog.addEventListener("close", function () {
+                dialogBody.replaceChildren();
+
+                if (previousFocus) {
+                    previousFocus.focus();
+                    previousFocus = null;
+                }
+            });
+
+            dialog.addEventListener("click", function (event) {
+                if (event.target === dialog) {
+                    dialog.close();
+                }
+            });
+        })();</script>
+
+</body>
+</html>
