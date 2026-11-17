@@ -133,7 +133,7 @@
                 {% for message in messages %}<div class="mc-message">{{ message }}</div>{% endfor %}
             </div>
             {% endif %}
-            {% block content %}{% endblock %}
+            <div id="mc-cr08-shell">{% block content %}{% endblock %}</div>
         </main>
     </div>
 
@@ -692,5 +692,90 @@
     </script>
 
     {% block extra_js %}{% endblock %}
+<!-- MC-CR08-INDEX-INLINE-V1 : same workspace, no full navigation -->
+<script>
+(function () {
+  'use strict';
+  const shell = document.getElementById('mc-cr08-shell');
+  if (!shell) return;
+  const compatibilityUrl = "{% url 'catalog:compatibilidad' %}";
+  const compatibilityPath = new URL(compatibilityUrl, window.location.href).pathname;
+  // Preserve the INDEX's Arma tu PC entry inside the existing navigation.
+  const nav = document.querySelector('#navbar .nav-links, header .nav-links, header nav, .mc-navbar nav, nav.mc-nav');
+  if (nav) {
+    const links = [...nav.querySelectorAll('a[href]')];
+    const present = links.some(a => {
+      try { return new URL(a.href, location.href).pathname === compatibilityPath; }
+      catch (_) { return false; }
+    });
+    if (!present) {
+      const entry = document.createElement('a');
+      entry.href = compatibilityUrl;
+      entry.textContent = '🧩 Arma tu PC';
+      const sample = links.find(a => a.className);
+      if (sample) entry.className = sample.className;
+      nav.appendChild(entry);
+    }
+  }
+  let savedContent = null;
+  let showing = false;
+  let working = false;
+
+  async function fetchPanel(url) {
+    const target = new URL(url, window.location.href);
+    target.searchParams.set('fragment', '1');
+    const response = await fetch(target.toString(), {credentials:'same-origin', headers:{'X-Requested-With':'XMLHttpRequest'}});
+    if (!response.ok) throw new Error('No se pudo cargar el comparador');
+    return response.text();
+  }
+  function renderPanel(html) {
+    if (!showing) {
+      savedContent = document.createDocumentFragment();
+      while (shell.firstChild) savedContent.appendChild(shell.firstChild);
+      showing = true;
+    }
+    shell.innerHTML = html;
+    const back = shell.querySelector('[data-mc-cr08-back]');
+    if (back) back.hidden = false;
+    shell.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  function restore() {
+    if (!showing || !savedContent) return;
+    shell.replaceChildren(savedContent);
+    showing = false;
+    savedContent = null;
+    shell.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  async function load(url) {
+    if (working) return;
+    working = true;
+    try { renderPanel(await fetchPanel(url)); }
+    catch (error) { console.error(error); window.location.assign(compatibilityUrl); }
+    finally { working = false; }
+  }
+  document.addEventListener('click', function (event) {
+    const anchor = event.target.closest('a[href]');
+    if (anchor && event.button === 0 && !event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey && !anchor.hasAttribute('download') && anchor.target !== '_blank') {
+      let target;
+      try { target = new URL(anchor.href, window.location.href); } catch (_) { return; }
+      if (target.origin === window.location.origin && target.pathname === compatibilityPath) {
+        event.preventDefault();
+        load(anchor.href);
+        return;
+      }
+    }
+    if (event.target.closest('[data-mc-cr08-back]')) {event.preventDefault(); restore(); return;}
+    if (event.target.closest('[data-mc-cr08-clear]')) {event.preventDefault(); load(compatibilityUrl);}
+  });
+  document.addEventListener('submit', function (event) {
+    const form = event.target.closest('#mc-cr08-form');
+    if (!form) return;
+    event.preventDefault();
+    const params = new URLSearchParams(new FormData(form));
+    load(form.action + '?' + params.toString());
+  });
+})();
+</script>
+
 </body>
 </html>

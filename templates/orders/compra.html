@@ -315,6 +315,7 @@
           action="{% url 'orders:checkout' %}">
 
         {% csrf_token %}
+        <input type="hidden" name="checkout_token" value="{{ checkout_token }}">
 
         <div class="layout">
 

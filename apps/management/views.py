@@ -16,6 +16,7 @@ from apps.accounts.models import Profile, SellerProfile, SellerRequest
 from apps.accounts.permissions import role, allowed, screen
 from apps.catalog.models import Category, Product
 from apps.orders.models import Cart, CartItem, PurchaseOrder, PurchaseLine
+from apps.orders.services import transition_order, allowed_order_targets, OrderStateError
 User = get_user_model()
 
 from apps.catalog.forms import CategoryForm
@@ -633,6 +634,7 @@ def admin_orders(request):
 
     for order in orders:
         lines = list(order.lines.all())
+        order.available_transitions = allowed_order_targets(order, request.user)
 
         order.puede_cancelar = all(
             line.status == "PENDIENTE"
@@ -658,90 +660,11 @@ def admin_orders(request):
 @require_POST
 @allowed("ADMINISTRADOR")
 def admin_pedido_estado(request, pk):
-    nuevo_estado = request.POST.get("status", "").strip()
-
-    estados_validos = {
-        estado for estado, nombre in PurchaseOrder.STATUSES
-    }
-
-    if nuevo_estado not in estados_validos:
-        messages.error(request, "Estado de pedido inválido.")
-        return redirect("management:pedidos")
-
-    with transaction.atomic():
-        pedido = get_object_or_404(
-            PurchaseOrder.objects.select_for_update(),
-            pk=pk,
-        )
-
-        estado_actual = pedido.status
-
-        if nuevo_estado == estado_actual:
-            messages.info(request, "El pedido ya tiene ese estado.")
-            return redirect("management:pedidos")
-
-        lineas = list(
-            pedido.lines.select_for_update()
-        )
-
-        if (
-            estado_actual == "PENDIENTE"
-            and nuevo_estado == "EN_PROCESO"
-        ):
-            pedido.status = "EN_PROCESO"
-
-        elif (
-            estado_actual == "PENDIENTE"
-            and nuevo_estado == "CANCELADO"
-        ):
-            if any(
-                linea.status != "PENDIENTE"
-                for linea in lineas
-            ):
-                messages.error(
-                    request,
-                    "No puedes cancelar un pedido "
-                    "con artículos en preparación o envío.",
-                )
-                return redirect("management:pedidos")
-
-            for linea in lineas:
-                Product.objects.filter(
-                    pk=linea.product_id
-                ).update(
-                    stock=F("stock") + linea.quantity
-                )
-
-            pedido.status = "CANCELADO"
-
-        elif (
-            estado_actual == "EN_PROCESO"
-            and nuevo_estado == "COMPLETADO"
-        ):
-            if not lineas or any(
-                linea.status != "ENTREGADO"
-                for linea in lineas
-            ):
-                messages.error(
-                    request,
-                    "Todos los artículos deben estar "
-                    "entregados antes de completar el pedido.",
-                )
-                return redirect("management:pedidos")
-
-            pedido.status = "COMPLETADO"
-
-        else:
-            messages.error(
-                request,
-                "La transición solicitada no está permitida.",
-            )
-            return redirect("management:pedidos")
-
-        pedido.save(update_fields=["status", "updated_at"])
-
-    messages.success(
-        request,
-        "Estado de la orden actualizado correctamente.",
-    )
+    pedido = get_object_or_404(PurchaseOrder, pk=pk)
+    try:
+        transition_order(pedido.pk, request.POST.get("status", "").strip(), request.user, request.POST.get("reason", "").strip())
+    except OrderStateError as error:
+        messages.error(request, str(error))
+    else:
+        messages.success(request, "Estado del pedido actualizado.")
     return redirect("management:pedidos")

@@ -120,3 +120,9 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+class ProductTechnicalSpec(models.Model):
+    product = models.OneToOneField(Product, on_delete=models.CASCADE, related_name="technical_spec")
+    component_type = models.CharField(max_length=10, choices=[("CPU", "Procesador"), ("PLACA", "Tarjeta madre"), ("RAM", "Memoria RAM")])
+    socket = models.CharField(max_length=50, blank=True)
+    ram_type = models.CharField(max_length=20, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)

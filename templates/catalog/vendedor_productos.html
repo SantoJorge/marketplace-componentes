@@ -728,6 +728,11 @@ Mis productos | Marketplace Componentes
                                 👁 Ver
                             </button>
 
+                            <!-- CR08 FICHA TECNICA -->
+                            {% if p.category.name == 'Procesadores' or p.category.name == 'Tarjetas madre' or p.category.name == 'Memoria RAM' %}
+                            <a href="{% url 'catalog:especificacion' p.pk %}" class="mc-sp-btn">Ficha tecnica</a>
+                            {% endif %}
+
                             <!-- EDITAR -->
 
                             <a href="{% url 'catalog:vendedor_producto_editar' p.pk %}"

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Inventario | Marketplace{% endblock %}
+{% block content %}
+<section style="max-width:1050px;margin:34px auto;padding:30px;background:white;border:1px solid #d9e1e9;border-radius:12px;color:#1d2939">
+  <h1>Inventario y reservas</h1>
+  <p>Disponible es el stock que otros compradores pueden adquirir. Reservado corresponde a pedidos aún no enviados.</p>
+  <div style="overflow-x:auto">
+    <table style="width:100%;border-collapse:collapse">
+      <thead><tr style="text-align:left;border-bottom:2px solid #d9e1e9">
+        <th style="padding:12px">Producto</th><th>Disponible</th><th>Reservado</th><th>Total pendiente</th><th>Estado</th>
+      </tr></thead>
+      <tbody>
+      {% for product in products %}
+        <tr style="border-bottom:1px solid #e4e9ef">
+          <td style="padding:12px">{{ product.name }}</td>
+          <td>{{ product.stock }}</td>
+          <td>{{ product.reserved_cr09 }}</td>
+          <td>{{ product.total_cr09 }}</td>
+          <td>{% if product.stock <= 2 %}Stock bajo{% else %}Disponible{% endif %}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5" style="padding:20px">Todavía no hay productos registrados.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:13px;color:#667085;margin-top:22px">El total pendiente combina las unidades disponibles y reservadas activas; no incluye ventas ya enviadas.</p>
+  <a href="{% url 'catalog:vendedor_dashboard' %}" style="color:#205a90">Volver al panel</a>
+</section>
+{% endblock %}

@@ -1,4 +1,4 @@
-﻿"""
+"""
 
 Django settings for config project.
 
@@ -278,3 +278,30 @@ MAILERS = {
     },
 
 }
+
+
+# FASE 6.0: conexion MySQL opcional
+_mc_env = BASE_DIR / '.env'
+_mc_vars = {}
+if _mc_env.is_file():
+    for _mc_line in _mc_env.read_text(encoding='utf-8-sig').splitlines():
+        if '=' in _mc_line and not _mc_line.lstrip().startswith('#'):
+            _mc_key, _mc_value = _mc_line.split('=', 1)
+            _mc_vars[_mc_key.strip()] = _mc_value.strip()
+_mc_keys = ('MYSQL_DB_NAME', 'MYSQL_DB_USER', 'MYSQL_DB_PASSWORD', 'MYSQL_DB_HOST', 'MYSQL_DB_PORT')
+_mc_vars = {k: os.getenv(k, _mc_vars.get(k, '')) for k in _mc_keys}
+if all(_mc_vars.values()):
+    DATABASES['mysql'] = {'ENGINE': 'django.db.backends.mysql', 'NAME': _mc_vars['MYSQL_DB_NAME'], 'USER': _mc_vars['MYSQL_DB_USER'], 'PASSWORD': _mc_vars['MYSQL_DB_PASSWORD'], 'HOST': _mc_vars['MYSQL_DB_HOST'], 'PORT': _mc_vars['MYSQL_DB_PORT'], 'OPTIONS': {'charset': 'utf8mb4'}}
+
+
+# FASE 6.0: selector reversible
+_mc_mode = os.getenv('DJANGO_DB_ENGINE', '').strip().lower()
+if not _mc_mode and _mc_env.is_file():
+    _mc_mode = next((line.split('=', 1)[1].strip().lower() for line in _mc_env.read_text(encoding='utf-8-sig').splitlines() if line.strip().startswith('DJANGO_DB_ENGINE=')), 'sqlite')
+if _mc_mode == 'mysql':
+    if 'mysql' not in DATABASES:
+        raise RuntimeError('Conexion MySQL no configurada')
+    DATABASES['sqlite'] = DATABASES['default'].copy()
+    DATABASES['default'] = DATABASES['mysql'].copy()
+elif _mc_mode not in ('', 'sqlite'):
+    raise RuntimeError('DJANGO_DB_ENGINE invalido')

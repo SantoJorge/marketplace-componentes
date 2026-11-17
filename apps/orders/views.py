@@ -171,6 +171,7 @@ from apps.orders.models import Cart, CartItem, PurchaseOrder, PurchaseLine
 User = get_user_model()
 
 from apps.orders.forms import CheckoutForm
+from apps.orders.services import record_order_created, transition_order, advance_seller_line, OrderStateError
 
 
 def get_market_cart(request):
@@ -404,6 +405,30 @@ def cart_change(request,pk):
 @allowed('COMPRADOR', 'VENDEDOR', 'ADMINISTRADOR')
 def checkout(request):
     from apps.catalog.views import available_products
+    from uuid import UUID, uuid4
+    from django.db import IntegrityError, OperationalError
+    from time import sleep
+
+    # Compatibilidad: llamadas antiguas sin token reciben uno nuevo.
+    # La interfaz web SIEMPRE enviara checkout_token desde el formulario.
+    if request.method == "POST":
+        try:
+            token = (
+                UUID(request.POST["checkout_token"])
+                if "checkout_token" in request.POST else uuid4()
+            )
+        except (ValueError, TypeError, AttributeError):
+            messages.error(request, "Identificador de compra invalido.")
+            return redirect("orders:cart_detail")
+
+        # Primero recuperar el pedido ya confirmado, incluso con carrito vacio.
+        anterior = PurchaseOrder.objects.filter(
+            buyer=request.user, checkout_token=token
+        ).first()
+        if anterior:
+            return redirect("orders:pedido_detalle", pk=anterior.pk)
+    else:
+        token = uuid4()
 
     cart = get_market_cart(request)
 
@@ -416,6 +441,13 @@ def checkout(request):
     )
 
     if not items:
+        # Una compra pudo confirmarse entre el primer SELECT y este punto.
+        if request.method == "POST":
+            anterior = PurchaseOrder.objects.filter(
+                buyer=request.user, checkout_token=token
+            ).first()
+            if anterior:
+                return redirect("orders:pedido_detalle", pk=anterior.pk)
         messages.error(
             request,
             "Tu carrito está vacío."
@@ -446,126 +478,164 @@ def checkout(request):
     # Confirmar solo mediante POST y formulario válido.
     if request.method == "POST" and form.is_valid():
 
-        try:
-            with transaction.atomic():
+        for intento in range(3):
+            try:
+                with transaction.atomic():
 
-                # Bloquear el carrito para evitar que
-                # dos solicitudes lo confirmen a la vez.
-                Cart.objects.select_for_update().get(
-                    pk=cart.pk
-                )
-
-                # Consultar de nuevo los productos dentro
-                # de la transacción.
-                productos_carrito = list(
-                    CartItem.objects
-                    .select_for_update()
-                    .filter(cart_id=cart.pk)
-                    .select_related(
-                        "product",
-                        "product__seller",
-                        "product__category",
-                    )
-                    .order_by("pk")
-                )
-
-                if not productos_carrito:
-                    raise ValueError(
-                        "El carrito ya fue procesado o está vacío."
+                    # Bloquear el carrito para evitar que
+                    # dos solicitudes lo confirmen a la vez.
+                    Cart.objects.select_for_update().get(
+                        pk=cart.pk
                     )
 
-                # Usar el mismo criterio del Catálogo.
-                ids_disponibles = set(
-                    available_products()
-                    .filter(
-                        pk__in=[
-                            i.product_id
-                            for i in productos_carrito
-                        ]
+                    # Volver a comprobar despues de bloquear el carrito.
+                    anterior = PurchaseOrder.objects.filter(
+                        buyer=request.user, checkout_token=token
+                    ).first()
+                    if anterior:
+                        return redirect("orders:pedido_detalle", pk=anterior.pk)
+
+                    # Consultar de nuevo los productos dentro
+                    # de la transacción.
+                    productos_carrito = list(
+                        CartItem.objects
+                        .select_for_update()
+                        .filter(cart_id=cart.pk)
+                        .select_related(
+                            "product",
+                            "product__seller",
+                            "product__category",
+                        )
+                        .order_by("pk")
                     )
-                    .values_list("pk", flat=True)
-                )
 
-                total = Decimal("0.00")
-                lineas = []
-
-                for item in productos_carrito:
-                    producto = item.product
-                    cantidad = item.quantity
-
-                    if producto.pk not in ids_disponibles:
+                    if not productos_carrito:
                         raise ValueError(
-                            f"{producto.name}: "
-                            "producto no disponible."
+                            "El carrito ya fue procesado o está vacío."
                         )
 
-                    # Regla de seguridad del INDEX.
-                    if producto.seller_id == request.user.pk:
-                        raise ValueError(
-                            f"No puedes comprar tu propio "
-                            f"producto: {producto.name}."
+                    # Usar el mismo criterio del Catálogo.
+                    ids_disponibles = set(
+                        available_products()
+                        .filter(
+                            pk__in=[
+                                i.product_id
+                                for i in productos_carrito
+                            ]
                         )
-
-                    if cantidad < 1:
-                        raise ValueError(
-                            f"{producto.name}: cantidad inválida."
-                        )
-
-                    # Descontar stock solo si hay
-                    # suficientes unidades disponibles.
-                    actualizados = Product.objects.filter(
-                        pk=producto.pk,
-                        stock__gte=cantidad,
-                        active=True,
-                        approval_status="APROBADO",
-                        category__active=True,
-                        seller__is_active=True,
-                    ).update(
-                        stock=F("stock") - cantidad
+                        .values_list("pk", flat=True)
                     )
 
-                    if actualizados != 1:
-                        raise ValueError(
-                            f"{producto.name}: "
-                            "stock insuficiente o producto "
-                            "no disponible."
+                    total = Decimal("0.00")
+                    lineas = []
+
+                    for item in productos_carrito:
+                        producto = item.product
+                        cantidad = item.quantity
+
+                        if producto.pk not in ids_disponibles:
+                            raise ValueError(
+                                f"{producto.name}: "
+                                "producto no disponible."
+                            )
+
+                        # Regla de seguridad del INDEX.
+                        if producto.seller_id == request.user.pk:
+                            raise ValueError(
+                                f"No puedes comprar tu propio "
+                                f"producto: {producto.name}."
+                            )
+
+                        if cantidad < 1:
+                            raise ValueError(
+                                f"{producto.name}: cantidad inválida."
+                            )
+
+                        # Descontar stock solo si hay
+                        # suficientes unidades disponibles.
+                        actualizados = Product.objects.filter(
+                            pk=producto.pk,
+                            stock__gte=cantidad,
+                            active=True,
+                            approval_status="APROBADO",
+                        ).update(
+                            stock=F("stock") - cantidad
                         )
 
-                    total += producto.price * cantidad
+                        if actualizados != 1:
+                            raise ValueError(
+                                f"{producto.name}: "
+                                "stock insuficiente o producto "
+                                "no disponible."
+                            )
 
-                    lineas.append(
-                        (producto, cantidad)
+                        total += producto.price * cantidad
+
+                        lineas.append(
+                            (producto, cantidad)
+                        )
+
+                    # Registrar la compra real.
+                    pedido = PurchaseOrder.objects.create(
+                        buyer=request.user,
+                        status='PENDIENTE_PAGO',
+                        total=total,
+                        checkout_token=token,
+                        **form.cleaned_data,
                     )
 
-                # Registrar la compra real.
-                pedido = PurchaseOrder.objects.create(
-                    buyer=request.user,
-                    total=total,
-                    **form.cleaned_data,
-                )
+                    # Guardar productos, vendedor,
+                    # cantidad y precio de la compra.
+                    PurchaseLine.objects.bulk_create([
+                        PurchaseLine(
+                            order=pedido,
+                            product=producto,
+                            seller=producto.seller,
+                            product_name=producto.name,
+                            unit_price=producto.price,
+                            quantity=cantidad,
+                        )
+                        for producto, cantidad in lineas
+                    ])
 
-                # Guardar productos, vendedor,
-                # cantidad y precio de la compra.
-                PurchaseLine.objects.bulk_create([
-                    PurchaseLine(
-                        order=pedido,
-                        product=producto,
-                        seller=producto.seller,
-                        product_name=producto.name,
-                        unit_price=producto.price,
-                        quantity=cantidad,
+                    record_order_created(pedido, request.user)
+                    from apps.orders.stock_services import reserve_order_lines
+                    reserve_order_lines(pedido)
+
+                    # Vaciar solamente el carrito confirmado.
+                    CartItem.objects.filter(
+                        cart_id=cart.pk
+                    ).delete()
+
+            except IntegrityError:
+                # La transaccion ha salido de atomic() y sus cambios se revirtieron.
+                anterior = PurchaseOrder.objects.filter(
+                    buyer=request.user, checkout_token=token
+                ).first()
+                if anterior:
+                    return redirect("orders:pedido_detalle", pk=anterior.pk)
+                if PurchaseOrder.objects.filter(checkout_token=token).exists():
+                    messages.error(request, "Identificador de compra ya utilizado.")
+                    return redirect("orders:cart_detail")
+                raise
+            except ValueError as error:
+                messages.error(request, str(error))
+                return redirect("orders:cart_detail")
+            except OperationalError as error:
+                # Esperar a salir del bloque atomic antes de reintentar.
+                codigo = error.args[0] if error.args else None
+                if codigo not in (1205, 1213):
+                    raise
+                if intento == 2:
+                    messages.error(
+                        request,
+                        "No se pudo completar la compra por un bloqueo temporal. "
+                        "Vuelve a intentarlo en unos momentos."
                     )
-                    for producto, cantidad in lineas
-                ])
-
-                # Vaciar solamente el carrito confirmado.
-                CartItem.objects.filter(
-                    cart_id=cart.pk
-                ).delete()
-
-        except ValueError as error:
-            messages.error(request, str(error))
-            return redirect("orders:cart_detail")
+                    return redirect("orders:cart_detail")
+                sleep(0.05 * (intento + 1))
+            else:
+                break
 
         messages.success(
             request,
@@ -598,6 +668,7 @@ def checkout(request):
             "items": items,
             "total": total,
             "cantidad_articulos": cantidad_articulos,
+            "checkout_token": str(token),
         },
     )
 
@@ -647,22 +718,23 @@ def order_detail(request,pk):
 @require_POST
 @allowed('COMPRADOR','VENDEDOR','ADMINISTRADOR')
 def cancel_order(request,pk):
-    with transaction.atomic():
-        order=get_object_or_404(PurchaseOrder.objects.select_for_update(),pk=pk,buyer=request.user)
-        if order.status!='PENDIENTE' or order.lines.exclude(status='PENDIENTE').exists():
-            messages.error(request,'Ya no puedes cancelar este pedido.')
-            return redirect('orders:pedido_detalle',pk=pk)
-        order.status='CANCELADO'; order.save(update_fields=['status','updated_at'])
-        for item in order.lines.all():
-            Product.objects.filter(pk=item.product_id).update(stock=F('stock')+item.quantity)
-    messages.success(request,'Pedido cancelado y stock restablecido.')
+    order=get_object_or_404(PurchaseOrder,pk=pk,buyer=request.user)
+    try:
+        transition_order(order.pk,'CANCELADA',request.user,'Cancelacion solicitada por el comprador')
+    except OrderStateError as error:
+        messages.error(request,str(error))
+    else:
+        messages.success(request,'Pedido cancelado y stock restablecido.')
     return redirect('orders:pedido_detalle',pk=pk)
-
 
 
 @allowed('VENDEDOR')
 def seller_sales(request):
     lines=PurchaseLine.objects.filter(seller=request.user).select_related('order','order__buyer','product')
+    from apps.orders.services import can_advance_seller_line
+    lines = list(lines)
+    for line in lines:
+        line.can_advance = can_advance_seller_line(line)
     return screen(request,'orders/vendedor_ventas.html',lines=lines)
 
 
@@ -670,19 +742,12 @@ def seller_sales(request):
 @require_POST
 @allowed('VENDEDOR')
 def seller_sale_status(request,pk):
-    allowed_next={'PENDIENTE':'PREPARANDO','PREPARANDO':'ENVIADO','ENVIADO':'ENTREGADO'}
-    with transaction.atomic():
-        line=get_object_or_404(PurchaseLine.objects.select_for_update().select_related('order'),pk=pk,seller=request.user)
-        order=PurchaseOrder.objects.select_for_update().get(pk=line.order_id)
-        next_state=allowed_next.get(line.status)
-        if not next_state or order.status=='CANCELADO':
-            messages.error(request,'La venta no permite este cambio de estado.')
-        else:
-            line.status=next_state; line.save(update_fields=['status'])
-            statuses=list(order.lines.values_list('status',flat=True))
-            order.status='COMPLETADO' if statuses and all(s=='ENTREGADO' for s in statuses) else 'EN_PROCESO'
-            order.save(update_fields=['status','updated_at'])
-            messages.success(request,'Estado de venta actualizado.')
+    try:
+        advance_seller_line(pk,request.user)
+    except OrderStateError as error:
+        messages.error(request,str(error))
+    else:
+        messages.success(request,'Estado de venta actualizado.')
     return redirect('orders:vendedor_ventas')
 
 
@@ -710,3 +775,19 @@ def cart_count(request):
     response["Cache-Control"] = "no-store"
 
     return response
+
+@require_POST
+@allowed("COMPRADOR","VENDEDOR","ADMINISTRADOR")
+def buyer_order_status(request, pk):
+    from apps.orders.services import transition_order, OrderStateError
+    order = get_object_or_404(PurchaseOrder, pk=pk, buyer=request.user)
+    try:
+        target = request.POST.get("status", "").strip()
+        if target not in ("CANCELADA", "COMPLETADA", "EN_DISPUTA"):
+            raise OrderStateError("Accion no permitida")
+        transition_order(order.pk, target, request.user, request.POST.get("reason", ""))
+    except OrderStateError as error:
+        messages.error(request, str(error))
+    else:
+        messages.success(request, "Estado actualizado")
+    return redirect("orders:pedido_detalle", pk=pk)

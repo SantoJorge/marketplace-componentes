@@ -929,73 +929,20 @@
                     </strong>
                 </div>
 
-                <!-- ACTUALIZACIÓN REAL DEL ESTADO -->
-                {% if o.status == 'PENDIENTE' %}
-
-                <form method="post"
-                      action="{% url 'management:pedido_estado' o.pk %}"
-                      class="order-status-form">
-
-                    {% csrf_token %}
-
-                    <select class="order-status-select"
-                            name="status"
-                            aria-label="Nuevo estado">
-
-                        <option value="PENDIENTE" selected>
-                            Pendiente
-                        </option>
-
-                        <option value="EN_PROCESO">
-                            En proceso
-                        </option>
-
-                        {% if o.puede_cancelar %}
-                        <option value="CANCELADO">
-                            Cancelado
-                        </option>
-                        {% endif %}
-                    </select>
-
-                    <button class="order-button primary"
-                            type="submit">
-                        Actualizar estado
-                    </button>
-                </form>
-
-                {% elif o.status == 'EN_PROCESO' and o.puede_completar %}
-
-                <form method="post"
-                      action="{% url 'management:pedido_estado' o.pk %}"
-                      class="order-status-form">
-
-                    {% csrf_token %}
-
-                    <select class="order-status-select"
-                            name="status"
-                            aria-label="Nuevo estado">
-
-                        <option value="EN_PROCESO" selected>
-                            En proceso
-                        </option>
-
-                        <option value="COMPLETADO">
-                            Completado
-                        </option>
-                    </select>
-
-                    <button class="order-button primary"
-                            type="submit">
-                        Actualizar estado
-                    </button>
-                </form>
-
-                {% else %}
-                <p class="order-status-help">
-                    No hay cambios de estado disponibles
-                    para esta orden.
-                </p>
-                {% endif %}
+                <!-- ACTUALIZACIÓN REAL DEL ESTADO - CR06 -->
+{% if o.available_transitions %}
+<form method="post" action="{% url 'management:pedido_estado' o.pk %}" class="order-status-form">
+{% csrf_token %}
+<select name="status" class="order-status-select" required>
+<option value="">Seleccionar estado</option>
+{% for state, label in o.available_transitions %}
+<option value="{{ state }}">{{ label }}</option>
+{% endfor %}
+</select>
+<textarea name="reason" maxlength="2000" placeholder="Motivo del cambio, cuando corresponda"></textarea>
+<button type="submit" class="order-button primary">Actualizar estado</button>
+</form>
+{% else %}<p class="order-status-help">Sin cambios permitidos.</p>{% endif %}
 
             </template>
             {% endfor %}

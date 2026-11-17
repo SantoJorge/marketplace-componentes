@@ -18,3 +18,11 @@ urlpatterns = [
     path("vendedor/ventas/", views.seller_sales, name="vendedor_ventas"),
     path("vendedor/ventas/<int:pk>/estado/", views.seller_sale_status, name="vendedor_venta_estado"),
 ]
+
+from . import payment_views
+urlpatterns += [
+    path('pedidos/<int:pk>/comprobante/', payment_views.subir_comprobante, name='subir_comprobante'),
+    path('pedidos/<int:pk>/comprobante/<int:receipt_id>/revisar/', payment_views.revisar_comprobante, name='revisar_comprobante'),
+    path('pedidos/<int:pk>/comprobante/<int:receipt_id>/descargar/', payment_views.descargar_comprobante, name='descargar_comprobante'),
+]
+urlpatterns += [path("pedidos/<int:pk>/estado/", views.buyer_order_status, name="pedido_estado")]

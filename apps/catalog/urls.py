@@ -11,3 +11,13 @@ urlpatterns = [
     path("vendedor/productos/nuevo/", views.seller_product_edit, name="vendedor_producto_nuevo"),
     path("vendedor/productos/<int:pk>/", views.seller_product_edit, name="vendedor_producto_editar"),
 ]
+
+# FASE 7.3 CR-08
+from . import compatibility_views
+urlpatterns += [
+    path("compatibilidad/", compatibility_views.comparador, name="compatibilidad"),
+    path("vendedor/productos/<int:pk>/ficha-tecnica/", compatibility_views.editar_especificacion, name="especificacion"),
+]
+
+from . import inventory_views
+urlpatterns += [path("vendedor/inventario/", inventory_views.vendedor_inventario, name="vendedor_inventario")]
