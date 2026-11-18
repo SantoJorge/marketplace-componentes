@@ -735,10 +735,54 @@
       showing = true;
     }
     shell.innerHTML = html;
+    initCompatibilityFilters();
     const back = shell.querySelector('[data-mc-cr08-back]');
     if (back) back.hidden = false;
     shell.scrollIntoView({behavior:'smooth',block:'start'});
   }
+  function initCompatibilityFilters() {
+    const form = shell.querySelector('#mc-cr08-form');
+    if (!form) return;
+    const fields = {
+      cpu: form.elements.namedItem('cpu'),
+      placa: form.elements.namedItem('placa'),
+      ram: form.elements.namedItem('ram')
+    };
+    const socket = value => (value || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+    const ddr = value => ((value || '').toUpperCase().match(/DDR[2-6]/) || [''])[0];
+    const selectedSpec = key => {
+      const option = fields[key] && fields[key].selectedOptions[0];
+      if (!option || !option.value) return null;
+      return {socket: socket(option.dataset.socket), ddr: ddr(option.dataset.ramType)};
+    };
+    function compatible(key, option) {
+      const cpu = selectedSpec('cpu');
+      const board = selectedSpec('placa');
+      const memory = selectedSpec('ram');
+      const itemSocket = socket(option.dataset.socket);
+      const itemDdr = ddr(option.dataset.ramType);
+      if (key === 'cpu' && board) return !!itemSocket && !!board.socket && itemSocket === board.socket;
+      if (key === 'placa') {
+        if (cpu && (!itemSocket || !cpu.socket || itemSocket !== cpu.socket)) return false;
+        if (memory && (!itemDdr || !memory.ddr || itemDdr !== memory.ddr)) return false;
+      }
+      if (key === 'ram' && board) return !!itemDdr && !!board.ddr && itemDdr === board.ddr;
+      return true;
+    }
+    function refresh() {
+      Object.entries(fields).forEach(([key, select]) => {
+        if (!select) return;
+        Array.from(select.options).forEach(option => {
+          if (!option.value) { option.hidden = false; return; }
+          option.hidden = !compatible(key, option);
+          if (option.selected && option.hidden) select.value = '';
+        });
+      });
+    }
+    Object.values(fields).forEach(select => select && select.addEventListener('change', refresh));
+    refresh();
+  }
+  initCompatibilityFilters();
   function restore() {
     if (!showing || !savedContent) return;
     shell.replaceChildren(savedContent);

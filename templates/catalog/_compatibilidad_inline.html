@@ -46,7 +46,7 @@
             <select name="{{ key }}" id="mc-cr08-{{ key }}">
               <option value="">— Seleccionar —</option>
               {% for p in items %}
-                <option value="{{ p.pk }}" {% if key == 'cpu' and selected_ids.cpu == p.pk|stringformat:'s' or key == 'placa' and selected_ids.placa == p.pk|stringformat:'s' or key == 'ram' and selected_ids.ram == p.pk|stringformat:'s' %}selected{% endif %}>{{ p.brand }} {{ p.name }} (${{ p.price }})</option>
+                <option value="{{ p.pk }}" data-socket="{{ p.technical_spec.socket|default:''|escape }}" data-ram-type="{{ p.technical_spec.ram_type|default:''|escape }}" {% if key == 'cpu' and selected_ids.cpu == p.pk|stringformat:'s' or key == 'placa' and selected_ids.placa == p.pk|stringformat:'s' or key == 'ram' and selected_ids.ram == p.pk|stringformat:'s' %}selected{% endif %}>{{ p.brand }} {{ p.name }} (${{ p.price }})</option>
               {% endfor %}
             </select>
           </div>
