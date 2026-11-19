@@ -176,3 +176,82 @@ class StockMovement(models.Model):
     quantity_change = models.IntegerField()
     reason = models.CharField(max_length=255, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+
+class Offer(models.Model):
+    STATUSES = [
+        ("PENDIENTE", "Pendiente del vendedor"),
+        ("CONTRAOFERTA", "Contraoferta recibida"),
+        ("ACEPTADA", "Oferta aceptada"),
+        ("RECHAZADA", "Oferta rechazada"),
+        ("VENCIDA", "Oferta vencida"),
+        ("CONVERTIDA", "Convertida en compra"),
+    ]
+
+    product = models.ForeignKey(
+        "catalog.Product",
+        on_delete=models.PROTECT,
+        related_name="offers",
+    )
+
+    buyer = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name="offers_sent",
+    )
+
+    seller = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name="offers_received",
+    )
+
+    offered_price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+    )
+
+    counter_price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+    )
+
+    agreed_price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUSES,
+        default="PENDIENTE",
+    )
+
+    expires_at = models.DateTimeField()
+
+    accepted_at = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+
+    order = models.ForeignKey(
+        "orders.PurchaseOrder",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="negotiated_offers",
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"Oferta #{self.pk} - Producto #{self.product_id}"

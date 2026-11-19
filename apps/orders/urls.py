@@ -26,3 +26,37 @@ urlpatterns += [
     path('pedidos/<int:pk>/comprobante/<int:receipt_id>/descargar/', payment_views.descargar_comprobante, name='descargar_comprobante'),
 ]
 urlpatterns += [path("pedidos/<int:pk>/estado/", views.buyer_order_status, name="pedido_estado")]
+
+
+
+# ============================================================
+# CR-11 - OFERTAS Y CONTRAOFERTAS
+# ============================================================
+
+urlpatterns += [
+    path(
+        "ofertas/enviadas/",
+        views.offers_sent,
+        name="ofertas_enviadas",
+    ),
+    path(
+        "ofertas/recibidas/",
+        views.offers_received,
+        name="ofertas_recibidas",
+    ),
+    path(
+        "ofertas/producto/<int:product_id>/crear/",
+        views.offer_create,
+        name="crear_oferta",
+    ),
+    path(
+        "ofertas/<int:offer_id>/vendedor/responder/",
+        views.offer_seller_reply,
+        name="responder_oferta_vendedor",
+    ),
+    path(
+        "ofertas/<int:offer_id>/comprador/responder/",
+        views.offer_buyer_reply,
+        name="responder_oferta_comprador",
+    ),
+]

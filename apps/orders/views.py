@@ -404,6 +404,10 @@ def cart_change(request,pk):
 ##MODIFICADO MODIFICADO FASE 2.4
 @allowed('COMPRADOR', 'VENDEDOR', 'ADMINISTRADOR')
 def checkout(request):
+
+    from django.utils import timezone
+    from .models import Offer
+
     from apps.catalog.views import available_products
     from uuid import UUID, uuid4
     from django.db import IntegrityError, OperationalError
@@ -569,11 +573,50 @@ def checkout(request):
                                 "no disponible."
                             )
 
-                        total += producto.price * cantidad
+
+                        # CR-11: localizar una oferta aceptada y vigente.
+                        # El stock ya fue validado y descontado dentro
+                        # de esta misma transaccion.
+                        oferta = (
+                            Offer.objects
+                            .select_for_update()
+                            .filter(
+                                product_id=producto.pk,
+                                buyer_id=request.user.pk,
+                                seller_id=producto.seller_id,
+                                status="ACEPTADA",
+                                order__isnull=True,
+                                expires_at__gt=timezone.now(),
+                            )
+                            .order_by("created_at", "pk")
+                            .first()
+                        )
+
+                        if oferta is not None:
+                            if cantidad != 1:
+                                raise ValueError(
+                                    "Para usar el precio negociado, "
+                                    "compra una sola unidad del producto."
+                                )
+
+                            if (
+                                producto.condition != "USADO"
+                                or oferta.agreed_price is None
+                            ):
+                                raise ValueError(
+                                    "La oferta aceptada ya no es valida."
+                                )
+
+                            precio_unitario = oferta.agreed_price
+                        else:
+                            precio_unitario = producto.price
+
+                        total += precio_unitario * cantidad
 
                         lineas.append(
-                            (producto, cantidad)
+                            (producto, cantidad, precio_unitario, oferta)
                         )
+
 
                     # Registrar la compra real.
                     pedido = PurchaseOrder.objects.create(
@@ -592,13 +635,30 @@ def checkout(request):
                             product=producto,
                             seller=producto.seller,
                             product_name=producto.name,
-                            unit_price=producto.price,
+                            unit_price=precio_unitario,
                             quantity=cantidad,
                         )
-                        for producto, cantidad in lineas
+                        for producto, cantidad, precio_unitario, oferta in lineas
                     ])
 
+
+                    # CR-11: marcar el acuerdo como utilizado.
+                    for producto, cantidad, precio_unitario, oferta in lineas:
+                        if oferta is not None:
+                            oferta.status = "CONVERTIDA"
+                            oferta.order = pedido
+                            oferta.save(
+                                update_fields=[
+                                    "status",
+                                    "order",
+                                    "updated_at",
+                                ]
+                            )
+
+
                     record_order_created(pedido, request.user)
+
+
                     from apps.orders.stock_services import reserve_order_lines
                     reserve_order_lines(pedido)
 
@@ -651,10 +711,43 @@ def checkout(request):
 
     # La pantalla de compra pertenece a la
     # experiencia pública, no al panel administrativo.
-    total = sum(
-        (i.subtotal for i in items),
-        Decimal("0.00"),
-    )
+
+    # CR-11: resumen con precios negociados vigentes.
+    from django.utils import timezone
+    from .models import Offer
+
+    total = Decimal("0.00")
+
+    for item in items:
+        item.precio_checkout = item.product.price
+
+        if (
+            item.quantity == 1
+            and item.product.condition == "USADO"
+        ):
+            oferta = (
+                Offer.objects.filter(
+                    product_id=item.product_id,
+                    buyer_id=request.user.pk,
+                    seller_id=item.product.seller_id,
+                    status="ACEPTADA",
+                    order__isnull=True,
+                    expires_at__gt=timezone.now(),
+                    agreed_price__isnull=False,
+                )
+                .order_by("created_at", "pk")
+                .first()
+            )
+
+            if oferta is not None:
+                item.precio_checkout = oferta.agreed_price
+
+        item.subtotal_checkout = (
+            item.precio_checkout * item.quantity
+        )
+
+        total += item.subtotal_checkout
+
 
     cantidad_articulos = sum(
         i.quantity for i in items
@@ -791,3 +884,255 @@ def buyer_order_status(request, pk):
     else:
         messages.success(request, "Estado actualizado")
     return redirect("orders:pedido_detalle", pk=pk)
+
+
+
+# ============================================================
+# CR-11 - VISTAS DE OFERTAS Y CONTRAOFERTAS
+# ============================================================
+
+from django.contrib import messages as cr11_messages
+from django.contrib.auth.decorators import login_required as cr11_login
+from django.http import HttpResponseForbidden
+
+from apps.accounts.permissions import (
+    role as cr11_role,
+    screen as cr11_screen,
+)
+
+from .models import Offer
+from .services import (
+    OfferError,
+    cr11_crear_oferta,
+    cr11_responder_vendedor,
+    cr11_responder_comprador,
+    cr11_vencer_ofertas,
+)
+
+
+@cr11_login(login_url="accounts:login")
+@require_POST
+def offer_create(request, product_id):
+    try:
+        cr11_crear_oferta(
+            product_id=product_id,
+            comprador=request.user,
+            monto=request.POST.get("monto"),
+        )
+    except OfferError as exc:
+        cr11_messages.error(request, str(exc))
+        return redirect("catalog:producto", pk=product_id)
+
+    cr11_messages.success(
+        request,
+        "Tu oferta fue enviada al vendedor.",
+    )
+    return redirect("orders:ofertas_enviadas")
+
+
+@cr11_login(login_url="accounts:login")
+def offers_sent(request):
+    if cr11_role(request.user) not in ("COMPRADOR", "VENDEDOR"):
+        return HttpResponseForbidden("No tienes permiso.")
+
+    cr11_vencer_ofertas()
+
+    ofertas = (
+        Offer.objects
+        .filter(buyer=request.user)
+        .select_related("product", "seller")
+        .order_by("-created_at")
+    )
+
+    return cr11_screen(
+        request,
+        "orders/ofertas_enviadas.html",
+        ofertas=ofertas,
+        panel_mode=True,
+    )
+
+
+@cr11_login(login_url="accounts:login")
+def offers_received(request):
+    if cr11_role(request.user) != "VENDEDOR":
+        return HttpResponseForbidden("Solo para vendedores.")
+
+    cr11_vencer_ofertas()
+
+    ofertas = (
+        Offer.objects
+        .filter(seller=request.user)
+        .select_related("product", "buyer")
+        .order_by("-created_at")
+    )
+
+    return cr11_screen(
+        request,
+        "orders/ofertas_recibidas.html",
+        ofertas=ofertas,
+    )
+
+
+@cr11_login(login_url="accounts:login")
+@require_POST
+def offer_seller_reply(request, offer_id):
+    try:
+        cr11_responder_vendedor(
+            oferta_id=offer_id,
+            vendedor=request.user,
+            accion=request.POST.get("accion"),
+            monto=request.POST.get("monto"),
+        )
+        cr11_messages.success(
+            request,
+            "La respuesta fue registrada correctamente.",
+        )
+    except OfferError as exc:
+        cr11_messages.error(request, str(exc))
+
+    return redirect("orders:ofertas_recibidas")
+
+
+@cr11_login(login_url="accounts:login")
+@require_POST
+def offer_buyer_reply(request, offer_id):
+    try:
+        cr11_responder_comprador(
+            oferta_id=offer_id,
+            comprador=request.user,
+            accion=request.POST.get("accion"),
+        )
+        cr11_messages.success(
+            request,
+            "Tu respuesta fue registrada correctamente.",
+        )
+    except OfferError as exc:
+        cr11_messages.error(request, str(exc))
+
+    return redirect("orders:ofertas_enviadas")
+
+
+
+# ============================================================
+# CR-11 - VISTAS DE OFERTAS Y CONTRAOFERTAS
+# ============================================================
+
+from django.contrib import messages as cr11_messages
+from django.contrib.auth.decorators import login_required as cr11_login
+from django.http import HttpResponseForbidden
+
+from apps.accounts.permissions import (
+    role as cr11_role,
+    screen as cr11_screen,
+)
+
+from .models import Offer
+from .services import (
+    OfferError,
+    cr11_crear_oferta,
+    cr11_responder_vendedor,
+    cr11_responder_comprador,
+    cr11_vencer_ofertas,
+)
+
+
+@cr11_login(login_url="accounts:login")
+@require_POST
+def offer_create(request, product_id):
+    try:
+        cr11_crear_oferta(
+            product_id=product_id,
+            comprador=request.user,
+            monto=request.POST.get("monto"),
+        )
+    except OfferError as exc:
+        cr11_messages.error(request, str(exc))
+        return redirect("catalog:producto", pk=product_id)
+
+    cr11_messages.success(
+        request,
+        "Tu oferta fue enviada al vendedor.",
+    )
+    return redirect("orders:ofertas_enviadas")
+
+
+@cr11_login(login_url="accounts:login")
+def offers_sent(request):
+    if cr11_role(request.user) not in ("COMPRADOR", "VENDEDOR"):
+        return HttpResponseForbidden("No tienes permiso.")
+
+    cr11_vencer_ofertas()
+
+    ofertas = (
+        Offer.objects
+        .filter(buyer=request.user)
+        .select_related("product", "seller")
+        .order_by("-created_at")
+    )
+
+    return cr11_screen(
+        request,
+        "orders/ofertas_enviadas.html",
+        ofertas=ofertas,
+        panel_mode=True,
+    )
+
+
+@cr11_login(login_url="accounts:login")
+def offers_received(request):
+    if cr11_role(request.user) != "VENDEDOR":
+        return HttpResponseForbidden("Solo para vendedores.")
+
+    cr11_vencer_ofertas()
+
+    ofertas = (
+        Offer.objects
+        .filter(seller=request.user)
+        .select_related("product", "buyer")
+        .order_by("-created_at")
+    )
+
+    return cr11_screen(
+        request,
+        "orders/ofertas_recibidas.html",
+        ofertas=ofertas,
+    )
+
+
+@cr11_login(login_url="accounts:login")
+@require_POST
+def offer_seller_reply(request, offer_id):
+    try:
+        cr11_responder_vendedor(
+            oferta_id=offer_id,
+            vendedor=request.user,
+            accion=request.POST.get("accion"),
+            monto=request.POST.get("monto"),
+        )
+        cr11_messages.success(
+            request,
+            "La respuesta fue registrada correctamente.",
+        )
+    except OfferError as exc:
+        cr11_messages.error(request, str(exc))
+
+    return redirect("orders:ofertas_recibidas")
+
+
+@cr11_login(login_url="accounts:login")
+@require_POST
+def offer_buyer_reply(request, offer_id):
+    try:
+        cr11_responder_comprador(
+            oferta_id=offer_id,
+            comprador=request.user,
+            accion=request.POST.get("accion"),
+        )
+        cr11_messages.success(
+            request,
+            "Tu respuesta fue registrada correctamente.",
+        )
+    except OfferError as exc:
+        cr11_messages.error(request, str(exc))
+
+    return redirect("orders:ofertas_enviadas")

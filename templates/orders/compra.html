@@ -388,12 +388,12 @@
                         </div>
                         <div class="product-qty">
                             {{ item.quantity }} ×
-                            ${{ item.product.price|floatformat:"2u" }}
+                            ${{ item.precio_checkout|floatformat:"2u" }}
                         </div>
                     </div>
 
                     <div class="product-price">
-                        ${{ item.subtotal|floatformat:"2u" }}
+                        ${{ item.subtotal_checkout|floatformat:"2u" }}
                     </div>
 
                 </div>

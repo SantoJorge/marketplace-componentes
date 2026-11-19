@@ -109,6 +109,25 @@
 
 
                     <a class="nav-dropdown-item" href="{% url 'orders:mis_pedidos' %}">🧾 Mis compras</a>
+
+
+                    <!-- CR-11: ACCESO A NEGOCIACIONES -->
+                    {% if current_role == "COMPRADOR" or current_role == "VENDEDOR" %}
+                    <a class="nav-dropdown-item"
+                       href="{% url 'orders:ofertas_enviadas' %}">
+                        📤 Mis ofertas
+                    </a>
+                    {% endif %}
+
+                    {% if current_role == "VENDEDOR" %}
+                    <a class="nav-dropdown-item"
+                       href="{% url 'orders:ofertas_recibidas' %}">
+                        📥 Ofertas recibidas
+                    </a>
+                    {% endif %}
+                    <!-- FIN CR-11 -->
+
+
                     <div class="nav-dropdown-divider"></div>
                     <form action="{% url 'accounts:logout' %}" method="post" class="nav-logout-form">
                         {% csrf_token %}

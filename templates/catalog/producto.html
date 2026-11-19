@@ -746,6 +746,76 @@
 
                 </form>
 
+
+                <!-- CR-11: OFERTAS EN PRODUCTOS USADOS -->
+                {% if product.condition == "USADO" %}
+
+                <section style="margin-top:18px; padding:20px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px;">
+
+                    <h3 style="margin:0 0 8px; color:#172338;">
+                        ¿Quieres negociar el precio?
+                    </h3>
+
+                    <p style="color:#64748b; font-size:14px;">
+                        Envía una oferta directamente al vendedor.
+                    </p>
+
+                    {% if request.user.is_authenticated %}
+
+                    {% if current_role == "COMPRADOR" or current_role == "VENDEDOR" %}
+
+                    <form method="post"
+                          action="{% url 'orders:crear_oferta' product.pk %}">
+
+                        {% csrf_token %}
+
+                        <label for="cr11-monto"
+                               style="display:block; margin-bottom:8px;">
+                            Tu oferta en dólares
+                        </label>
+
+                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+
+                            <input type="number"
+                                   id="cr11-monto"
+                                   name="monto"
+                                   min="0.01"
+                                   max="99999999.99"
+                                   step="0.01"
+                                   placeholder="Ejemplo: 75.00"
+                                   required
+                                   style="flex:1; min-width:140px; padding:12px; border:1px solid #cbd5e1; border-radius:9px;">
+
+                            <button type="submit"
+                                    class="pd-button pd-add">
+                                Hacer oferta
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                    {% else %}
+
+                    <p>Tu cuenta no tiene permisos para enviar ofertas.</p>
+
+                    {% endif %}
+
+                    {% else %}
+
+                    <a href="{% url 'accounts:login' %}"
+                       class="pd-button pd-add">
+                        Inicia sesión para ofertar
+                    </a>
+
+                    {% endif %}
+
+                </section>
+
+                {% endif %}
+                <!-- FIN CR-11 -->
+
+
                 <a class="pd-cartlink"
                    href="{% url 'orders:cart_detail' %}">
                     Ver mi carrito →

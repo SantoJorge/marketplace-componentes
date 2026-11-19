@@ -416,3 +416,211 @@ def record_order_created(order, actor):
         actor_role=role(actor),
         reason="Pedido creado",
     )
+
+
+# ============================================================
+# CR-11 - OFERTAS Y CONTRAOFERTAS
+# ============================================================
+
+from datetime import timedelta
+from decimal import Decimal, InvalidOperation
+
+from django.conf import settings
+from django.utils import timezone
+
+from .models import Offer
+
+
+class OfferError(OrderStateError):
+    pass
+
+
+def _cr11_precio(valor):
+    try:
+        precio = Decimal(str(valor))
+    except (InvalidOperation, ValueError, TypeError):
+        raise OfferError("Introduce un precio valido.")
+
+    if (
+        not precio.is_finite()
+        or precio <= 0
+        or precio > Decimal("99999999.99")
+        or precio != precio.quantize(Decimal("0.01"))
+    ):
+        raise OfferError("El precio debe ser positivo y tener maximo dos decimales.")
+
+    return precio
+
+
+def _cr11_vigencia():
+    horas = int(getattr(settings, "MARKETPLACE_OFFER_HOURS", 48))
+
+    if not 1 <= horas <= 720:
+        raise OfferError("La vigencia configurada no es valida.")
+
+    return timezone.now() + timedelta(hours=horas)
+
+
+def _cr11_producto_disponible(producto):
+    return (
+        producto.condition == "USADO"
+        and producto.active
+        and producto.approval_status == "APROBADO"
+        and producto.stock > 0
+        and producto.category.active
+        and producto.seller.is_active
+    )
+
+
+@transaction.atomic
+def cr11_crear_oferta(product_id, comprador, monto):
+    if (
+        comprador is None
+        or not comprador.is_authenticated
+        or role(comprador) not in ("COMPRADOR", "VENDEDOR")
+    ):
+        raise OfferError("Necesitas una cuenta activa para ofertar.")
+
+    try:
+        producto = (
+            Product.objects
+            .select_related("seller", "category")
+            .select_for_update()
+            .get(pk=product_id)
+        )
+    except Product.DoesNotExist:
+        raise OfferError("El producto no existe.")
+
+    if not _cr11_producto_disponible(producto):
+        raise OfferError("Este producto no admite ofertas.")
+
+    if producto.seller_id == comprador.pk:
+        raise OfferError("No puedes ofertar por tu propio producto.")
+
+    precio = _cr11_precio(monto)
+    ahora = timezone.now()
+
+    if Offer.objects.filter(
+        product=producto,
+        buyer=comprador,
+        status__in=("PENDIENTE", "CONTRAOFERTA", "ACEPTADA"),
+        expires_at__gt=ahora,
+    ).exists():
+        raise OfferError("Ya tienes una negociacion vigente para este producto.")
+
+    return Offer.objects.create(
+        product=producto,
+        buyer=comprador,
+        seller=producto.seller,
+        offered_price=precio,
+        expires_at=_cr11_vigencia(),
+    )
+
+
+@transaction.atomic
+def cr11_responder_vendedor(oferta_id, vendedor, accion, monto=None):
+    try:
+        oferta = (
+            Offer.objects.select_for_update()
+            .select_related("product", "product__category", "product__seller")
+            .get(pk=oferta_id)
+        )
+    except Offer.DoesNotExist:
+        raise OfferError("La oferta no existe.")
+
+    if role(vendedor) != "VENDEDOR" or oferta.seller_id != vendedor.pk:
+        raise OfferError("No tienes permiso para responder esta oferta.")
+
+    if oferta.status != "PENDIENTE":
+        raise OfferError("Esta oferta ya fue respondida.")
+
+    if oferta.expires_at <= timezone.now():
+        raise OfferError("La oferta ha vencido.")
+
+    accion = str(accion).strip().upper()
+
+    if accion not in ("ACEPTAR", "RECHAZAR", "CONTRAOFERTAR"):
+        raise OfferError("Accion no permitida.")
+
+    if accion != "RECHAZAR" and not _cr11_producto_disponible(oferta.product):
+        raise OfferError("El producto ya no esta disponible.")
+
+    campos = ["status", "updated_at"]
+
+    if accion == "ACEPTAR":
+        oferta.status = "ACEPTADA"
+        oferta.agreed_price = oferta.offered_price
+        oferta.accepted_at = timezone.now()
+        oferta.expires_at = _cr11_vigencia()
+        campos += ["agreed_price", "accepted_at", "expires_at"]
+
+    elif accion == "RECHAZAR":
+        oferta.status = "RECHAZADA"
+
+    else:
+        precio = _cr11_precio(monto)
+
+        if precio == oferta.offered_price:
+            raise OfferError("La contraoferta debe tener un precio diferente.")
+
+        oferta.counter_price = precio
+        oferta.status = "CONTRAOFERTA"
+        oferta.expires_at = _cr11_vigencia()
+        campos += ["counter_price", "expires_at"]
+
+    oferta.save(update_fields=campos)
+    return oferta
+
+
+@transaction.atomic
+def cr11_responder_comprador(oferta_id, comprador, accion):
+    try:
+        oferta = (
+            Offer.objects.select_for_update()
+            .select_related("product", "product__category", "product__seller")
+            .get(pk=oferta_id)
+        )
+    except Offer.DoesNotExist:
+        raise OfferError("La oferta no existe.")
+
+    if (
+        role(comprador) not in ("COMPRADOR", "VENDEDOR")
+        or oferta.buyer_id != comprador.pk
+    ):
+        raise OfferError("No tienes permiso para responder esta contraoferta.")
+
+    if oferta.status != "CONTRAOFERTA":
+        raise OfferError("No existe una contraoferta pendiente.")
+
+    if oferta.expires_at <= timezone.now():
+        raise OfferError("La contraoferta ha vencido.")
+
+    accion = str(accion).strip().upper()
+
+    if accion not in ("ACEPTAR", "RECHAZAR"):
+        raise OfferError("Accion no permitida.")
+
+    campos = ["status", "updated_at"]
+
+    if accion == "ACEPTAR":
+        if not _cr11_producto_disponible(oferta.product):
+            raise OfferError("El producto ya no esta disponible.")
+
+        oferta.status = "ACEPTADA"
+        oferta.agreed_price = oferta.counter_price
+        oferta.accepted_at = timezone.now()
+        oferta.expires_at = _cr11_vigencia()
+        campos += ["agreed_price", "accepted_at", "expires_at"]
+
+    else:
+        oferta.status = "RECHAZADA"
+
+    oferta.save(update_fields=campos)
+    return oferta
+
+
+def cr11_vencer_ofertas():
+    return Offer.objects.filter(
+        status__in=("PENDIENTE", "CONTRAOFERTA", "ACEPTADA"),
+        expires_at__lte=timezone.now(),
+    ).update(status="VENCIDA", updated_at=timezone.now())

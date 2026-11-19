@@ -1,0 +1,329 @@
+{% extends "base.html" %}
+
+{% block title %}Ofertas recibidas | Marketplace Componentes{% endblock %}
+
+{% block content %}
+<style>
+    .cr11-seller {
+        max-width: 1120px;
+        margin: 30px auto;
+        padding: 0 20px 55px;
+        color: #172338;
+    }
+
+        .cr11-seller h1 {
+            margin: 0 0 8px;
+            font-size: 30px;
+            font-weight: 800;
+        }
+
+    .cr11-subtitle {
+        color: #64748b;
+        margin-bottom: 25px;
+    }
+
+    .cr11-offer {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 18px;
+        box-shadow: 0 5px 20px rgba(15, 23, 42, .04);
+    }
+
+    .cr11-offer-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .cr11-offer-title {
+        color: #172338;
+        text-decoration: none;
+        font-size: 20px;
+        font-weight: 800;
+    }
+
+        .cr11-offer-title:hover {
+            color: #2563eb;
+        }
+
+    .cr11-info {
+        color: #64748b;
+        font-size: 13px;
+        margin-top: 7px;
+    }
+
+    .cr11-badge {
+        background: #eff6ff;
+        color: #1d4ed8;
+        border-radius: 25px;
+        padding: 7px 13px;
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+        .cr11-badge.ok {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .cr11-badge.closed {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+    .cr11-summary {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin: 22px 0;
+    }
+
+    .cr11-value {
+        flex: 1;
+        min-width: 150px;
+        padding: 16px;
+        border-radius: 12px;
+        background: #f8fafc;
+    }
+
+        .cr11-value span {
+            color: #64748b;
+            font-size: 12px;
+            display: block;
+            margin-bottom: 7px;
+        }
+
+        .cr11-value strong {
+            font-size: 24px;
+            color: #0f172a;
+        }
+
+        .cr11-value.primary {
+            background: #eff6ff;
+        }
+
+            .cr11-value.primary strong {
+                color: #1d4ed8;
+            }
+
+    .cr11-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: flex-end;
+    }
+
+        .cr11-buttons form {
+            margin: 0;
+        }
+
+    .cr11-button {
+        cursor: pointer;
+        background: #2563eb;
+        color: #fff;
+        font-weight: 750;
+        padding: 12px 18px;
+        border: 0;
+        border-radius: 10px;
+        font-size: 14px;
+    }
+
+        .cr11-button.reject {
+            background: #f1f5f9;
+            color: #334155;
+        }
+
+    .cr11-counter {
+        background: #f8fafc;
+        padding: 15px;
+        border-radius: 12px;
+        margin-top: 18px;
+    }
+
+        .cr11-counter label {
+            display: block;
+            margin-bottom: 9px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+    .cr11-counter-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .cr11-counter input {
+        min-width: 150px;
+        flex: 1;
+        padding: 11px;
+        border-radius: 9px;
+        border: 1px solid #cbd5e1;
+        font-size: 15px;
+    }
+
+    .cr11-empty {
+        padding: 55px 25px;
+        text-align: center;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+    }
+
+        .cr11-empty p {
+            color: #64748b;
+        }
+</style>
+
+<div class="cr11-seller">
+
+    <h1>Ofertas recibidas</h1>
+
+    <p class="cr11-subtitle">
+        Revisa las propuestas de tus compradores y negocia el mejor precio.
+    </p>
+
+    {% for oferta in ofertas %}
+
+    <article class="cr11-offer">
+
+        <div class="cr11-offer-head">
+            <div>
+                <a class="cr11-offer-title"
+                   href="{% url 'catalog:producto' oferta.product.pk %}">
+                    {{ oferta.product.name }}
+                </a>
+
+                <div class="cr11-info">
+                    Comprador: {{ oferta.buyer.username }}
+                </div>
+
+                <div class="cr11-info">
+                    Recibida: {{ oferta.created_at|date:"d/m/Y H:i" }}
+                </div>
+
+                <div class="cr11-info">
+                    Vigencia: {{ oferta.expires_at|date:"d/m/Y H:i" }}
+                </div>
+            </div>
+
+            <span class="cr11-badge {% if oferta.status == 'ACEPTADA' or oferta.status == 'CONVERTIDA' %}ok{% elif oferta.status == 'RECHAZADA' or oferta.status == 'VENCIDA' %}closed{% endif %}">
+                {{ oferta.get_status_display }}
+            </span>
+        </div>
+
+        <div class="cr11-summary">
+
+            <div class="cr11-value">
+                <span>Precio publicado</span>
+                <strong>${{ oferta.product.price|floatformat:2 }}</strong>
+            </div>
+
+            <div class="cr11-value primary">
+                <span>Oferta del comprador</span>
+                <strong>${{ oferta.offered_price|floatformat:2 }}</strong>
+            </div>
+
+            {% if oferta.counter_price %}
+            <div class="cr11-value">
+                <span>Tu contraoferta</span>
+                <strong>${{ oferta.counter_price|floatformat:2 }}</strong>
+            </div>
+            {% endif %}
+
+            {% if oferta.agreed_price %}
+            <div class="cr11-value">
+                <span>Precio acordado</span>
+                <strong>${{ oferta.agreed_price|floatformat:2 }}</strong>
+            </div>
+            {% endif %}
+
+        </div>
+
+        {% if oferta.status == "PENDIENTE" %}
+
+        <div class="cr11-buttons">
+
+            <form method="post"
+                  action="{% url 'orders:responder_oferta_vendedor' oferta.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="accion" value="ACEPTAR">
+                <button class="cr11-button" type="submit">
+                    Aceptar oferta
+                </button>
+            </form>
+
+            <form method="post"
+                  action="{% url 'orders:responder_oferta_vendedor' oferta.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="accion" value="RECHAZAR">
+                <button class="cr11-button reject" type="submit">
+                    Rechazar
+                </button>
+            </form>
+
+        </div>
+
+        <div class="cr11-counter">
+
+            <form method="post"
+                  action="{% url 'orders:responder_oferta_vendedor' oferta.pk %}">
+                {% csrf_token %}
+
+                <input type="hidden"
+                       name="accion"
+                       value="CONTRAOFERTAR">
+
+                <label for="cr11-monto-{{ oferta.pk }}">
+                    Proponer otro precio
+                </label>
+
+                <div class="cr11-counter-row">
+
+                    <input id="cr11-monto-{{ oferta.pk }}"
+                           type="number"
+                           name="monto"
+                           min="0.01"
+                           step="0.01"
+                           placeholder="Ejemplo: 75.00"
+                           required>
+
+                    <button class="cr11-button" type="submit">
+                        Enviar contraoferta
+                    </button>
+
+                </div>
+            </form>
+        </div>
+
+        {% elif oferta.status == "CONTRAOFERTA" %}
+
+        <p class="cr11-info">
+            Tu contraoferta está esperando la respuesta del comprador.
+        </p>
+
+        {% elif oferta.status == "ACEPTADA" %}
+
+        <p class="cr11-info">
+            Acuerdo registrado. La compra todavía está pendiente de formalización.
+        </p>
+
+        {% endif %}
+
+    </article>
+
+    {% empty %}
+
+    <div class="cr11-empty">
+        <h2>No tienes ofertas recibidas</h2>
+        <p>Las propuestas de compradores aparecerán aquí.</p>
+    </div>
+
+    {% endfor %}
+
+</div>
+{% endblock %}
