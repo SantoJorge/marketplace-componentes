@@ -60,3 +60,27 @@ urlpatterns += [
         name="responder_oferta_comprador",
     ),
 ]
+
+
+
+# ============================================================
+# CR-14 - RUTAS DE NOTIFICACIONES
+# ============================================================
+
+urlpatterns += [
+    path(
+        "notificaciones/",
+        views.notifications_list,
+        name="mis_notificaciones",
+    ),
+    path(
+        "notificaciones/<int:pk>/leida/",
+        views.notification_mark_read,
+        name="notificacion_marcar_leida",
+    ),
+    path(
+        "notificaciones/marcar-todas/",
+        views.notification_mark_all_read,
+        name="notificaciones_marcar_todas",
+    ),
+]

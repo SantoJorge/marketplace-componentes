@@ -1136,3 +1136,66 @@ def offer_buyer_reply(request, offer_id):
         cr11_messages.error(request, str(exc))
 
     return redirect("orders:ofertas_enviadas")
+
+
+
+# ============================================================
+# CR-14 - CENTRO DE NOTIFICACIONES
+# ============================================================
+
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from django.shortcuts import get_object_or_404, redirect, render
+from .models import Notification
+
+
+@login_required
+def notifications_list(request):
+    avisos = (
+        Notification.objects
+        .filter(recipient=request.user)
+        .select_related("order", "offer")
+        .order_by("-created_at")[:100]
+    )
+
+    pendientes = Notification.objects.filter(
+        recipient=request.user,
+        is_read=False,
+    ).count()
+
+    return render(
+        request,
+        "orders/notificaciones.html",
+        {
+            "notifications": avisos,
+            "unread_count": pendientes,
+            "panel_mode": True,
+        },
+    )
+
+
+@login_required
+@require_POST
+def notification_mark_read(request, pk):
+    aviso = get_object_or_404(
+        Notification,
+        pk=pk,
+        recipient=request.user,
+    )
+
+    if not aviso.is_read:
+        aviso.is_read = True
+        aviso.save(update_fields=["is_read"])
+
+    return redirect("orders:mis_notificaciones")
+
+
+@login_required
+@require_POST
+def notification_mark_all_read(request):
+    Notification.objects.filter(
+        recipient=request.user,
+        is_read=False,
+    ).update(is_read=True)
+
+    return redirect("orders:mis_notificaciones")

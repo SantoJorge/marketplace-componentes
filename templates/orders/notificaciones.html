@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+
+{% block title %}Mis notificaciones | Marketplace Componentes{% endblock %}
+
+{% block content %}
+<style>
+    .mc14-wrap {
+        max-width: 1100px;
+        margin: 28px auto 65px;
+        padding: 0 20px
+    }
+
+    .mc14-head {
+        background: linear-gradient(120deg,#172638,#31465c);
+        color: white;
+        border-radius: 18px;
+        padding: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px
+    }
+
+        .mc14-head h1 {
+            color: white;
+            margin: 0 0 8px;
+            font-size: 30px
+        }
+
+        .mc14-head p {
+            margin: 0;
+            color: #d6e0eb
+        }
+
+    .mc14-count {
+        background: #ffffff17;
+        border: 1px solid #ffffff30;
+        border-radius: 14px;
+        padding: 16px 25px;
+        text-align: center;
+        min-width: 110px
+    }
+
+        .mc14-count strong {
+            display: block;
+            color: #ffae65;
+            font-size: 35px
+        }
+
+        .mc14-count span {
+            font-size: 12px
+        }
+
+    .mc14-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        margin: 25px 0 16px;
+        flex-wrap: wrap
+    }
+
+        .mc14-toolbar h2 {
+            font-size: 19px;
+            margin: 0
+        }
+
+    .mc14-feed {
+        display: grid;
+        gap: 13px
+    }
+
+    .mc14-item {
+        display: flex;
+        gap: 15px;
+        align-items: flex-start;
+        background: var(--mc-card-bg,#fff);
+        border: 1px solid #dfe5ec;
+        border-radius: 13px;
+        padding: 20px
+    }
+
+        .mc14-item.unread {
+            border-left: 4px solid #ec8735
+        }
+
+    .mc14-symbol {
+        font-size: 26px;
+        background: #fff0e3;
+        padding: 10px;
+        border-radius: 12px
+    }
+
+    .mc14-body {
+        flex: 1;
+        min-width: 0
+    }
+
+        .mc14-body strong {
+            display: block;
+            margin-bottom: 8px
+        }
+
+        .mc14-body p {
+            margin: 0 0 9px;
+            color: var(--mc-text,#445065);
+            overflow-wrap: anywhere
+        }
+
+        .mc14-body small {
+            color: #84909d
+        }
+
+    .mc14-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+        align-items: center
+    }
+
+        .mc14-actions form {
+            margin: 0
+        }
+
+    .mc14-btn {
+        display: inline-block;
+        padding: 10px 13px;
+        border-radius: 8px;
+        border: 1px solid #d77c30;
+        background: transparent;
+        color: #c46d25;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        text-decoration: none
+    }
+
+        .mc14-btn.primary {
+            background: #253b52;
+            border-color: #253b52;
+            color: white
+        }
+
+    .mc14-empty {
+        text-align: center;
+        padding: 60px 20px;
+        background: var(--mc-card-bg,#fff);
+        border: 1px dashed #cfd8e2;
+        border-radius: 15px
+    }
+
+    @media(max-width:650px) {
+        .mc14-head {
+            flex-direction: column;
+            align-items: flex-start
+        }
+
+        .mc14-count {
+            width: 100%
+        }
+
+        .mc14-item {
+            flex-wrap: wrap
+        }
+
+        .mc14-actions {
+            width: 100%
+        }
+    }
+</style>
+
+<section class="mc14-wrap">
+    <header class="mc14-head">
+        <div>
+            <h1>Mis notificaciones</h1>
+            <p>Actividad de tus compras, pagos, ofertas y pedidos.</p>
+        </div>
+        <div class="mc14-count">
+            <strong>{{ unread_count }}</strong>
+            <span>Sin leer</span>
+        </div>
+    </header>
+
+    <div class="mc14-toolbar">
+        <h2>Actividad reciente</h2>
+        {% if unread_count %}
+        <form method="post" action="{% url 'orders:notificaciones_marcar_todas' %}">
+            {% csrf_token %}
+            <button class="mc14-btn" type="submit">Marcar todas como leídas</button>
+        </form>
+        {% endif %}
+    </div>
+
+    <div class="mc14-feed">
+        {% for aviso in notifications %}
+        <article class="mc14-item{% if not aviso.is_read %} unread{% endif %}">
+            <div class="mc14-symbol" aria-hidden="true">&#128276;</div>
+            <div class="mc14-body">
+                <strong>{{ aviso.get_notification_type_display }}</strong>
+                <p>{{ aviso.message }}</p>
+                <small>{{ aviso.created_at|date:"d/m/Y H:i" }}</small>
+            </div>
+
+            <div class="mc14-actions">
+                {% if aviso.order_id %}
+                {% if aviso.order.buyer_id == request.user.pk %}
+                <a class="mc14-btn primary" href="{% url 'orders:pedido_detalle' aviso.order_id %}">Ver pedido</a>
+                {% else %}
+                <a class="mc14-btn primary" href="{% url 'orders:vendedor_ventas' %}">Mis ventas</a>
+                {% endif %}
+                {% elif aviso.offer_id %}
+                {% if aviso.offer.seller_id == request.user.pk %}
+                <a class="mc14-btn primary" href="{% url 'orders:ofertas_recibidas' %}">Ver oferta</a>
+                {% else %}
+                <a class="mc14-btn primary" href="{% url 'orders:ofertas_enviadas' %}">Mi oferta</a>
+                {% endif %}
+                {% endif %}
+
+                {% if not aviso.is_read %}
+                <form method="post" action="{% url 'orders:notificacion_marcar_leida' aviso.pk %}">
+                    {% csrf_token %}
+                    <button class="mc14-btn" type="submit">Marcar leída</button>
+                </form>
+                {% endif %}
+            </div>
+        </article>
+        {% empty %}
+        <div class="mc14-empty">
+            <h2>No tienes notificaciones</h2>
+            <p>Cuando ocurra alguna novedad, aparecerá aquí.</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

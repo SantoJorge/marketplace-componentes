@@ -273,3 +273,77 @@ class Offer(models.Model):
 
     def __str__(self):
         return f"Oferta #{self.pk} - Producto #{self.product_id}"
+
+
+# ============================================================
+# CR-14 - SISTEMA DE NOTIFICACIONES INTERNAS
+# ============================================================
+
+class Notification(models.Model):
+
+    TYPES = [
+        ("COMPRA_NUEVA", "Nueva compra"),
+        ("PAGO_APROBADO", "Pago aprobado"),
+        ("PAGO_RECHAZADO", "Pago rechazado"),
+        ("ESTADO_PEDIDO", "Cambio de estado"),
+        ("OFERTA_NUEVA", "Nueva oferta"),
+        ("OFERTA_RESPUESTA", "Respuesta de oferta"),
+        ("CANCELACION", "Cancelación"),
+        ("DISPUTA", "Disputa"),
+    ]
+
+    recipient = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="market_notifications",
+    )
+
+    notification_type = models.CharField(
+        max_length=25,
+        choices=TYPES,
+    )
+
+    message = models.CharField(
+        max_length=500,
+    )
+
+    order = models.ForeignKey(
+        "orders.PurchaseOrder",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="notifications",
+    )
+
+    offer = models.ForeignKey(
+        "orders.Offer",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="notifications",
+    )
+
+    event_key = models.CharField(
+        max_length=150,
+        unique=True,
+        null=True,
+        blank=True,
+        editable=False,
+    )
+
+    is_read = models.BooleanField(
+        default=False,
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return (
+            f"Notificación #{self.pk} "
+            f"- Usuario #{self.recipient_id}"
+        )

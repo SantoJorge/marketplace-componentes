@@ -273,13 +273,16 @@ def allowed_order_targets(order, actor):
     return options
 
 
+
 def _apply_locked(order, new_status, actor, reason=""):
     _validate(order, new_status, actor, reason)
 
     previous = order.status
 
+    # CR-12: conservar la devolucion de inventario.
     if new_status in ("CANCELADA", "CANCELADO"):
         from apps.orders.stock_services import release_order_stock
+
         # Los pedidos legacy sin lineas se podian cancelar sin restock.
         # Para pedidos con lineas, restituir en la misma transaccion.
         if new_status == "CANCELADA" or order.lines.exists():
@@ -288,7 +291,7 @@ def _apply_locked(order, new_status, actor, reason=""):
     order.status = new_status
     order.save(update_fields=["status", "updated_at"])
 
-    OrderStatusHistory.objects.create(
+    historial = OrderStatusHistory.objects.create(
         order=order,
         previous_status=previous,
         new_status=new_status,
@@ -297,7 +300,49 @@ def _apply_locked(order, new_status, actor, reason=""):
         reason=(reason or "").strip()[:2000],
     )
 
+    # CR-14: identificar el acontecimiento.
+    if previous == "PAGO_EN_REVISION" and new_status == "PAGADA":
+        tipo = "PAGO_APROBADO"
+    elif previous == "PAGO_EN_REVISION" and new_status == "PENDIENTE_PAGO":
+        tipo = "PAGO_RECHAZADO"
+    elif new_status in ("CANCELADA", "CANCELADO"):
+        tipo = "CANCELACION"
+    elif new_status == "EN_DISPUTA":
+        tipo = "DISPUTA"
+    else:
+        tipo = "ESTADO_PEDIDO"
+
+    # El comprador recibe todos los cambios relevantes.
+    destinatarios = {order.buyer_id}
+
+    # En cancelaciones y disputas tambien se informa a los vendedores.
+    if tipo in ("CANCELACION", "DISPUTA"):
+        destinatarios.update(
+            order.lines.values_list(
+                "seller_id", flat=True
+            ).distinct()
+        )
+
+    estado_visible = LABELS.get(new_status, new_status)
+
+    for destinatario_id in destinatarios:
+        cr14_notificar(
+            destinatario_id=destinatario_id,
+            tipo=tipo,
+            mensaje=(
+                f"El pedido #{order.pk} ha cambiado "
+                f"al estado: {estado_visible}."
+            ),
+            clave=(
+                f"pedido:{order.pk}:"
+                f"historial:{historial.pk}:"
+                f"usuario:{destinatario_id}"
+            ),
+            pedido=order,
+        )
+
     return order
+
 
 
 @transaction.atomic
@@ -407,8 +452,9 @@ def advance_seller_line(line_id, actor):
     return line, order
 
 
+
 def record_order_created(order, actor):
-    return OrderStatusHistory.objects.create(
+    historial = OrderStatusHistory.objects.create(
         order=order,
         previous_status="",
         new_status=order.status,
@@ -416,6 +462,25 @@ def record_order_created(order, actor):
         actor_role=role(actor),
         reason="Pedido creado",
     )
+
+    # CR-14: notificar una vez a cada vendedor del pedido.
+    vendedores = (
+        order.lines
+        .values_list("seller_id", flat=True)
+        .distinct()
+    )
+
+    for vendedor_id in vendedores:
+        cr14_notificar(
+            destinatario_id=vendedor_id,
+            tipo="COMPRA_NUEVA",
+            mensaje=f"Has recibido una nueva compra en el pedido #{order.pk}.",
+            clave=f"pedido:{order.pk}:compra:vendedor:{vendedor_id}",
+            pedido=order,
+        )
+
+    return historial
+
 
 
 # ============================================================
@@ -508,13 +573,29 @@ def cr11_crear_oferta(product_id, comprador, monto):
     ).exists():
         raise OfferError("Ya tienes una negociacion vigente para este producto.")
 
-    return Offer.objects.create(
+
+    oferta = Offer.objects.create(
         product=producto,
         buyer=comprador,
         seller=producto.seller,
         offered_price=precio,
         expires_at=_cr11_vigencia(),
     )
+
+    # CR-14: avisar al vendedor sobre la nueva oferta.
+    cr14_notificar(
+        destinatario_id=producto.seller_id,
+        tipo="OFERTA_NUEVA",
+        mensaje=(
+            f"Has recibido una oferta de "
+            f"${precio} por {producto.name}."
+        ),
+        clave=f"oferta:{oferta.pk}:creada",
+        oferta=oferta,
+    )
+
+    return oferta
+
 
 
 @transaction.atomic
@@ -568,8 +649,23 @@ def cr11_responder_vendedor(oferta_id, vendedor, accion, monto=None):
         oferta.expires_at = _cr11_vigencia()
         campos += ["counter_price", "expires_at"]
 
+
     oferta.save(update_fields=campos)
+
+    # CR-14: avisar al comprador de la respuesta.
+    cr14_notificar(
+        destinatario_id=oferta.buyer_id,
+        tipo="OFERTA_RESPUESTA",
+        mensaje=(
+            f"El vendedor ha respondido a tu oferta "
+            f"#{oferta.pk}: {oferta.get_status_display()}."
+        ),
+        clave=f"oferta:{oferta.pk}:respuesta:vendedor",
+        oferta=oferta,
+    )
+
     return oferta
+
 
 
 @transaction.atomic
@@ -615,8 +711,23 @@ def cr11_responder_comprador(oferta_id, comprador, accion):
     else:
         oferta.status = "RECHAZADA"
 
+
     oferta.save(update_fields=campos)
+
+    # CR-14: avisar al vendedor de la decision del comprador.
+    cr14_notificar(
+        destinatario_id=oferta.seller_id,
+        tipo="OFERTA_RESPUESTA",
+        mensaje=(
+            f"El comprador ha respondido a tu contraoferta "
+            f"#{oferta.pk}: {oferta.get_status_display()}."
+        ),
+        clave=f"oferta:{oferta.pk}:respuesta:comprador",
+        oferta=oferta,
+    )
+
     return oferta
+
 
 
 def cr11_vencer_ofertas():
@@ -624,3 +735,67 @@ def cr11_vencer_ofertas():
         status__in=("PENDIENTE", "CONTRAOFERTA", "ACEPTADA"),
         expires_at__lte=timezone.now(),
     ).update(status="VENCIDA", updated_at=timezone.now())
+
+
+
+# ============================================================
+# CR-14 - NOTIFICACIONES INTERNAS
+# ============================================================
+
+from .models import Notification
+
+
+def cr14_notificar(
+    *,
+    destinatario_id,
+    tipo,
+    mensaje,
+    clave,
+    pedido=None,
+    oferta=None,
+):
+    """
+    Registra una notificacion unica por evento y destinatario.
+
+    Debe llamarse dentro de la transaccion que registra
+    el evento principal.
+    """
+
+    if not destinatario_id:
+        raise ValueError("Destinatario obligatorio.")
+
+    if tipo not in dict(Notification.TYPES):
+        raise ValueError("Tipo de notificacion invalido.")
+
+    if not mensaje or len(mensaje) > 500:
+        raise ValueError("Mensaje de notificacion invalido.")
+
+    if not clave or len(clave) > 150:
+        raise ValueError("Identificador de evento invalido.")
+
+    notificacion, creada = Notification.objects.get_or_create(
+        event_key=clave,
+        defaults={
+            "recipient_id": destinatario_id,
+            "notification_type": tipo,
+            "message": mensaje,
+            "order": pedido,
+            "offer": oferta,
+        },
+    )
+
+    if (
+        notificacion.recipient_id != destinatario_id
+        and notificacion.notification_type != tipo
+    ):
+        pass
+
+    if (
+        notificacion.recipient_id != destinatario_id
+        or notificacion.notification_type != tipo
+    ):
+        raise ValueError(
+            "El identificador pertenece a otra notificacion."
+        )
+
+    return notificacion, creada
