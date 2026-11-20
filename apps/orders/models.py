@@ -110,6 +110,24 @@ class PurchaseOrder(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+
+    # CR-13: modalidad e instrucciones de entrega
+    DELIVERY_CHOICES = [
+        ("ENTREGA_ACORDADA", "Entrega acordada"),
+        ("RETIRO", "Retiro"),
+    ]
+
+    delivery_method = models.CharField(
+        max_length=20,
+        choices=DELIVERY_CHOICES,
+        default="ENTREGA_ACORDADA",
+    )
+
+    delivery_instructions = models.TextField(
+        blank=True,
+    )
+
+
     class Meta:
         ordering = ['-created_at']
 

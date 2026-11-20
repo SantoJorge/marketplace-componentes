@@ -241,3 +241,72 @@ class CR11OffersTests(TestCase):
 
         self.product.refresh_from_db()
         self.assertEqual(self.product.stock, 1)
+
+
+
+    def test_cr13_entrega_y_retiro(self):
+        from uuid import uuid4
+        from django.urls import reverse
+        from apps.orders.models import Cart, CartItem, PurchaseOrder
+
+        self.client.force_login(self.buyer)
+
+        carrito = Cart.objects.create(user=self.buyer)
+        checkout_url = reverse("orders:checkout")
+
+        modalidades = [
+            ("RETIRO", "Recoger jueves a las 10 am"),
+            ("ENTREGA_ACORDADA", "Entregar viernes a las 3 pm"),
+        ]
+
+        for metodo, instrucciones in modalidades:
+            CartItem.objects.create(
+                cart=carrito,
+                product=self.product,
+                quantity=1,
+            )
+
+            datos = {
+                "contact_name": "Comprador CR13",
+                "contact_phone": "60000000",
+                "province": "Chiriquí",
+                "address": "Punto de encuentro de prueba",
+                "comments": "",
+                "delivery_method": metodo,
+                "delivery_instructions": instrucciones,
+                "checkout_token": str(uuid4()),
+            }
+
+            respuesta = self.client.post(checkout_url, datos)
+
+            self.assertEqual(respuesta.status_code, 302)
+
+            pedido = (
+                PurchaseOrder.objects
+                .filter(buyer=self.buyer)
+                .order_by("-pk")
+                .first()
+            )
+
+            self.assertIsNotNone(pedido)
+            self.assertEqual(pedido.delivery_method, metodo)
+            self.assertEqual(
+                pedido.delivery_instructions,
+                instrucciones,
+            )
+
+            detalle = self.client.get(
+                reverse("orders:pedido_detalle", args=[pedido.pk])
+            )
+
+            self.assertContains(detalle, instrucciones)
+
+        self.assertEqual(
+            PurchaseOrder.objects.filter(
+                buyer=self.buyer
+            ).count(),
+            2,
+        )
+
+        self.product.refresh_from_db()
+        self.assertEqual(self.product.stock, 1)
