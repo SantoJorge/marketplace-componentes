@@ -347,3 +347,76 @@ class Notification(models.Model):
             f"Notificación #{self.pk} "
             f"- Usuario #{self.recipient_id}"
         )
+
+
+
+
+# ============================================================
+# CR-15 - VALORACIONES Y RESENAS VERIFICADAS
+# ============================================================
+
+class ProductReview(models.Model):
+
+    RATING_CHOICES = [
+        (1, "1 estrella"),
+        (2, "2 estrellas"),
+        (3, "3 estrellas"),
+        (4, "4 estrellas"),
+        (5, "5 estrellas"),
+    ]
+
+    order_line = models.OneToOneField(
+        "orders.PurchaseLine",
+        on_delete=models.PROTECT,
+        related_name="verified_review",
+    )
+
+    rating = models.PositiveSmallIntegerField(
+        choices=RATING_CHOICES,
+    )
+
+    comment = models.TextField(
+        max_length=2000,
+        blank=True,
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True,
+    )
+
+    class Meta:
+        ordering = ["-created_at"]
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(
+                    rating__gte=1,
+                    rating__lte=5,
+                ),
+                name="cr15_rating_range",
+            ),
+        ]
+
+    @property
+    def product(self):
+        return self.order_line.product
+
+    @property
+    def buyer(self):
+        return self.order_line.order.buyer
+
+    @property
+    def is_verified(self):
+        return (
+            self.order_line.order.status == "COMPLETADA"
+        )
+
+    def __str__(self):
+        return (
+            f"Reseña #{self.pk} | "
+            f"Producto #{self.order_line.product_id} | "
+            f"{self.rating}/5"
+        )

@@ -1199,3 +1199,60 @@ def notification_mark_all_read(request):
     ).update(is_read=True)
 
     return redirect("orders:mis_notificaciones")
+
+
+# ============================================================
+# CR-15 - PUBLICAR RESENA DE COMPRA VERIFICADA
+# ============================================================
+
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+
+from apps.orders.services import (
+    CR15ReviewError,
+    cr15_crear_resena,
+)
+
+
+@login_required
+@require_POST
+def cr15_publicar_resena(request, linea_id):
+
+    estrellas_texto = request.POST.get(
+        "rating", ""
+    ).strip()
+
+    comentario = request.POST.get(
+        "comment", ""
+    )
+
+    try:
+        estrellas = int(estrellas_texto)
+
+        resena = cr15_crear_resena(
+            linea_id=linea_id,
+            comprador=request.user,
+            estrellas=estrellas,
+            comentario=comentario,
+        )
+
+    except (ValueError, TypeError) as error:
+        messages.error(
+            request,
+            str(error) if str(error)
+            else "Selecciona una calificacion valida.",
+        )
+
+        return redirect(
+            "orders:mis_pedidos"
+        )
+
+    messages.success(
+        request,
+        "Tu resena verificada se publico correctamente.",
+    )
+
+    return redirect(
+        "orders:pedido_detalle",
+        pk=resena.order_line.order_id,
+    )

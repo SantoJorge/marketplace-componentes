@@ -84,3 +84,17 @@ urlpatterns += [
         name="notificaciones_marcar_todas",
     ),
 ]
+
+
+
+# ============================================================
+# CR-15 - RUTA DE RESENAS VERIFICADAS
+# ============================================================
+
+urlpatterns += [
+    path(
+        "pedidos/lineas/<int:linea_id>/resena/",
+        views.cr15_publicar_resena,
+        name="resena_publicar",
+    ),
+]

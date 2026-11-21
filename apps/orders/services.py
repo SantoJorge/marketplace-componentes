@@ -799,3 +799,126 @@ def cr14_notificar(
         )
 
     return notificacion, creada
+
+
+
+
+# ============================================================
+# CR-15 - RESENAS DE COMPRAS VERIFICADAS
+# ============================================================
+
+from .models import ProductReview
+
+
+class CR15ReviewError(ValueError):
+    """Error de validacion de resenas verificadas."""
+    pass
+
+
+@transaction.atomic
+def cr15_crear_resena(
+    linea_id,
+    comprador,
+    estrellas,
+    comentario="",
+):
+    """
+    Permite crear una resena solamente cuando:
+    - El usuario esta autenticado y activo.
+    - La linea pertenece a una compra suya.
+    - El pedido esta COMPLETADO.
+    - La calificacion esta entre 1 y 5.
+    - La linea todavia no tiene una resena.
+
+    Se utilizan bloqueos para proteger la operacion
+    frente a solicitudes concurrentes.
+    """
+
+    if (
+        comprador is None
+        or not comprador.is_authenticated
+        or not comprador.is_active
+    ):
+        raise CR15ReviewError(
+            "Debes iniciar sesion para valorar una compra."
+        )
+
+    if (
+        not isinstance(estrellas, int)
+        or isinstance(estrellas, bool)
+        or not 1 <= estrellas <= 5
+    ):
+        raise CR15ReviewError(
+            "Selecciona una calificacion de 1 a 5 estrellas."
+        )
+
+    if not isinstance(comentario, str):
+        raise CR15ReviewError(
+            "El comentario no es valido."
+        )
+
+    comentario = comentario.strip()
+
+    if len(comentario) > 2000:
+        raise CR15ReviewError(
+            "El comentario no puede superar 2000 caracteres."
+        )
+
+    # Consultar la referencia antes de bloquear.
+    referencia = (
+        PurchaseLine.objects
+        .filter(pk=linea_id)
+        .values("order_id")
+        .first()
+    )
+
+    if referencia is None:
+        raise CR15ReviewError(
+            "La linea de compra no existe."
+        )
+
+    # Respetar el orden de bloqueos: pedido y luego linea.
+    pedido = (
+        PurchaseOrder.objects
+        .select_for_update()
+        .get(pk=referencia["order_id"])
+    )
+
+    linea = (
+        PurchaseLine.objects
+        .select_for_update()
+        .get(
+            pk=linea_id,
+            order_id=pedido.pk,
+        )
+    )
+
+    if pedido.buyer_id != comprador.pk:
+        raise CR15ReviewError(
+            "No puedes valorar compras de otros usuarios."
+        )
+
+    if pedido.status != "COMPLETADA":
+        raise CR15ReviewError(
+            "Solo puedes valorar pedidos completados."
+        )
+
+    if linea.seller_id == comprador.pk:
+        raise CR15ReviewError(
+            "No puedes valorar tu propio producto."
+        )
+
+    if ProductReview.objects.filter(
+        order_line_id=linea.pk
+    ).exists():
+        raise CR15ReviewError(
+            "Este articulo ya fue valorado en esta compra."
+        )
+
+    resena = ProductReview.objects.create(
+        order_line=linea,
+        rating=estrellas,
+        comment=comentario,
+    )
+
+    return resena

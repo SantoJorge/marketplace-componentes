@@ -899,3 +899,451 @@ class CR14NotificationTests(TestCase):
             ).count(),
             2,
         )
+
+
+
+# ============================================================
+# CR-15 - PRUEBAS DE RESENAS VERIFICADAS
+# ============================================================
+
+from apps.orders.models import PurchaseLine, ProductReview
+from apps.orders.services import (
+    CR15ReviewError,
+    cr15_crear_resena,
+)
+
+
+class CR15ReviewTests(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.buyer = User.objects.create_user(
+            username="cr15_buyer",
+            password="Test12345!",
+        )
+
+        cls.seller = User.objects.create_user(
+            username="cr15_seller",
+            password="Test12345!",
+        )
+
+        cls.other = User.objects.create_user(
+            username="cr15_other",
+            password="Test12345!",
+        )
+
+        Profile.objects.update_or_create(
+            user=cls.seller,
+            defaults={
+                "role": "VENDEDOR",
+                "active": True,
+            },
+        )
+
+        cls.category = Category.objects.create(
+            name="Componentes CR15",
+            active=True,
+        )
+
+        cls.product = Product.objects.create(
+            seller=cls.seller,
+            category=cls.category,
+            name="Procesador CR15",
+            description="Producto para pruebas",
+            brand="Marca CR15",
+            price=Decimal("100.00"),
+            stock=3,
+            condition="USADO",
+            approval_status="APROBADO",
+            active=True,
+        )
+
+        cls.order = PurchaseOrder.objects.create(
+            buyer=cls.buyer,
+            status="COMPLETADA",
+            contact_name="Comprador CR15",
+            contact_phone="60000000",
+            province="Chiriquí",
+            address="Direccion de prueba",
+            total=Decimal("100.00"),
+        )
+
+        cls.line = PurchaseLine.objects.create(
+            order=cls.order,
+            product=cls.product,
+            seller=cls.seller,
+            product_name=cls.product.name,
+            unit_price=Decimal("100.00"),
+            quantity=1,
+            status="ENTREGADO",
+        )
+
+    def test_comprador_verificado_puede_valorar(self):
+        resena = cr15_crear_resena(
+            self.line.pk,
+            self.buyer,
+            5,
+            "Excelente producto",
+        )
+
+        self.assertEqual(resena.rating, 5)
+        self.assertEqual(
+            resena.comment,
+            "Excelente producto",
+        )
+        self.assertEqual(
+            resena.order_line_id,
+            self.line.pk,
+        )
+        self.assertEqual(
+            resena.buyer,
+            self.buyer,
+        )
+        self.assertTrue(resena.is_verified)
+
+        self.assertEqual(
+            ProductReview.objects.count(),
+            1,
+        )
+
+    def test_pedido_sin_completar_no_puede_valorarse(self):
+        self.order.status = "ENTREGADA"
+        self.order.save(update_fields=["status"])
+
+        with self.assertRaises(CR15ReviewError):
+            cr15_crear_resena(
+                self.line.pk,
+                self.buyer,
+                5,
+                "Pedido sin completar",
+            )
+
+        self.assertFalse(
+            ProductReview.objects.exists()
+        )
+
+    def test_comprador_ajeno_no_puede_valorar(self):
+        with self.assertRaises(CR15ReviewError):
+            cr15_crear_resena(
+                self.line.pk,
+                self.other,
+                4,
+                "Compra de otra persona",
+            )
+
+        self.assertFalse(
+            ProductReview.objects.exists()
+        )
+
+    def test_no_permite_resenas_duplicadas(self):
+        primera = cr15_crear_resena(
+            self.line.pk,
+            self.buyer,
+            5,
+            "Primera valoracion",
+        )
+
+        with self.assertRaises(CR15ReviewError):
+            cr15_crear_resena(
+                self.line.pk,
+                self.buyer,
+                1,
+                "Segunda valoracion",
+            )
+
+        self.assertEqual(
+            ProductReview.objects.count(),
+            1,
+        )
+
+        primera.refresh_from_db()
+        self.assertEqual(primera.rating, 5)
+
+    def test_rechaza_calificaciones_y_comentarios_invalidos(self):
+        for estrellas in (0, 6, -1, True, "5"):
+            with self.subTest(estrellas=estrellas):
+                with self.assertRaises(CR15ReviewError):
+                    cr15_crear_resena(
+                        self.line.pk,
+                        self.buyer,
+                        estrellas,
+                        "Prueba",
+                    )
+
+        with self.assertRaises(CR15ReviewError):
+            cr15_crear_resena(
+                self.line.pk,
+                self.buyer,
+                5,
+                "A" * 2001,
+            )
+
+        self.assertEqual(
+            ProductReview.objects.count(),
+            0,
+        )
+
+
+
+    # ========================================================
+    # CR-15 - PRUEBAS HTTP E INTERFAZ PUBLICA
+    # ========================================================
+
+    def test_http_publicar_y_mostrar_resena(self):
+        self.client.force_login(self.buyer)
+
+        url = reverse(
+            "orders:resena_publicar",
+            kwargs={"linea_id": self.line.pk},
+        )
+
+        respuesta = self.client.post(
+            url,
+            {
+                "rating": "5",
+                "comment": "Excelente procesador CR15 HTTP",
+            },
+        )
+
+        self.assertEqual(respuesta.status_code, 302)
+
+        resena = ProductReview.objects.get(
+            order_line=self.line,
+        )
+
+        self.assertEqual(resena.rating, 5)
+        self.assertEqual(
+            resena.comment,
+            "Excelente procesador CR15 HTTP",
+        )
+
+        # Las reseñas deben ser visibles públicamente.
+        self.client.logout()
+
+        respuesta = self.client.get(
+            reverse(
+                "catalog:producto",
+                kwargs={"pk": self.product.pk},
+            )
+        )
+
+        self.assertEqual(respuesta.status_code, 200)
+        self.assertContains(
+            respuesta,
+            "Excelente procesador CR15 HTTP",
+        )
+        self.assertContains(
+            respuesta,
+            "Compra verificada",
+        )
+        self.assertContains(
+            respuesta,
+            "Valoraciones de compradores",
+        )
+
+    def test_http_bloquea_anonimos_y_compradores_ajenos(self):
+        url = reverse(
+            "orders:resena_publicar",
+            kwargs={"linea_id": self.line.pk},
+        )
+
+        datos = {
+            "rating": "4",
+            "comment": "Intento no autorizado",
+        }
+
+        # Sin iniciar sesion.
+        respuesta = self.client.post(url, datos)
+        self.assertEqual(respuesta.status_code, 302)
+
+        # Usuario que no compro el producto.
+        self.client.force_login(self.other)
+
+        respuesta = self.client.post(url, datos)
+        self.assertEqual(respuesta.status_code, 302)
+
+        self.assertFalse(
+            ProductReview.objects.exists()
+        )
+
+        # Un GET no puede publicar una valoracion.
+        self.client.force_login(self.buyer)
+
+        respuesta = self.client.get(url)
+        self.assertEqual(respuesta.status_code, 405)
+
+        self.assertFalse(
+            ProductReview.objects.exists()
+        )
+
+    def test_http_rechaza_pedido_incompleto_y_duplicados(self):
+        self.client.force_login(self.buyer)
+
+        url = reverse(
+            "orders:resena_publicar",
+            kwargs={"linea_id": self.line.pk},
+        )
+
+        self.order.status = "ENTREGADA"
+        self.order.save(update_fields=["status"])
+
+        datos = {
+            "rating": "5",
+            "comment": "Primera reseña HTTP",
+        }
+
+        respuesta = self.client.post(url, datos)
+        self.assertEqual(respuesta.status_code, 302)
+
+        self.assertEqual(
+            ProductReview.objects.count(),
+            0,
+        )
+
+        # El comprador completa el pedido.
+        self.order.status = "COMPLETADA"
+        self.order.save(update_fields=["status"])
+
+        respuesta = self.client.post(url, datos)
+        self.assertEqual(respuesta.status_code, 302)
+
+        self.assertEqual(
+            ProductReview.objects.count(),
+            1,
+        )
+
+        # Intentar publicar otra vez.
+        respuesta = self.client.post(
+            url,
+            {
+                "rating": "1",
+                "comment": "Intento duplicado",
+            },
+        )
+
+        self.assertEqual(respuesta.status_code, 302)
+
+        self.assertEqual(
+            ProductReview.objects.count(),
+            1,
+        )
+
+        resena = ProductReview.objects.get(
+            order_line=self.line,
+        )
+
+        self.assertEqual(resena.rating, 5)
+        self.assertEqual(
+            resena.comment,
+            "Primera reseña HTTP",
+        )
+
+    def test_formulario_solo_en_pedido_completado(self):
+        self.client.force_login(self.buyer)
+
+        url = reverse(
+            "orders:pedido_detalle",
+            kwargs={"pk": self.order.pk},
+        )
+
+        # Pedido completado: aparece el formulario.
+        respuesta = self.client.get(url)
+
+        self.assertEqual(respuesta.status_code, 200)
+        self.assertContains(
+            respuesta,
+            'id="cr15-valoraciones"',
+        )
+
+        # Pedido sin completar: no aparece.
+        self.order.status = "ENTREGADA"
+        self.order.save(update_fields=["status"])
+
+        respuesta = self.client.get(url)
+
+        self.assertEqual(respuesta.status_code, 200)
+        self.assertNotContains(
+            respuesta,
+            'id="cr15-valoraciones"',
+        )
+
+        # Pedido completado y valorado:
+        # se muestra la reseña, no otro formulario.
+        self.order.status = "COMPLETADA"
+        self.order.save(update_fields=["status"])
+
+        cr15_crear_resena(
+            self.line.pk,
+            self.buyer,
+            4,
+            "Producto recibido correctamente",
+        )
+
+        respuesta = self.client.get(url)
+
+        self.assertEqual(respuesta.status_code, 200)
+        self.assertContains(
+            respuesta,
+            "Ya valoraste este producto",
+        )
+        self.assertContains(
+            respuesta,
+            "Producto recibido correctamente",
+        )
+
+    def test_resena_no_aparece_en_otro_producto(self):
+        otro_producto = Product.objects.create(
+            seller=self.seller,
+            category=self.category,
+            name="Memoria RAM distinta CR15",
+            description="Otro producto de prueba",
+            brand="Marca CR15",
+            price=Decimal("50.00"),
+            stock=3,
+            condition="USADO",
+            approval_status="APROBADO",
+            active=True,
+        )
+
+        cr15_crear_resena(
+            self.line.pk,
+            self.buyer,
+            5,
+            "Comentario exclusivo del procesador",
+        )
+
+        # La reseña aparece en el producto comprado.
+        respuesta_original = self.client.get(
+            reverse(
+                "catalog:producto",
+                kwargs={"pk": self.product.pk},
+            )
+        )
+
+        self.assertContains(
+            respuesta_original,
+            "Comentario exclusivo del procesador",
+        )
+
+        # No debe contaminar la ficha de otro producto.
+        respuesta_otro = self.client.get(
+            reverse(
+                "catalog:producto",
+                kwargs={"pk": otro_producto.pk},
+            )
+        )
+
+        self.assertEqual(
+            respuesta_otro.status_code,
+            200,
+        )
+
+        self.assertNotContains(
+            respuesta_otro,
+            "Comentario exclusivo del procesador",
+        )
+
+        self.assertContains(
+            respuesta_otro,
+            "Este producto todavía no tiene valoraciones",
+        )

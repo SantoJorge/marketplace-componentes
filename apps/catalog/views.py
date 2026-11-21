@@ -661,3 +661,39 @@ def seller_product_edit(request, pk=None):
         back="catalog:vendedor_productos",
         multipart=True,
     )
+
+
+def product_detail(request, pk):
+    from django.db.models import Avg, Count
+    from apps.orders.models import ProductReview
+
+    product = get_object_or_404(
+        available_products(),
+        pk=pk,
+    )
+
+    reviews = (
+        ProductReview.objects
+        .filter(
+            order_line__product_id=product.pk,
+            order_line__order__status="COMPLETADA",
+        )
+        .select_related(
+            "order_line__order__buyer"
+        )
+        .order_by("-created_at")
+    )
+
+    resumen = reviews.aggregate(
+        promedio=Avg("rating"),
+        total=Count("pk"),
+    )
+
+    return screen(
+        request,
+        "catalog/producto.html",
+        product=product,
+        product_reviews=reviews,
+        product_review_average=resumen["promedio"],
+        product_review_count=resumen["total"],
+    )
