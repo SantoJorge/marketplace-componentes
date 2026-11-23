@@ -4,35 +4,53 @@
 
 {% block content %}
 <style>
+    /* =====================================================
+       FASE B1-003: MIS OFERTAS ENVIADAS
+       Integracion visual con el tema oscuro Marketplace
+       Solo presentacion: sin cambios en la logica CR-11
+       ===================================================== */
+
     .cr11-wrap {
         max-width: 1120px;
         margin: 30px auto;
         padding: 0 20px 55px;
-        color: #172338;
+        color: #e9eefb;
+        color-scheme: dark;
+    }
+
+    .cr11-wrap *,
+    .cr11-wrap *::before,
+    .cr11-wrap *::after {
+        box-sizing: border-box;
     }
 
     .cr11-header {
         margin-bottom: 26px;
     }
 
-        .cr11-header h1 {
-            font-size: 30px;
-            font-weight: 800;
-            margin: 0 0 8px;
-        }
+    .cr11-header h1 {
+        color: #f8fafc;
+        font-size: 30px;
+        line-height: 1.25;
+        font-weight: 800;
+        margin: 0 0 9px;
+    }
 
-        .cr11-header p {
-            color: #68768d;
-            margin: 0;
-        }
+    .cr11-header p {
+        color: #a6b6d0;
+        font-size: 14px;
+        line-height: 1.6;
+        margin: 0;
+    }
 
     .cr11-card {
-        background: #fff;
-        border: 1px solid #e2e8f0;
+        background: #111827;
+        color: #e9eefb;
+        border: 1px solid #22304c;
         border-radius: 16px;
         padding: 24px;
         margin-bottom: 18px;
-        box-shadow: 0 5px 20px rgba(15, 23, 42, .04);
+        box-shadow: 0 9px 24px rgba(0, 0, 0, .17);
     }
 
     .cr11-top {
@@ -44,45 +62,63 @@
     }
 
     .cr11-product {
+        display: inline-block;
+        max-width: 100%;
         font-size: 20px;
-        font-weight: 750;
-        color: #15243b;
+        line-height: 1.4;
+        font-weight: 800;
+        color: #f1f5ff;
         text-decoration: none;
+        overflow-wrap: anywhere;
     }
 
-        .cr11-product:hover {
-            color: #2563eb;
-        }
+    .cr11-product:hover,
+    .cr11-product:focus-visible {
+        color: #67d6f5;
+    }
 
     .cr11-muted {
+        color: #a6b6d0;
         font-size: 13px;
-        color: #738198;
+        line-height: 1.55;
         margin-top: 7px;
+        overflow-wrap: anywhere;
     }
 
     .cr11-status {
-        background: #eff6ff;
-        color: #1d4ed8;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        max-width: 100%;
+        background: #15294c;
+        color: #b6d4ff;
+        border: 1px solid #2c548b;
         padding: 7px 12px;
         border-radius: 30px;
         font-size: 12px;
+        line-height: 1.3;
         font-weight: 800;
+        text-align: center;
+        overflow-wrap: anywhere;
     }
 
-        .cr11-status.ok {
-            background: #dcfce7;
-            color: #166534;
-        }
+    .cr11-status.ok {
+        background: #123b30;
+        color: #86efac;
+        border-color: #27694e;
+    }
 
-        .cr11-status.warn {
-            background: #fff7ed;
-            color: #9a3412;
-        }
+    .cr11-status.warn {
+        background: #3b2a16;
+        color: #fcd38d;
+        border-color: #795427;
+    }
 
-        .cr11-status.closed {
-            background: #f1f5f9;
-            color: #64748b;
-        }
+    .cr11-status.closed {
+        background: #252f42;
+        color: #c2cce0;
+        border-color: #40506b;
+    }
 
     .cr11-prices {
         display: grid;
@@ -92,30 +128,38 @@
     }
 
     .cr11-price-box {
+        min-width: 0;
         border-radius: 12px;
-        background: #f8fafc;
+        border: 1px solid #283956;
+        background: #172135;
         padding: 16px;
     }
 
-        .cr11-price-box span {
-            display: block;
-            color: #64748b;
-            font-size: 12px;
-            margin-bottom: 7px;
-        }
+    .cr11-price-box span {
+        display: block;
+        color: #a9b9d3;
+        font-size: 12px;
+        line-height: 1.45;
+        margin-bottom: 7px;
+    }
 
-        .cr11-price-box strong {
-            font-size: 24px;
-            color: #0f172a;
-        }
+    .cr11-price-box strong {
+        display: block;
+        color: #f8fafc;
+        font-size: 24px;
+        line-height: 1.25;
+        font-weight: 900;
+        overflow-wrap: anywhere;
+    }
 
-        .cr11-price-box.highlight {
-            background: #eff6ff;
-        }
+    .cr11-price-box.highlight {
+        background: #152b4b;
+        border-color: #315c9a;
+    }
 
-            .cr11-price-box.highlight strong {
-                color: #1d4ed8;
-            }
+    .cr11-price-box.highlight strong {
+        color: #8bb8ff;
+    }
 
     .cr11-actions {
         display: flex;
@@ -124,43 +168,106 @@
         margin-top: 20px;
     }
 
+    .cr11-actions form {
+        margin: 0;
+    }
+
     .cr11-btn {
-        border: 0;
+        min-height: 44px;
+        border: 1px solid #2563eb;
         border-radius: 10px;
         padding: 12px 19px;
+        font-family: inherit;
         font-size: 14px;
-        font-weight: 750;
+        line-height: 1.3;
+        font-weight: 800;
         cursor: pointer;
         background: #2563eb;
         color: #fff;
+        transition: background .18s ease, border-color .18s ease;
     }
 
-        .cr11-btn.reject {
-            background: #f1f5f9;
-            color: #334155;
-        }
+    .cr11-btn:hover {
+        background: #1d4ed8;
+        border-color: #1d4ed8;
+    }
+
+    .cr11-btn.reject {
+        background: #22304c;
+        border-color: #405172;
+        color: #e5edf9;
+    }
+
+    .cr11-btn.reject:hover {
+        background: #304361;
+        border-color: #637da6;
+    }
+
+    .cr11-btn:focus-visible,
+    .cr11-link:focus-visible,
+    .cr11-product:focus-visible {
+        outline: 3px solid #67d6f5;
+        outline-offset: 3px;
+    }
 
     .cr11-empty {
         padding: 55px 25px;
         text-align: center;
-        background: #fff;
-        border: 1px solid #e2e8f0;
+        background: #111827;
+        color: #e9eefb;
+        border: 1px solid #22304c;
         border-radius: 16px;
     }
 
-        .cr11-empty h2 {
-            font-size: 21px;
-            margin: 12px 0;
-        }
+    .cr11-empty h2 {
+        color: #f8fafc;
+        font-size: 21px;
+        margin: 12px 0;
+    }
 
-        .cr11-empty p {
-            color: #64748b;
-        }
+    .cr11-empty p {
+        color: #a6b6d0;
+        line-height: 1.6;
+    }
 
     .cr11-link {
-        color: #2563eb;
-        font-weight: 700;
+        color: #8bb8ff;
+        font-weight: 800;
         text-decoration: none;
+    }
+
+    .cr11-link:hover {
+        color: #67d6f5;
+        text-decoration: underline;
+    }
+
+    @media (max-width: 600px) {
+        .cr11-wrap {
+            margin: 20px auto;
+            padding: 0 12px 35px;
+        }
+
+        .cr11-header h1 {
+            font-size: 25px;
+        }
+
+        .cr11-card {
+            padding: 17px;
+        }
+
+        .cr11-product {
+            font-size: 17px;
+        }
+
+        .cr11-prices {
+            grid-template-columns: 1fr;
+        }
+
+        .cr11-actions,
+        .cr11-actions form,
+        .cr11-actions .cr11-btn {
+            width: 100%;
+        }
     }
 </style>
 

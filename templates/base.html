@@ -10,6 +10,106 @@
     <link rel="stylesheet" href="{% static 'css/paneles.css' %}">
     {% endif %}
     <link rel="stylesheet" href="{% static 'css/navbar_unificada.css' %}?v=1">
+    <!-- B1-005: accesos del usuario, sin alterar los estilos de la barra principal -->
+    <style>
+        #user-dropdown[hidden] { display: none !important; }
+        #user-dropdown {
+            width: min(320px, calc(100vw - 24px));
+            max-height: min(76vh, 670px);
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            background: #111827;
+            border: 1px solid #2d415f;
+            border-radius: 14px;
+            box-shadow: 0 18px 45px rgba(0,0,0,.35);
+            color: #e9eefb;
+        }
+        #user-dropdown .nav-dropdown-head {
+            border-bottom: 1px solid #283a55;
+        }
+        #user-dropdown .mc-menu-label {
+            display: block;
+            margin: 13px 15px 5px;
+            font-size: 10px;
+            line-height: 1.4;
+            font-weight: 800;
+            letter-spacing: 1.2px;
+            color: #97add0;
+            text-transform: uppercase;
+        }
+        #user-dropdown .nav-dropdown-item.mc-menu-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-height: 41px;
+            padding: 9px 14px;
+            color: #d9e6fa;
+            text-decoration: none;
+            border-radius: 8px;
+            margin: 1px 7px;
+            font-size: 13px;
+            line-height: 1.3;
+        }
+        #user-dropdown .nav-dropdown-item.mc-menu-link:hover,
+        #user-dropdown .nav-dropdown-item.mc-menu-link:focus-visible {
+            background: #1d304d;
+            color: #ffffff;
+            outline-offset: -2px;
+        }
+        #user-dropdown .mc-menu-icon {
+            display: inline-block;
+            width: 21px;
+            flex: 0 0 21px;
+            text-align: center;
+        }
+        #user-dropdown .mc-menu-count {
+            margin-left: auto;
+            padding: 2px 7px;
+            font-size: 10px;
+            line-height: 1.5;
+            font-weight: 800;
+            color: #fff;
+            background: #2563eb;
+            border-radius: 999px;
+        }
+        #user-dropdown .mc-menu-divider {
+            height: 1px;
+            margin: 10px 13px;
+            background: #283a55;
+        }
+        #user-dropdown .mc-menu-logout {
+            width: calc(100% - 14px);
+            text-align: left;
+            color: #fca5a5 !important;
+            background: transparent;
+            border: 0;
+            cursor: pointer;
+        }
+        #user-dropdown .mc-menu-logout:hover { background: #39222e !important; }
+        .mc-nav-notification-icon { position: relative; text-decoration: none; }
+        .mc-nav-notif-badge {
+            position: absolute;
+            top: -6px;
+            right: -7px;
+            min-width: 19px;
+            height: 19px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 5px;
+            border: 2px solid #0b1120;
+            border-radius: 999px;
+            color: #fff;
+            background: #ea580c;
+            font-size: 10px;
+            font-weight: 900;
+            line-height: 1;
+        }
+        @media (max-width: 600px) {
+            #user-dropdown { max-height: 72vh; }
+            #user-dropdown .nav-dropdown-item.mc-menu-link { min-height: 44px; }
+        }
+    </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body>
@@ -58,6 +158,19 @@
 
         <div class="nav-actions">
 
+            {% if user.is_authenticated %}
+            <!-- B1-005: acceso directo a notificaciones. El contador solo aparece si Django envía un dato real. -->
+            <a class="cart-btn mc-nav-notification-icon"
+               href="{% url 'orders:mis_notificaciones' %}"
+               title="Mis notificaciones"
+               aria-label="Mis notificaciones{% if navbar_unread_count %}: {{ navbar_unread_count }} sin leer{% endif %}">
+                <span aria-hidden="true">🔔</span>
+                {% if navbar_unread_count %}
+                <span class="mc-nav-notif-badge" aria-hidden="true">{{ navbar_unread_count }}</span>
+                {% endif %}
+            </a>
+            {% endif %}
+
             <a class="cart-btn mc-cart-icon"
                href="{% url 'orders:cart_detail' %}"
                title="Ver carrito"
@@ -95,44 +208,41 @@
                         </span>
                     </div>
 
+                    <span class="mc-menu-label">Mi cuenta</span>
                     {% if user.is_superuser or user.profile.role == 'ADMINISTRADOR' %}
-                    <a class="nav-dropdown-item" href="{% url 'management:dashboard' %}">🛡️ Panel administrativo</a>
-                    <a class="nav-dropdown-item" href="{% url 'management:perfil' %}">👤 Mi perfil</a>
+                    <a class="nav-dropdown-item mc-menu-link" href="{% url 'management:dashboard' %}"><span class="mc-menu-icon" aria-hidden="true">🛡️</span>Panel administrativo</a>
+                    <a class="nav-dropdown-item mc-menu-link" href="{% url 'management:perfil' %}"><span class="mc-menu-icon" aria-hidden="true">👤</span>Mi perfil</a>
                     {% elif user.profile.role == 'VENDEDOR' %}
-                    <a class="nav-dropdown-item" href="{% url 'catalog:vendedor_dashboard' %}">🏪 Panel de vendedor</a>
-                    <a class="nav-dropdown-item" href="{% url 'accounts:perfil' %}">👤 Mi perfil</a>
-
-                    <!-- MODIFICADO EN FASE 3.1 -->
+                    <a class="nav-dropdown-item mc-menu-link" href="{% url 'catalog:vendedor_dashboard' %}"><span class="mc-menu-icon" aria-hidden="true">🏪</span>Panel de vendedor</a>
+                    <a class="nav-dropdown-item mc-menu-link" href="{% url 'accounts:perfil' %}"><span class="mc-menu-icon" aria-hidden="true">👤</span>Mi perfil</a>
                     {% else %}
-                    <a class="nav-dropdown-item" href="{% url 'accounts:perfil' %}">👤 Mi perfil</a>
+                    <a class="nav-dropdown-item mc-menu-link" href="{% url 'accounts:perfil' %}"><span class="mc-menu-icon" aria-hidden="true">👤</span>Mi perfil</a>
+                    {% endif %}
+                    <a class="nav-dropdown-item mc-menu-link" href="{% url 'orders:mis_pedidos' %}"><span class="mc-menu-icon" aria-hidden="true">🧾</span>Mis compras</a>
+                    <a class="nav-dropdown-item mc-menu-link" href="{% url 'orders:cart_detail' %}"><span class="mc-menu-icon" aria-hidden="true">🛒</span>Mi carrito</a>
+
+                    <!-- CR-11: enlaces según el rol persistente, no según current_role contextual. -->
+                    {% if not user.is_superuser and user.profile.role != 'ADMINISTRADOR' %}
+                    <div class="mc-menu-divider"></div>
+                    <span class="mc-menu-label">Negociaciones</span>
+                    <a class="nav-dropdown-item mc-menu-link" href="{% url 'orders:ofertas_enviadas' %}"><span class="mc-menu-icon" aria-hidden="true">📤</span>Mis ofertas enviadas</a>
+                    {% if user.profile.role == 'VENDEDOR' %}
+                    <a class="nav-dropdown-item mc-menu-link" href="{% url 'orders:ofertas_recibidas' %}"><span class="mc-menu-icon" aria-hidden="true">📥</span>Ofertas recibidas</a>
+                    {% endif %}
                     {% endif %}
 
-
-                    <a class="nav-dropdown-item" href="{% url 'orders:mis_pedidos' %}">🧾 Mis compras</a>
-
-
-                    <!-- CR-11: ACCESO A NEGOCIACIONES -->
-                    {% if current_role == "COMPRADOR" or current_role == "VENDEDOR" %}
-                    <a class="nav-dropdown-item"
-                       href="{% url 'orders:ofertas_enviadas' %}">
-                        📤 Mis ofertas
+                    <div class="mc-menu-divider"></div>
+                    <span class="mc-menu-label">Actividad</span>
+                    <a class="nav-dropdown-item mc-menu-link" href="{% url 'orders:mis_notificaciones' %}">
+                        <span class="mc-menu-icon" aria-hidden="true">🔔</span>
+                        Mis notificaciones
+                        {% if navbar_unread_count %}<span class="mc-menu-count" aria-label="{{ navbar_unread_count }} sin leer">{{ navbar_unread_count }}</span>{% endif %}
                     </a>
-                    {% endif %}
 
-                    {% if current_role == "VENDEDOR" %}
-                    <a class="nav-dropdown-item"
-                       href="{% url 'orders:ofertas_recibidas' %}">
-                        📥 Ofertas recibidas
-                    </a>
-                    {% endif %}
-                    <!-- FIN CR-11 -->
-                    <a class="nav-dropdown-item" href="{% url 'orders:mis_notificaciones' %}">&#128276; Mis notificaciones</a>
-
-
-                    <div class="nav-dropdown-divider"></div>
+                    <div class="mc-menu-divider"></div>
                     <form action="{% url 'accounts:logout' %}" method="post" class="nav-logout-form">
                         {% csrf_token %}
-                        <button type="submit" class="nav-dropdown-item nav-danger">⏻ Cerrar sesión</button>
+                        <button type="submit" class="nav-dropdown-item mc-menu-link mc-menu-logout"><span class="mc-menu-icon" aria-hidden="true">⏻</span>Cerrar sesión</button>
                     </form>
                 </div>
             </div>
