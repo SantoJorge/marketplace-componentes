@@ -899,16 +899,62 @@
       if (key === 'ram' && board) return !!itemDdr && !!board.ddr && itemDdr === board.ddr;
       return true;
     }
-    function refresh() {
-      Object.entries(fields).forEach(([key, select]) => {
-        if (!select) return;
-        Array.from(select.options).forEach(option => {
-          if (!option.value) { option.hidden = false; return; }
-          option.hidden = !compatible(key, option);
-          if (option.selected && option.hidden) select.value = '';
-        });
-      });
-    }
+
+    
+      function refresh() {
+          Object.entries(fields).forEach(([key, select]) => {
+              if (!select) return;
+
+              Array.from(select.options).forEach(option => {
+                  if (!option.value) {
+                      option.hidden = false;
+                      return;
+                  }
+
+                  option.hidden = !compatible(key, option);
+
+                  if (option.selected && option.hidden) {
+                      select.value = '';
+                  }
+              });
+          });
+
+          // Resumen de componentes seleccionados
+          let totalCents = 0;
+          let count = 0;
+
+          Object.values(fields).forEach(select => {
+              if (!select || !select.value) return;
+
+              const option = select.selectedOptions[0];
+
+              if (!option) return;
+
+              const price = Number(option.dataset.price);
+
+              if (Number.isFinite(price)) {
+                  totalCents += Math.round(price * 100);
+              }
+
+              count++;
+          });
+
+          const totalElement = form.querySelector('#mc-cr08-total');
+          const countElement = form.querySelector('#mc-cr08-count');
+
+          if (totalElement) {
+              totalElement.textContent = new Intl.NumberFormat('en-US', {
+                  style: 'currency',
+                  currency: 'USD'
+              }).format(totalCents / 100);
+          }
+
+          if (countElement) {
+              countElement.textContent =
+                  count + ' de 3 componentes seleccionados';
+          }
+      }
+
     Object.values(fields).forEach(select => select && select.addEventListener('change', refresh));
     refresh();
   }
