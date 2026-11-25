@@ -3,12 +3,12 @@
 /* MC-CR08 - MARKETPLACE DARK UI */
 
 #mc-cr08 {
-    --c8-bg: #101827;
-    --c8-card: #151f30;
-    --c8-border: #293950;
-    --c8-text: #edf3fc;
-    --c8-muted: #9aabc1;
-    --c8-accent: #38a5eb;
+    --c8-bg: #20121e;
+    --c8-card: #302035;
+    --c8-border: #75445c;
+    --c8-text: #f9f4f7;
+    --c8-muted: #cbb5c7;
+    --c8-accent: #ffad79;
 
     max-width: 1340px;
     margin: 0 auto;
@@ -89,7 +89,7 @@
 }
 
 #mc-cr08 .c8-field:hover {
-    border-color: #3779aa;
+    border-color: #F26716;
 }
 
 #mc-cr08 .c8-step {
@@ -121,8 +121,8 @@
     height: 46px;
     width: 100%;
     padding: 0 12px;
-    background: #0c1421;
-    border: 1px solid #344963;
+    background: #211822;
+    border: 1px solid #75445c;
     border-radius: 8px;
     color: var(--c8-text);
     font: inherit;
@@ -131,13 +131,13 @@
 }
 
 #mc-cr08 select option {
-    background: #111b2b;
-    color: #edf3fc;
+    background: #24151e;
+    color: #f9f4f7;
 }
 
 #mc-cr08 select:focus {
     border-color: var(--c8-accent);
-    box-shadow: 0 0 0 3px rgba(56,165,235,.13);
+    box-shadow: 0 0 0 3px rgba(242,103,22,.13);
 }
 
 #mc-cr08 .c8-summary {
@@ -147,7 +147,7 @@
     gap: 18px;
     padding: 20px;
     margin-bottom: 20px;
-    background: #0c1524;
+    background: #211822;
     border: 1px solid var(--c8-border);
     border-radius: 12px;
 }
@@ -159,7 +159,7 @@
 
 #mc-cr08 .c8-total {
     display: block;
-    color: #edf3fc;
+    color: #f9f4f7;
     font-size: 30px;
     font-weight: 800;
     margin-top: 4px;
@@ -191,23 +191,23 @@
 }
 
 #mc-cr08 .c8-primary {
-    background: #1763bd;
+    background: #8C0D24;
     color: #fff;
-    border-color: #287bd4;
+    border-color: #F26716;
 }
 
 #mc-cr08 .c8-primary:hover {
-    background: #2277d3;
+    background: #A51B32;
 }
 
 #mc-cr08 .c8-secondary {
-    background: #182538;
-    border-color: #34465e;
-    color: #dbe7f6;
+    background: #302035;
+    border-color: #81506a;
+    color: #f9f4f7;
 }
 
 #mc-cr08 .c8-secondary:hover {
-    background: #23354c;
+    background: #3E2259;
 }
 
 #mc-cr08 .c8-btn:focus-visible {
@@ -333,6 +333,7 @@
                 {% for key, items in groups.items %}
 
                 <div class="c8-field">
+                    <div class="hz-build-icon">{% if key == 'cpu' %}<svg class="hz-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9" y="9" width="6" height="6" rx="1"/><path d="M9 3v3m6-3v3M9 18v3m6-3v3M3 9h3m-3 6h3m12-6h3m-3 6h3"/></svg>{% elif key == 'placa' %}<svg class="hz-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><rect x="6" y="6" width="7" height="7" rx="1"/><path d="M16 6v8m3-8v8M6 16h13m-13 3h8"/></svg>{% else %}<svg class="hz-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="10" rx="2"/><path d="M6 10h3v4H6zm5 0h3v4h-3zm5 0h2v4h-2zM6 17v3m4-3v3m4-3v3m4-3v3"/></svg>{% endif %}</div>
 
                     {% if key == 'cpu' %}
 
@@ -383,6 +384,7 @@
                             data-socket="{{ p.technical_spec.socket|default:''|escape }}"
                             data-ram-type="{{ p.technical_spec.ram_type|default:''|escape }}"
                             data-price="{{ p.price|stringformat:'s' }}"
+                            {% if p.image %}data-hz-image="{{ p.image.url|escape }}"{% endif %}
                             {% if key == 'cpu' and selected_ids.cpu == p.pk|stringformat:'s' or key == 'placa' and selected_ids.placa == p.pk|stringformat:'s' or key == 'ram' and selected_ids.ram == p.pk|stringformat:'s' %}selected{% endif %}>
                             {% if p.brand and p.brand|lower not in p.name|lower %}{{ p.brand }} {% endif %}{{ p.name }} (${{ p.price }})
                         </option>
@@ -390,6 +392,7 @@
                         {% endfor %}
 
                     </select>
+                    <div class="hz-build-preview" data-hz-build-preview="{{ key }}" aria-live="polite"><img class="hz-build-image" alt="" hidden><span class="hz-build-placeholder">{% if key == 'cpu' %}<svg class="hz-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9" y="9" width="6" height="6" rx="1"/><path d="M9 3v3m6-3v3M9 18v3m6-3v3M3 9h3m-3 6h3m12-6h3m-3 6h3"/></svg>{% elif key == 'placa' %}<svg class="hz-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><rect x="6" y="6" width="7" height="7" rx="1"/><path d="M16 6v8m3-8v8M6 16h13m-13 3h8"/></svg>{% else %}<svg class="hz-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="10" rx="2"/><path d="M6 10h3v4H6zm5 0h3v4h-3zm5 0h2v4h-2zM6 17v3m4-3v3m4-3v3m4-3v3"/></svg>{% endif %}</span><div><strong>Sin componente seleccionado</strong><small>Selecciona una opción disponible.</small></div></div>
 
                 </div>
 

@@ -1,22 +1,23 @@
 {% extends "base.html" %}
 {% block title %}Ficha tecnica | Marketplace{% endblock %}
 {% block content %}
-<section style="max-width:700px;margin:36px auto;padding:30px;background:#fff;color:#1d2939;border:1px solid #dce4ed;border-radius:12px">
-  <h1>Ficha tecnica</h1>
+<section class="hz-tech-spec">
+  <div class="hz-tech-heading"><svg class="hz-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 16 12-12 4 4L8 20H4zM14 6l4 4"/></svg><h1>Ficha técnica</h1></div>
   <p><strong>{{ product.name }}</strong> | {{ kind }}</p>
-  <p>Las modificaciones requieren nueva aprobacion del administrador.</p>
+  <p class="hz-tech-note">Las modificaciones requieren nueva aprobación del administrador.</p>
   <form method="post">
     {% csrf_token %}
     {% if kind == 'CPU' or kind == 'PLACA' %}
       <label for="socket">Socket (ej.: AM4, AM5, LGA1700)</label>
-      <input id="socket" name="socket" required maxlength="50" value="{{ technical.socket|default:'' }}" style="display:block;width:100%;padding:12px;margin:8px 0 20px;border:1px solid #bfcbd8;border-radius:6px">
+      <input id="socket" name="socket" required maxlength="50" value="{{ technical.socket|default:'' }}">
     {% endif %}
     {% if kind == 'PLACA' or kind == 'RAM' %}
       <label for="ram_type">Tipo de memoria (ej.: DDR4, DDR5)</label>
-      <input id="ram_type" name="ram_type" required maxlength="20" value="{{ technical.ram_type|default:'' }}" style="display:block;width:100%;padding:12px;margin:8px 0 20px;border:1px solid #bfcbd8;border-radius:6px">
+      <input id="ram_type" name="ram_type" required maxlength="20" value="{{ technical.ram_type|default:'' }}">
     {% endif %}
-    <button type="submit" style="padding:12px 20px;border:0;border-radius:6px;background:#244d70;color:#fff">Guardar ficha</button>
-    <a href="{% url 'catalog:vendedor_productos' %}" style="margin-left:15px">Volver</a>
+    <div class="hz-tech-actions"><button type="submit" class="btn btn-primary">Guardar ficha</button>
+    <a href="{% url 'catalog:vendedor_productos' %}">Volver</a>
+  </div>
   </form>
 </section>
 {% endblock %}
