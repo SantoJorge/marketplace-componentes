@@ -1,88 +1,529 @@
+
 <style>
-/* MC-CR08-INDEX-INLINE-V1 - only styles inside this view */
-#mc-cr08{max-width:1300px;margin:0 auto;padding:20px 25px 42px;color:#263e54;font-family:inherit}
-#mc-cr08 *{box-sizing:border-box}
-#mc-cr08 .c8-path{font-size:11px;color:#75869b;margin-bottom:6px}
-#mc-cr08 .c8-path a{color:#356d9c;text-decoration:none}
-#mc-cr08 h1{font-size:23px;font-weight:750;letter-spacing:-.35px;margin:0;line-height:1.3}
-#mc-cr08 h1 span{color:#256596}
-#mc-cr08 .c8-desc{color:#6a7d91;font-size:12px;margin:5px 0 17px}
-#mc-cr08 .c8-panel{background:#fff;border:1px solid #dfe7ee;border-radius:9px;padding:16px;margin-bottom:17px;box-shadow:none}
-#mc-cr08 .c8-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:13px}
-#mc-cr08 .c8-field{min-width:0}
-#mc-cr08 label{display:block;font-size:10px;margin-bottom:5px;letter-spacing:.5px;text-transform:uppercase;font-weight:750;color:#5e6f82}
-#mc-cr08 select{height:36px;width:100%;padding:0 11px;background:#fff;border:1px solid #d6e0e9;border-radius:7px;color:#23354b;font:inherit;font-size:12px;outline:none}
-#mc-cr08 select:focus{border-color:#8293a3;box-shadow:0 0 0 2px rgba(150,169,185,.12)}
-#mc-cr08 .c8-actions{display:flex;gap:9px;flex-wrap:wrap}
-#mc-cr08 .c8-btn{min-height:33px;padding:8px 13px;font-size:12px;font-weight:650;border-radius:6px;border:1px solid transparent;cursor:pointer;font-family:inherit}
-#mc-cr08 .c8-primary{background:#627d92;color:#fff}
-#mc-cr08 .c8-primary:hover{background:#738da1}
-#mc-cr08 .c8-secondary{background:#fff;border-color:#d6e1ec;color:#34516c}
-#mc-cr08 .c8-secondary:hover{background:#f2f6fa}
-#mc-cr08 .c8-result{padding:12px 14px;border-radius:7px;margin-top:11px;font-size:12px;line-height:1.6;border:1px solid}
-#mc-cr08 .c8-result h4{font-size:13px;font-weight:750;margin:0 0 6px;color:#273e53}
-#mc-cr08 .c8-ok{background:#edf8f2;border-color:#b8ddc8;color:#1b704b}
-#mc-cr08 .c8-bad{background:#fef1f1;border-color:#ecc1c1;color:#9c373a}
-#mc-cr08 .c8-warn{background:#fff7e8;border-color:#efd9ad;color:#865b20}
-#mc-cr08 .c8-detail{font-size:11.5px;color:#5c7085;margin-top:6px}
-#mc-cr08 .c8-panel-title{font-size:14px;font-weight:750;color:#223a50;margin-bottom:9px}
-#mc-cr08 .c8-panel ul{font-size:12.8px;line-height:1.8;color:#66798e;padding-left:20px;margin:0}
-#mc-cr08 .c8-panel li{margin-bottom:3px}
-@media(max-width:880px){#mc-cr08 .c8-grid{grid-template-columns:1fr}#mc-cr08{padding:20px 16px 38px}}
+/* MC-CR08 - MARKETPLACE DARK UI */
+
+#mc-cr08 {
+    --c8-bg: #20121e;
+    --c8-card: #302035;
+    --c8-border: #75445c;
+    --c8-text: #f9f4f7;
+    --c8-muted: #cbb5c7;
+    --c8-accent: #ffad79;
+
+    max-width: 1340px;
+    margin: 0 auto;
+    padding: 28px 25px 48px;
+    color: var(--c8-text);
+    font-family: inherit;
+    color-scheme: dark;
+}
+
+#mc-cr08 * {
+    box-sizing: border-box;
+}
+
+#mc-cr08 [hidden] {
+    display: none !important;
+}
+
+#mc-cr08 .c8-path {
+    font-size: 12px;
+    color: var(--c8-muted);
+    margin-bottom: 18px;
+}
+
+#mc-cr08 .c8-path a {
+    color: var(--c8-accent);
+    text-decoration: none;
+}
+
+#mc-cr08 h1 {
+    font-size: clamp(25px, 3vw, 34px);
+    font-weight: 800;
+    letter-spacing: -.7px;
+    margin: 0;
+    line-height: 1.3;
+    color: var(--c8-text);
+}
+
+#mc-cr08 h1 span {
+    color: var(--c8-accent);
+}
+
+#mc-cr08 .c8-desc {
+    color: var(--c8-muted);
+    font-size: 14px;
+    line-height: 1.7;
+    margin: 8px 0 25px;
+}
+
+#mc-cr08 .c8-panel {
+    background: var(--c8-bg);
+    border: 1px solid var(--c8-border);
+    border-radius: 14px;
+    padding: 22px;
+    margin-bottom: 20px;
+}
+
+#mc-cr08 .c8-panel-title {
+    font-size: 17px;
+    font-weight: 750;
+    color: var(--c8-text);
+    margin-bottom: 18px;
+}
+
+#mc-cr08 .c8-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+#mc-cr08 .c8-field {
+    min-width: 0;
+    padding: 20px;
+    background: var(--c8-card);
+    border: 1px solid var(--c8-border);
+    border-radius: 12px;
+    transition: border-color .2s;
+}
+
+#mc-cr08 .c8-field:hover {
+    border-color: #F26716;
+}
+
+#mc-cr08 .c8-step {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--c8-accent);
+    margin-bottom: 12px;
+}
+
+#mc-cr08 label {
+    display: block;
+    font-size: 15px;
+    font-weight: 750;
+    margin-bottom: 7px;
+    color: var(--c8-text);
+}
+
+#mc-cr08 .c8-hint {
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--c8-muted);
+    margin: 0 0 16px;
+    min-height: 38px;
+}
+
+#mc-cr08 select {
+    height: 46px;
+    width: 100%;
+    padding: 0 12px;
+    background: #211822;
+    border: 1px solid #75445c;
+    border-radius: 8px;
+    color: var(--c8-text);
+    font: inherit;
+    font-size: 12px;
+    outline: none;
+}
+
+#mc-cr08 select option {
+    background: #24151e;
+    color: #f9f4f7;
+}
+
+#mc-cr08 select:focus {
+    border-color: var(--c8-accent);
+    box-shadow: 0 0 0 3px rgba(242,103,22,.13);
+}
+
+#mc-cr08 .c8-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+    padding: 20px;
+    margin-bottom: 20px;
+    background: #211822;
+    border: 1px solid var(--c8-border);
+    border-radius: 12px;
+}
+
+#mc-cr08 .c8-summary-label {
+    font-size: 12px;
+    color: var(--c8-muted);
+}
+
+#mc-cr08 .c8-total {
+    display: block;
+    color: #f9f4f7;
+    font-size: 30px;
+    font-weight: 800;
+    margin-top: 4px;
+    font-variant-numeric: tabular-nums;
+}
+
+#mc-cr08 .c8-count {
+    color: var(--c8-accent);
+    font-size: 12px;
+    font-weight: 650;
+}
+
+#mc-cr08 .c8-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+#mc-cr08 .c8-btn {
+    min-height: 42px;
+    padding: 11px 20px;
+    font-size: 13px;
+    font-weight: 700;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background .2s;
+}
+
+#mc-cr08 .c8-primary {
+    background: #8C0D24;
+    color: #fff;
+    border-color: #F26716;
+}
+
+#mc-cr08 .c8-primary:hover {
+    background: #A51B32;
+}
+
+#mc-cr08 .c8-secondary {
+    background: #302035;
+    border-color: #81506a;
+    color: #f9f4f7;
+}
+
+#mc-cr08 .c8-secondary:hover {
+    background: #3E2259;
+}
+
+#mc-cr08 .c8-btn:focus-visible {
+    outline: 2px solid var(--c8-accent);
+    outline-offset: 3px;
+}
+
+#mc-cr08 .c8-result {
+    padding: 18px;
+    border-radius: 10px;
+    margin-top: 16px;
+    font-size: 13px;
+    line-height: 1.7;
+    border: 1px solid;
+}
+
+#mc-cr08 .c8-result h4 {
+    font-size: 15px;
+    font-weight: 750;
+    margin: 0 0 8px;
+    color: inherit;
+}
+
+#mc-cr08 .c8-ok {
+    background: #102b24;
+    border-color: #286348;
+    color: #86efac;
+}
+
+#mc-cr08 .c8-bad {
+    background: #301a23;
+    border-color: #773747;
+    color: #fca5a5;
+}
+
+#mc-cr08 .c8-warn {
+    background: #302719;
+    border-color: #75602d;
+    color: #fcd98b;
+}
+
+#mc-cr08 .c8-detail {
+    font-size: 12px;
+    color: var(--c8-muted);
+    line-height: 1.7;
+    margin-top: 8px;
+}
+
+#mc-cr08 .c8-panel ul {
+    font-size: 13px;
+    line-height: 1.9;
+    color: var(--c8-muted);
+    padding-left: 20px;
+    margin: 0;
+}
+
+#mc-cr08 .c8-panel li {
+    margin-bottom: 5px;
+}
+
+#mc-cr08 .c8-panel li strong {
+    color: var(--c8-text);
+}
+
+@media (max-width: 1000px) {
+    #mc-cr08 .c8-grid {
+        grid-template-columns: 1fr;
+    }
+
+    #mc-cr08 {
+        padding: 20px 16px 38px;
+    }
+
+    #mc-cr08 .c8-hint {
+        min-height: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    #mc-cr08 .c8-panel {
+        padding: 14px;
+    }
+
+    #mc-cr08 .c8-summary {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    #mc-cr08 .c8-actions button {
+        width: 100%;
+    }
+}
 </style>
-<section id="mc-cr08" aria-label="Comprobador de compatibilidad tecnica">
-  <div class="c8-path"><a href="{% url 'catalog:inicio' %}">Inicio</a> / Arma tu PC</div>
-  <h1>Comprueba tus <span>componentes</span></h1>
-  <p class="c8-desc">Elige un procesador, una tarjeta madre y una memoria RAM para comprobar si pueden funcionar juntos.</p>
-  <section class="c8-panel">
-    <form id="mc-cr08-form" action="{% url 'catalog:compatibilidad' %}" method="get">
-      <input type="hidden" name="check" value="1">
-      <div class="c8-grid">
-        {% for key, items in groups.items %}
-          <div class="c8-field">
-            <label for="mc-cr08-{{ key }}">
-              {% if key == 'cpu' %}⚙️ Procesador (CPU){% elif key == 'placa' %}🔌 Tarjeta madre{% else %}🧠 Memoria RAM{% endif %}
-            </label>
-            <select name="{{ key }}" id="mc-cr08-{{ key }}">
-              <option value="">— Seleccionar —</option>
-              {% for p in items %}
-                <option value="{{ p.pk }}" {% if key == 'cpu' and selected_ids.cpu == p.pk|stringformat:'s' or key == 'placa' and selected_ids.placa == p.pk|stringformat:'s' or key == 'ram' and selected_ids.ram == p.pk|stringformat:'s' %}selected{% endif %}>{{ p.brand }} {{ p.name }} (${{ p.price }})</option>
-              {% endfor %}
-            </select>
-          </div>
-        {% endfor %}
-      </div>
-      <div class="c8-actions">
-        <button class="c8-btn c8-primary" type="submit">Comprobar componentes</button>
-        <button class="c8-btn c8-secondary" type="button" data-mc-cr08-clear="1">↺ Limpiar</button>
-        <button class="c8-btn c8-secondary" type="button" data-mc-cr08-back="1" hidden>Volver</button>
-      </div>
-    </form>
-    <div id="mc-cr08-results" aria-live="polite">
-      {% if result %}
-        <div class="c8-result {% if result.general == 'COMPATIBLE' %}c8-ok{% elif result.general == 'INCOMPATIBLE' %}c8-bad{% else %}c8-warn{% endif %}">
-          <strong>{% if result.general == 'COMPATIBLE' %}✅ Configuración COMPATIBLE — todos los chequeos pasaron.{% elif result.general == 'INCOMPATIBLE' %}❌ Configuración INCOMPATIBLE — revisa los detalles abajo.{% else %}⚠️ Información INSUFICIENTE — faltan atributos técnicos.{% endif %}</strong>
-        </div>
-        <div class="c8-result {% if result.socket == 'COMPATIBLE' %}c8-ok{% elif result.socket == 'INCOMPATIBLE' %}c8-bad{% else %}c8-warn{% endif %}">
-          <h4>{% if result.socket == 'COMPATIBLE' %}✅{% elif result.socket == 'INCOMPATIBLE' %}❌{% else %}⚠️{% endif %} CPU ↔ Placa madre (socket)</h4>
-          <div>{{ result.cpu_message }}</div>
-          <div class="c8-detail">CPU: {{ result.cpu_socket|default:'—' }} · Placa: {{ result.board_socket|default:'—' }}</div>
-        </div>
-        <div class="c8-result {% if result.ram == 'COMPATIBLE' %}c8-ok{% elif result.ram == 'INCOMPATIBLE' %}c8-bad{% else %}c8-warn{% endif %}">
-          <h4>{% if result.ram == 'COMPATIBLE' %}✅{% elif result.ram == 'INCOMPATIBLE' %}❌{% else %}⚠️{% endif %} RAM ↔ Placa madre (tipo de memoria)</h4>
-          <div>{{ result.ram_message }}</div>
-          <div class="c8-detail">RAM: {{ result.ram_ddr|default:'—' }} · Placa: {{ result.board_ddr|default:'—' }}</div>
-        </div>
-      {% endif %}
+
+<section id="mc-cr08" aria-label="Configurador de computadoras">
+
+    <div class="c8-path">
+        <a href="{% url 'catalog:inicio' %}">Inicio</a>
+        / Arma tu PC
     </div>
-  </section>
-  <section class="c8-panel">
-    <div class="c8-panel-title">Qué comprobamos</div>
-    <ul>
-      <li><strong>Procesador y tarjeta madre:</strong> deben utilizar el mismo socket.</li>
-      <li><strong>Memoria y tarjeta madre:</strong> el tipo DDR debe estar admitido por la placa.</li>
-      <li>Cuando faltan especificaciones del producto, no se puede confirmar la compatibilidad.</li>
-    </ul>
-    <p class="c8-detail">Además, la compatibilidad real puede depender de BIOS, generación del procesador, QVL y otras especificaciones.</p>
-  </section>
+
+    <h1>Construye tu <span>próxima PC</span></h1>
+
+    <p class="c8-desc">
+        Selecciona tus componentes y comprueba su
+        compatibilidad técnica antes de realizar tu compra.
+    </p>
+
+    <section class="c8-panel">
+
+        <div class="c8-panel-title">
+            Configura tus componentes
+        </div>
+
+        <form id="mc-cr08-form"
+              action="{% url 'catalog:compatibilidad' %}"
+              method="get">
+
+            <input type="hidden" name="check" value="1">
+
+            <div class="c8-grid">
+
+                {% for key, items in groups.items %}
+
+                <div class="c8-field">
+                    <div class="hz-build-icon">{% if key == 'cpu' %}<svg class="hz-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9" y="9" width="6" height="6" rx="1"/><path d="M9 3v3m6-3v3M9 18v3m6-3v3M3 9h3m-3 6h3m12-6h3m-3 6h3"/></svg>{% elif key == 'placa' %}<svg class="hz-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><rect x="6" y="6" width="7" height="7" rx="1"/><path d="M16 6v8m3-8v8M6 16h13m-13 3h8"/></svg>{% else %}<svg class="hz-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="10" rx="2"/><path d="M6 10h3v4H6zm5 0h3v4h-3zm5 0h2v4h-2zM6 17v3m4-3v3m4-3v3m4-3v3"/></svg>{% endif %}</div>
+
+                    {% if key == 'cpu' %}
+
+                        <span class="c8-step">01 / PROCESADOR</span>
+
+                        <label for="mc-cr08-{{ key }}">
+                            Procesador (CPU)
+                        </label>
+
+                        <p class="c8-hint">
+                            Selecciona el procesador de tu computadora.
+                        </p>
+
+                    {% elif key == 'placa' %}
+
+                        <span class="c8-step">02 / PLATAFORMA</span>
+
+                        <label for="mc-cr08-{{ key }}">
+                            Tarjeta madre
+                        </label>
+
+                        <p class="c8-hint">
+                            Selecciona una placa compatible con tu procesador.
+                        </p>
+
+                    {% else %}
+
+                        <span class="c8-step">03 / MEMORIA</span>
+
+                        <label for="mc-cr08-{{ key }}">
+                            Memoria RAM
+                        </label>
+
+                        <p class="c8-hint">
+                            Selecciona el tipo de memoria admitido por tu placa.
+                        </p>
+
+                    {% endif %}
+
+                    <select name="{{ key }}" id="mc-cr08-{{ key }}">
+
+                        <option value="">Seleccionar componente</option>
+
+                        {% for p in items %}
+
+                        <option
+                            value="{{ p.pk }}"
+                            data-socket="{{ p.technical_spec.socket|default:''|escape }}"
+                            data-ram-type="{{ p.technical_spec.ram_type|default:''|escape }}"
+                            data-price="{{ p.price|stringformat:'s' }}"
+                            {% if p.image %}data-hz-image="{{ p.image.url|escape }}"{% endif %}
+                            {% if key == 'cpu' and selected_ids.cpu == p.pk|stringformat:'s' or key == 'placa' and selected_ids.placa == p.pk|stringformat:'s' or key == 'ram' and selected_ids.ram == p.pk|stringformat:'s' %}selected{% endif %}>
+                            {% if p.brand and p.brand|lower not in p.name|lower %}{{ p.brand }} {% endif %}{{ p.name }} (${{ p.price }})
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+                    <div class="hz-build-preview" data-hz-build-preview="{{ key }}" aria-live="polite"><img class="hz-build-image" alt="" hidden><span class="hz-build-placeholder">{% if key == 'cpu' %}<svg class="hz-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9" y="9" width="6" height="6" rx="1"/><path d="M9 3v3m6-3v3M9 18v3m6-3v3M3 9h3m-3 6h3m12-6h3m-3 6h3"/></svg>{% elif key == 'placa' %}<svg class="hz-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><rect x="6" y="6" width="7" height="7" rx="1"/><path d="M16 6v8m3-8v8M6 16h13m-13 3h8"/></svg>{% else %}<svg class="hz-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="10" rx="2"/><path d="M6 10h3v4H6zm5 0h3v4h-3zm5 0h2v4h-2zM6 17v3m4-3v3m4-3v3m4-3v3"/></svg>{% endif %}</span><div><strong>Sin componente seleccionado</strong><small>Selecciona una opción disponible.</small></div></div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+            <div class="c8-summary">
+
+                <div>
+                    <span class="c8-summary-label">
+                        Precio total estimado
+                    </span>
+
+                    <output id="mc-cr08-total"
+                            class="c8-total"
+                            aria-live="polite">$0.00</output>
+                </div>
+
+                <span id="mc-cr08-count"
+                      class="c8-count">
+                    0 de 3 componentes seleccionados
+                </span>
+
+            </div>
+
+            <div class="c8-actions">
+
+                <button class="c8-btn c8-primary"
+                        type="submit">
+                    Comprobar componentes
+                </button>
+
+                <button class="c8-btn c8-secondary"
+                        type="button"
+                        data-mc-cr08-clear="1">
+                    Limpiar
+                </button>
+
+                <button class="c8-btn c8-secondary"
+                        type="button"
+                        data-mc-cr08-back="1"
+                        hidden>
+                    Volver
+                </button>
+
+            </div>
+
+        </form>
+
+        <div id="mc-cr08-results" aria-live="polite">
+
+            {% if result %}
+
+            <div class="c8-result {% if result.general == 'COMPATIBLE' %}c8-ok{% elif result.general == 'INCOMPATIBLE' %}c8-bad{% else %}c8-warn{% endif %}">
+
+                <strong>
+                    {% if result.general == 'COMPATIBLE' %}
+                        Configuración compatible según los criterios evaluados.
+                    {% elif result.general == 'INCOMPATIBLE' %}
+                        Configuración incompatible. Revisa los detalles.
+                    {% else %}
+                        Información insuficiente. Faltan atributos técnicos.
+                    {% endif %}
+                </strong>
+
+            </div>
+
+            <div class="c8-result {% if result.socket == 'COMPATIBLE' %}c8-ok{% elif result.socket == 'INCOMPATIBLE' %}c8-bad{% else %}c8-warn{% endif %}">
+
+                <h4>Procesador y tarjeta madre</h4>
+
+                <div>{{ result.cpu_message }}</div>
+
+                <div class="c8-detail">
+                    CPU: {{ result.cpu_socket|default:'No especificado' }}
+                    |
+                    Placa: {{ result.board_socket|default:'No especificado' }}
+                </div>
+
+            </div>
+
+            <div class="c8-result {% if result.ram == 'COMPATIBLE' %}c8-ok{% elif result.ram == 'INCOMPATIBLE' %}c8-bad{% else %}c8-warn{% endif %}">
+
+                <h4>Memoria RAM y tarjeta madre</h4>
+
+                <div>{{ result.ram_message }}</div>
+
+                <div class="c8-detail">
+                    RAM: {{ result.ram_ddr|default:'No especificado' }}
+                    |
+                    Placa: {{ result.board_ddr|default:'No especificado' }}
+                </div>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </section>
+
+    <section class="c8-panel">
+
+        <div class="c8-panel-title">
+            Verificación técnica
+        </div>
+
+        <ul>
+            <li>
+                <strong>Procesador y tarjeta madre:</strong>
+                deben utilizar el mismo socket.
+            </li>
+
+            <li>
+                <strong>Memoria RAM:</strong>
+                el tipo DDR debe estar admitido por la placa.
+            </li>
+
+            <li>
+                Si faltan especificaciones técnicas,
+                no se puede confirmar la compatibilidad.
+            </li>
+        </ul>
+
+        <p class="c8-detail">
+            La compatibilidad completa también puede depender
+            de la BIOS, el chipset, la generación del procesador,
+            la lista QVL y otras especificaciones del fabricante.
+        </p>
+
+    </section>
+
 </section>

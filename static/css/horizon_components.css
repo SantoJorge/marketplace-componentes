@@ -1,0 +1,39 @@
+/* HORIZON INFERNO V08.1 / real component forms */
+body #mc-cr08 {max-width:1400px;padding:16px 0 36px;--c8-accent:#ffad79;--c8-bg:#20121e;--c8-card:#302035;--c8-border:#75445c;--c8-muted:#cbb5c7;}
+body #mc-cr08 h1 {font-family:Montserrat,Inter,sans-serif;font-weight:800;font-size:clamp(28px,4vw,44px);letter-spacing:-.045em;}
+body #mc-cr08 h1 span {color:#ffad79;}
+body #mc-cr08 .c8-panel {background:linear-gradient(145deg,#24151e,#20121e);border:1px solid #75445c88;border-radius:21px;padding:clamp(16px,2.5vw,28px);box-shadow:0 16px 36px #0003;}
+body #mc-cr08 .c8-grid {gap:16px;grid-template-columns:repeat(3,minmax(0,1fr));}
+body #mc-cr08 .c8-field {min-width:0;padding:18px;border-radius:17px;background:linear-gradient(145deg,#3e225955,#24151e);border:1px solid #75445c88;}
+body #mc-cr08 .hz-build-icon {display:grid;place-items:center;width:52px;height:52px;background:#3e225966;border:1px solid #75445c;border-radius:14px;color:#ffad79;margin-bottom:12px;}
+#mc-cr08 .hz-build-icon svg {width:29px;height:29px;}
+body #mc-cr08 .c8-step {color:#ffad79;letter-spacing:1.2px;}
+body #mc-cr08 select {width:100%;max-width:100%;min-height:46px;background:#171018;color:#f9f4f7;border:1px solid #75445c;border-radius:11px;}
+body #mc-cr08 select option {background:#20121e;color:#fff;}
+#mc-cr08 .hz-build-preview {display:grid;grid-template-columns:58px minmax(0,1fr);align-items:center;gap:11px;margin-top:14px;min-height:70px;border-top:1px solid #75445c55;padding-top:12px;color:#e5d2e1;}
+#mc-cr08 .hz-build-preview .hz-build-image {width:58px;height:58px;object-fit:contain;border-radius:11px;background:#171018;}
+#mc-cr08 .hz-build-preview .hz-build-placeholder {display:grid;place-items:center;width:58px;height:58px;background:#171018;border-radius:11px;color:#ffad79;}
+#mc-cr08 .hz-build-placeholder svg {width:30px;height:30px;}
+#mc-cr08 .hz-build-preview strong,#mc-cr08 .hz-build-preview small {display:block;overflow-wrap:anywhere;}
+#mc-cr08 .hz-build-preview strong {font-size:12px;line-height:1.35;}
+#mc-cr08 .hz-build-preview small {font-size:11px;color:#cbb5c7;margin-top:4px;}
+body #mc-cr08 .c8-summary {background:linear-gradient(120deg,#3e225955,#20121e);border:1px solid #75445c;border-radius:15px;gap:14px;}
+body #mc-cr08 .c8-total {font:800 34px/1.2 Montserrat,Inter,sans-serif;color:#fff;}
+body #mc-cr08 .c8-primary {background:linear-gradient(120deg,#8c0d24,#5c1227);border:1px solid #f2671688;color:#fff;}
+body #mc-cr08 .c8-secondary {background:#302035;border:1px solid #75445c;color:#fff;}
+body #mc-cr08 .c8-ok {background:#142821;border-color:#4ade80; color:#ddf9e7;}
+body #mc-cr08 .c8-bad {background:#391a24;border-color:#f22d1b;color:#ffdbd6;}
+body #mc-cr08 .c8-warn {background:#332418;border-color:#f26716;color:#ffe0c3;}
+body .hz-tech-spec {max-width:760px;margin:24px auto 40px;background:linear-gradient(145deg,#302035,#20121e);border:1px solid #75445c88;border-radius:21px;padding:clamp(20px,4vw,32px);}
+.hz-tech-spec .hz-tech-heading {display:flex;align-items:center;gap:15px;margin-bottom:18px;}
+.hz-tech-spec .hz-tech-heading .hz-ic,.mc-publish-card-icon .hz-ic {width:34px;height:34px;color:#ffad79;}
+.hz-tech-spec .hz-tech-heading h1 {margin:0;}
+.hz-tech-spec .hz-tech-note {border-left:3px solid #f26716;background:#8c0d241e;padding:12px;border-radius:8px;}
+.hz-tech-spec .hz-tech-actions {display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+body .mc-publish-card {border-radius:21px;border-color:#75445c88;}
+body .mc-publish-grid-2,body .mc-publish-grid-3 {min-width:0;}
+body .mc-publish-field {min-width:0;}
+body .mc-publish-field :is(input,select,textarea) {max-width:100%;}
+body .mc-publish-photo {flex-wrap:wrap;}
+@media(max-width:1000px){body #mc-cr08 .c8-grid{grid-template-columns:1fr;}body #mc-cr08 .c8-field{padding:16px;}body #mc-cr08 .c8-hint{min-height:0;}}
+@media(max-width:600px){body #mc-cr08 .c8-summary{flex-direction:column;align-items:flex-start;}body #mc-cr08 .c8-actions{display:grid;grid-template-columns:1fr;}body #mc-cr08 .c8-actions [hidden]{display:none!important;}body #mc-cr08 .c8-actions button{width:100%;}body .mc-publish-grid-2,body .mc-publish-grid-3{grid-template-columns:1fr;} .hz-tech-spec .hz-tech-actions>*{width:100%;text-align:center;margin:0;}}

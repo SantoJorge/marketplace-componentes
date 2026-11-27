@@ -527,13 +527,13 @@
         para encontrar lo que necesitas.
     </p>
 
-    <div class="estructura">
+    <nav class="hz-catalog-categories" aria-label="Categorías"><a href="{% url 'catalog:catalogo' %}?limpiar=1" {% if not selected_category %}aria-current="true"{% endif %}>Todas</a>{% for categoria in categorias %}<a href="{% url 'catalog:catalogo' %}?categoria={{ categoria.pk }}" {% if selected_category == categoria.pk|stringformat:'s' %}aria-current="true"{% endif %}>{% include 'includes/horizon_category_icon.html' with category_name=categoria.name %}{{ categoria.name }}</a>{% endfor %}</nav><p><a class="hz-quick-link" data-hz-recover hidden href="{% url 'catalog:catalogo' %}">Recuperar últimos filtros</a></p><div class="estructura">
 
         <!-- ==================================
              FILTROS
         ================================== -->
 
-        <aside class="filtros" aria-label="Filtros">
+        <details class="filtros hz-filters" aria-label="Filtros"><summary>Refinar búsqueda <span>Filtros y ordenamiento</span></summary>
 
             <form method="get"
                   action="{% url 'catalog:catalogo' %}"
@@ -584,7 +584,7 @@
                                    {% if selected_category == categoria.pk|stringformat:'s' %}checked{% endif %}
                                    onchange="this.form.submit()">
 
-                            {{ categoria.icon|default:'📦' }}
+                            {% include 'includes/horizon_category_icon.html' with category_name=categoria.name %}
                             {{ categoria.name }}
 
                         </label>
@@ -753,7 +753,7 @@
 
             </form>
 
-        </aside>
+        </details>
 
 
         <!-- ==================================
@@ -865,7 +865,7 @@
                         {% else %}
 
                         <span class="sin-foto">
-                            {{ producto.category.icon|default:'📦' }}
+                            {% include 'includes/horizon_category_icon.html' with category_name=producto.category.name %}
                         </span>
 
                         {% endif %}
@@ -945,6 +945,7 @@
                             </div>
 
                             <div class="acciones">
+<a class="hz-quick-link" data-hz-quick href="{% url 'catalog:producto' producto.pk %}"><svg class="hz-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg> Vista rápida</a>
 
                                 <a class="boton"
                                    href="{% url 'catalog:producto' producto.pk %}">

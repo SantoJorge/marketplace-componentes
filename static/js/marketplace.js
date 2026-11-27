@@ -64,6 +64,8 @@ document.addEventListener("click", function (event) {
     }
 
 
+});
+
     // ==========================================================
     // FASE 3.1 - MODAL DE SOLICITUD DE VENDEDOR
     // Reutiliza el formulario y la vista Django existentes.
@@ -352,6 +354,3 @@ document.addEventListener("click", function (event) {
         });
 
     })();
-
-
-});

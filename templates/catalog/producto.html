@@ -540,6 +540,7 @@
     </nav>
 
 
+    <header class="hz-detail-title"><span class="hz-eyebrow">{{ product.category.name }}</span><h1>{{ product.name }}</h1></header>
     <div class="pd-grid">
 
         <!-- =================================
@@ -561,7 +562,7 @@
 
                 <div class="pd-placeholder"
                      aria-label="Sin fotografía">
-                    {{ product.category.icon|default:"🖥️" }}
+                    {% include 'includes/horizon_category_icon.html' with category_name=product.category.name %}
                 </div>
 
                 {% endif %}
@@ -571,81 +572,7 @@
 
             <!-- DESCRIPCION BAJO LA IMAGEN -->
 
-            <section class="pd-panel pd-description">
 
-                <h2 class="pd-panel-title">
-                    📋 Descripción
-                </h2>
-
-                <p class="pd-text">
-                    {% if product.description %}
-                    {{ product.description|linebreaksbr }}
-                    {% else %}
-                    No hay descripción disponible.
-                    {% endif %}
-                </p>
-
-
-                <!-- ESPECIFICACIONES REALES -->
-
-                <h3 class="pd-spec-title">
-                    ⚙️ Especificaciones técnicas
-                </h3>
-
-                <div class="pd-specs">
-
-                    <div class="pd-spec-row">
-                        <div class="pd-spec-key">
-                            Categoría
-                        </div>
-                        <div class="pd-spec-value">
-                            {{ product.category.name }}
-                        </div>
-                    </div>
-
-                    <div class="pd-spec-row">
-                        <div class="pd-spec-key">
-                            Marca
-                        </div>
-                        <div class="pd-spec-value">
-                            {{ product.brand }}
-                        </div>
-                    </div>
-
-                    {% if product.model %}
-                    <div class="pd-spec-row">
-                        <div class="pd-spec-key">
-                            Modelo
-                        </div>
-                        <div class="pd-spec-value">
-                            {{ product.model }}
-                        </div>
-                    </div>
-                    {% endif %}
-
-                    <div class="pd-spec-row">
-                        <div class="pd-spec-key">
-                            Condición
-                        </div>
-                        <div class="pd-spec-value">
-                            {{ product.get_condition_display }}
-                        </div>
-                    </div>
-
-                    {% if product.location %}
-                    <div class="pd-spec-row">
-                        <div class="pd-spec-key">
-                            Ubicación
-                        </div>
-                        <div class="pd-spec-value">
-                            {{ product.location }}
-                        </div>
-                    </div>
-                    {% endif %}
-
-                </div>
-
-            </section>
 
         </div>
 
@@ -675,9 +602,9 @@
 
                 <!-- NOMBRE -->
 
-                <h1 class="pd-name">
+                <h2 class="pd-name">
                     {{ product.name }}
-                </h1>
+                </h2>
 
                 <div class="pd-subtitle">
 
@@ -906,6 +833,82 @@
         </div>
 
     </div>
+
+<section class="pd-panel pd-description">
+
+                <h2 class="pd-panel-title">
+                    📋 Descripción
+                </h2>
+
+                <p class="pd-text">
+                    {% if product.description %}
+                    {{ product.description|linebreaksbr }}
+                    {% else %}
+                    No hay descripción disponible.
+                    {% endif %}
+                </p>
+
+
+                <!-- ESPECIFICACIONES REALES -->
+
+                <h3 class="pd-spec-title">
+                    ⚙️ Especificaciones técnicas
+                </h3>
+
+                <div class="pd-specs">
+
+                    <div class="pd-spec-row">
+                        <div class="pd-spec-key">
+                            Categoría
+                        </div>
+                        <div class="pd-spec-value">
+                            {{ product.category.name }}
+                        </div>
+                    </div>
+
+                    <div class="pd-spec-row">
+                        <div class="pd-spec-key">
+                            Marca
+                        </div>
+                        <div class="pd-spec-value">
+                            {{ product.brand }}
+                        </div>
+                    </div>
+
+                    {% if product.model %}
+                    <div class="pd-spec-row">
+                        <div class="pd-spec-key">
+                            Modelo
+                        </div>
+                        <div class="pd-spec-value">
+                            {{ product.model }}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="pd-spec-row">
+                        <div class="pd-spec-key">
+                            Condición
+                        </div>
+                        <div class="pd-spec-value">
+                            {{ product.get_condition_display }}
+                        </div>
+                    </div>
+
+                    {% if product.location %}
+                    <div class="pd-spec-row">
+                        <div class="pd-spec-key">
+                            Ubicación
+                        </div>
+                        <div class="pd-spec-value">
+                            {{ product.location }}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                </div>
+
+            </section>
 
 </div>
 

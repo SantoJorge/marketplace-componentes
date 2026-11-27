@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load horizon_cut_tags %}
 
 {% block title %}
 Inicio | Marketplace Componentes
@@ -10,66 +11,14 @@ Inicio | Marketplace Componentes
      HOME / PORTADA PUBLICA
 ========================================== -->
 
-<section class="hero">
-    <div class="hero-content">
-
-        <div class="hero-tag">
-            ⚡ PLATAFORMA DE COMPRA Y REVENTA
-        </div>
-
-        <h1>
-            Compra y vende
-            <span>componentes de computadora</span>
-        </h1>
-
-        <p>
-            Encuentra procesadores, tarjetas gráficas,
-            memorias RAM y todo el hardware que necesitas,
-            directamente de los vendedores del marketplace.
-        </p>
-
-        <div class="hero-actions">
-
-            <a href="{% url 'catalog:catalogo' %}"
-               class="btn btn-primary btn-large">
-                🔍 Explorar componentes
-            </a>
-
-            <!-- MOSTRAR AVISO INICIO SECCION -->
-
-            <a href="{{ vender_url }}{% if not request.user.is_authenticated %}?aviso=vender{% endif %}"
-               class="btn btn-secondary btn-large">
-                🏪 {{ vender_texto }}
-            </a>
-
-
-        </div>
-
-        <!-- CONTADORES REALES -->
-
-        <div class="hero-stats">
-
-            <div>
-                <strong>{{ total_productos }}</strong>
-                <span>PRODUCTOS ACTIVOS</span>
-            </div>
-
-            <div>
-                <strong>{{ total_vendedores }}</strong>
-                <span>VENDEDORES</span>
-            </div>
-
-            <div>
-                <strong>{{ total_categorias }}</strong>
-                <span>CATEGORÍAS</span>
-            </div>
-
-            <div>
-                <strong>{{ total_ordenes }}</strong>
-                <span>ÓRDENES REGISTRADAS</span>
-            </div>
-
-        </div>
+<div class="hz-home">
+<section class="hz-intro" aria-labelledby="hz-title">
+    <div><span class="hz-eyebrow">MARKETPLACE / HORIZON</span>
+    <h1 id="hz-title">Tu próximo <em>upgrade.</em></h1>
+    <p>Compra y vende hardware. Descubre, inspecciona y elige tus componentes.</p></div>
+    <div class="hero-actions">
+        <a class="btn btn-primary" href="{% url 'catalog:catalogo' %}">Explorar catálogo</a>
+        <a class="btn btn-secondary" href="{{ vender_url }}{% if not request.user.is_authenticated %}?aviso=vender{% endif %}">{{ vender_texto }}</a>
     </div>
 </section>
 
@@ -102,7 +51,7 @@ Inicio | Marketplace Componentes
            href="{% url 'catalog:catalogo' %}?categoria={{ categoria.id }}">
 
             <div class="category-icon">
-                {{ categoria.icon|default:'📦' }}
+                {% include 'includes/horizon_category_icon.html' with category_name=categoria.name %}
             </div>
 
             <strong>{{ categoria.name }}</strong>
@@ -126,6 +75,36 @@ Inicio | Marketplace Componentes
 </section>
 
 
+<div class="hz-feature">
+<section class="hz-showroom" aria-label="Galería de productos destacados" data-hz-gallery>
+    <div class="hz-slides">
+    {% for producto in productos_destacados|slice:':4' %}
+    <article class="hz-stage" data-hz-slide {% if not forloop.first %}hidden{% endif %}>
+        <div class="hz-stage-copy">
+            <span class="hz-eyebrow">SELECCIÓN / {{ producto.category.name }}</span>
+            <h2>{{ producto.name }}</h2>
+            <p>{{ producto.brand }}{% if producto.model %} · {{ producto.model }}{% endif %}</p>
+            <div class="hz-facts"><span>{{ producto.get_condition_display }}</span><span>Stock: {{ producto.stock }}</span></div>
+            <strong class="hz-stage-price">${{ producto.price|floatformat:2 }}</strong>
+            <div class="hz-stage-actions"><a class="hz-quick-link" data-hz-quick href="{% url 'catalog:producto' producto.id %}"><svg class="hz-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg> Vista rápida</a><a class="btn btn-primary" href="{% url 'catalog:producto' producto.id %}">Ficha completa</a></div>
+        </div>
+        <a class="hz-stage-art" href="{% url 'catalog:producto' producto.id %}" aria-label="Ver {{ producto.name }}">
+            {% horizon_cut_url producto as hz_cut %}{% if hz_cut %}<img class="hz-cutout hz-stage-cutout" src="{{ hz_cut }}" alt="{{ producto.name }}">{% else %}
+            {% include 'includes/horizon_category_icon.html' with category_name=producto.category.name %}{% endif %}
+        </a>
+    </article>
+    {% empty %}<div class="hz-stage hz-stage-copy"><h2>Explora el marketplace</h2><p>No hay productos destacados disponibles.</p><a class="btn btn-primary" href="{% url 'catalog:catalogo' %}">Ver catálogo</a></div>{% endfor %}
+    </div>
+    {% if productos_destacados %}<div class="hz-stage-arrows"><button type="button" class="hz-icon" data-hz-step="-1" aria-label="Producto anterior">‹</button><button type="button" class="hz-icon" data-hz-step="1" aria-label="Producto siguiente">›</button></div><div class="hz-gallery-controls" aria-label="Elegir producto destacado">
+    {% for producto in productos_destacados|slice:':4' %}<button type="button" class="hz-thumb" data-hz-index="{{ forloop.counter0 }}" aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}">{% horizon_cut_url producto as hz_thumb_cut %}{% if hz_thumb_cut %}<img class="hz-cutout" src="{{ hz_thumb_cut }}" alt="" loading="lazy">{% else %}<span aria-hidden="true">{% include 'includes/horizon_category_icon.html' with category_name=producto.category.name %}</span>{% endif %}<span><b>{{ producto.name }}</b><small>${{ producto.price|floatformat:2 }}</small></span></button>{% endfor %}
+    </div>{% endif %}
+</section>
+<aside class="hz-feature-aside">
+    <div class="hz-build"><span class="hz-eyebrow">HERRAMIENTA / CONFIGURADOR</span><span class="hz-build-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="14" height="14" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 2v3m6-3v3M9 19v3m6-3v3M2 9h3m-3 6h3m14-6h3m-3 6h3"/></svg></span><h2>Construye tu PC.</h2><p>Comprueba socket y memoria antes de elegir tus componentes.</p><a class="btn btn-primary" href="{% url 'catalog:compatibilidad' %}">Abrir configurador</a></div>
+    <div class="hz-market-stats"><div><b>{{ total_productos }}</b><small>Productos activos</small></div><div><b>{{ total_vendedores }}</b><small>Vendedores</small></div><div><b>{{ total_categorias }}</b><small>Categorías</small></div><div><b>{{ total_ordenes }}</b><small>Órdenes</small></div></div>
+</aside>
+</div>
+
 <!-- ==========================================
      PRODUCTOS DESTACADOS
 ========================================== -->
@@ -135,7 +114,7 @@ Inicio | Marketplace Componentes
     <div class="section-header">
 
         <div>
-            <h2>⭐ Productos destacados</h2>
+            <h2>Productos destacados</h2>
             <p>
                 Una selección de publicaciones recientes disponibles
             </p>
@@ -148,6 +127,7 @@ Inicio | Marketplace Componentes
 
     </div>
 
+    <div class="hz-shelf-controls"><button type="button" class="hz-icon" data-hz-scroll="-1" aria-label="Desplazar a la izquierda">‹</button><button type="button" class="hz-icon" data-hz-scroll="1" aria-label="Desplazar a la derecha">›</button></div>
     <div class="products-grid">
 
         {% for producto in productos_destacados %}
@@ -169,7 +149,7 @@ Inicio | Marketplace Componentes
 
                 <span class="category-icon"
                       style="font-size:52px">
-                    {{ producto.category.icon|default:'📦' }}
+                    {% include 'includes/horizon_category_icon.html' with category_name=producto.category.name %}
                 </span>
 
                 {% endif %}
@@ -219,6 +199,7 @@ Inicio | Marketplace Componentes
                     </div>
 
                     <div class="product-actions">
+<a class="hz-quick-link" data-hz-quick href="{% url 'catalog:producto' producto.id %}"><svg class="hz-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg> Vista rápida</a>
 
                         <a href="{% url 'catalog:producto' producto.id %}"
                            class="btn btn-secondary">
@@ -267,7 +248,7 @@ Inicio | Marketplace Componentes
     <div class="section-header">
 
         <div>
-            <h2>🆕 Últimos productos</h2>
+            <h2>Últimos productos</h2>
             <p>
                 Los componentes publicados más recientemente
             </p>
@@ -280,6 +261,7 @@ Inicio | Marketplace Componentes
 
     </div>
 
+    <div class="hz-shelf-controls"><button type="button" class="hz-icon" data-hz-scroll="-1" aria-label="Desplazar a la izquierda">‹</button><button type="button" class="hz-icon" data-hz-scroll="1" aria-label="Desplazar a la derecha">›</button></div>
     <div class="products-grid">
 
         {% for producto in productos_recientes %}
@@ -301,7 +283,7 @@ Inicio | Marketplace Componentes
 
                 <span class="category-icon"
                       style="font-size:52px">
-                    {{ producto.category.icon|default:'📦' }}
+                    {% include 'includes/horizon_category_icon.html' with category_name=producto.category.name %}
                 </span>
 
                 {% endif %}
@@ -351,6 +333,7 @@ Inicio | Marketplace Componentes
                     </div>
 
                     <div class="product-actions">
+<a class="hz-quick-link" data-hz-quick href="{% url 'catalog:producto' producto.id %}"><svg class="hz-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg> Vista rápida</a>
 
                         <a href="{% url 'catalog:producto' producto.id %}"
                            class="btn btn-secondary">
@@ -444,4 +427,16 @@ Inicio | Marketplace Componentes
 
 </section>
 
+</div>
+<script>
+(function(){
+ const gallery=document.querySelector('[data-hz-gallery]'); if(!gallery)return;
+ const slides=Array.from(gallery.querySelectorAll('[data-hz-slide]'));
+ const buttons=Array.from(gallery.querySelectorAll('[data-hz-index]'));
+ buttons.forEach((button,i)=>button.addEventListener('click',()=>{
+   slides.forEach((slide,j)=>slide.hidden=i!==j);
+   buttons.forEach((item,j)=>item.setAttribute('aria-pressed',String(i===j)));
+ }));
+})();
+</script>
 {% endblock %}
