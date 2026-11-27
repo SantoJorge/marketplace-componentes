@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load horizon_cut_tags %}
 
 {% block title %}
 Inicio | Marketplace Componentes
@@ -88,14 +89,14 @@ Inicio | Marketplace Componentes
             <div class="hz-stage-actions"><a class="hz-quick-link" data-hz-quick href="{% url 'catalog:producto' producto.id %}"><svg class="hz-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg> Vista rápida</a><a class="btn btn-primary" href="{% url 'catalog:producto' producto.id %}">Ficha completa</a></div>
         </div>
         <a class="hz-stage-art" href="{% url 'catalog:producto' producto.id %}" aria-label="Ver {{ producto.name }}">
-            {% if producto.image %}<img src="{{ producto.image.url }}" alt="{{ producto.name }}">{% else %}
+            {% horizon_cut_url producto as hz_cut %}{% if hz_cut %}<img class="hz-cutout hz-stage-cutout" src="{{ hz_cut }}" alt="{{ producto.name }}">{% else %}
             {% include 'includes/horizon_category_icon.html' with category_name=producto.category.name %}{% endif %}
         </a>
     </article>
     {% empty %}<div class="hz-stage hz-stage-copy"><h2>Explora el marketplace</h2><p>No hay productos destacados disponibles.</p><a class="btn btn-primary" href="{% url 'catalog:catalogo' %}">Ver catálogo</a></div>{% endfor %}
     </div>
     {% if productos_destacados %}<div class="hz-stage-arrows"><button type="button" class="hz-icon" data-hz-step="-1" aria-label="Producto anterior">‹</button><button type="button" class="hz-icon" data-hz-step="1" aria-label="Producto siguiente">›</button></div><div class="hz-gallery-controls" aria-label="Elegir producto destacado">
-    {% for producto in productos_destacados|slice:':4' %}<button type="button" class="hz-thumb" data-hz-index="{{ forloop.counter0 }}" aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}">{% if producto.image %}<img src="{{ producto.image.url }}" alt="" loading="lazy">{% else %}<span aria-hidden="true">{% include 'includes/horizon_category_icon.html' with category_name=producto.category.name %}</span>{% endif %}<span><b>{{ producto.name }}</b><small>${{ producto.price|floatformat:2 }}</small></span></button>{% endfor %}
+    {% for producto in productos_destacados|slice:':4' %}<button type="button" class="hz-thumb" data-hz-index="{{ forloop.counter0 }}" aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}">{% horizon_cut_url producto as hz_thumb_cut %}{% if hz_thumb_cut %}<img class="hz-cutout" src="{{ hz_thumb_cut }}" alt="" loading="lazy">{% else %}<span aria-hidden="true">{% include 'includes/horizon_category_icon.html' with category_name=producto.category.name %}</span>{% endif %}<span><b>{{ producto.name }}</b><small>${{ producto.price|floatformat:2 }}</small></span></button>{% endfor %}
     </div>{% endif %}
 </section>
 <aside class="hz-feature-aside">
